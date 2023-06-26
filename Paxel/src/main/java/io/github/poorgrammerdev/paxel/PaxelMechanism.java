@@ -6,8 +6,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
 
 /**
  * Swaps the paxel's base item around during mining to replicate effect
@@ -29,14 +27,9 @@ public class PaxelMechanism implements Listener {
         if (event.isCancelled()) return;
         
         final ItemStack tool = event.getItemInHand();
-        final ItemMeta meta = tool.getItemMeta();
-        if (meta == null) return;
 
         //Make sure the item in question is a paxel
-        if (!meta.getPersistentDataContainer().has(plugin.getPaxelKey(), PersistentDataType.BOOLEAN) ||
-            !meta.getPersistentDataContainer().get(plugin.getPaxelKey(), PersistentDataType.BOOLEAN)) {
-                return;
-        }
+        if (!plugin.isPaxel(tool)) return;
 
         final Material toolType = tool.getType();
         final Material blockType = event.getBlock().getType();

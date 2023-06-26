@@ -39,6 +39,16 @@ public class ToolMapper {
     }
 
     /**
+     * Get the corresponding tool set from the tool
+     * @param material The tool item type (e.g. IRON_PICKAXE)
+     * @return 3-valued array with the tools in question (e.g. {IRON_AXE, IRON_PICKAXE, IRON_SHOVEL}) or null if input is invalid
+     */
+    public Material[] getToolSet(Material material) {
+        final String toolTier = getToolTier(material);
+        return (toolTier != null) ? getToolSet(toolTier) : null;
+    }
+
+    /**
      * Get the corresponding tier for a given tool
      * @param material The tool item type (e.g. IRON_PICKAXE)
      * @return The mineral tier of the tool (e.g. IRON) or null if the input is invalid
@@ -52,7 +62,7 @@ public class ToolMapper {
      * @return all mineral tool tiers
      */
     public Collection<String> getAllTiers() {
-        return this.tierMap.values();
+        return this.toolsMap.keySet();
     }
 
     /**
