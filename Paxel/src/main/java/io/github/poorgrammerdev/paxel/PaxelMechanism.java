@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 
 /**
  * Swaps the paxel's base item around during mining to replicate effect
+ * @author Thomas Tran
  */
 public class PaxelMechanism implements Listener {
     private final Paxel plugin;

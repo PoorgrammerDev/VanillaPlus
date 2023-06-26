@@ -23,6 +23,9 @@ public final class Paxel extends JavaPlugin {
         craftingManager.registerAllRecipes();
         this.getServer().getPluginManager().registerEvents(craftingManager, this);
 
+        final RepairingManager repairingManager = new RepairingManager(this, toolMapper);
+        this.getServer().getPluginManager().registerEvents(repairingManager, this);
+
         final PaxelMechanism paxelMechanism = new PaxelMechanism(this, this.toolMapper);
         this.getServer().getPluginManager().registerEvents(paxelMechanism, this);
     }
@@ -32,10 +35,17 @@ public final class Paxel extends JavaPlugin {
         // Plugin shutdown logic
     }
 
+    /**
+     * @return the NamespacedKey for validating that an item is a paxel
+     */
     public NamespacedKey getPaxelKey() {
         return paxelKey;
     }
 
+    /**
+     * Checks if an item is a paxel or not
+     * @return if the item is a paxel or not
+     */
     public boolean isPaxel(ItemStack item) {
         if (item == null || item.getType() == Material.AIR) return false;
         
@@ -48,16 +58,30 @@ public final class Paxel extends JavaPlugin {
         );
     }
 
+    /**
+     * Creates a new paxel item for the given mineral tier
+     * @param tier mineral tier of the item (e.g. IRON or DIAMOND)
+     * @return Paxel item
+     */
     public ItemStack createPaxel(String tier) {
         final Material[] toolSet = this.toolMapper.getToolSet(tier);
         if (toolSet == null) return null;
 
-        final String displayName = tier.charAt(0) + tier.substring(1).toLowerCase() + " Paxel";
+        final String displayName = getPaxelName(tier);
         return new ItemBuilder(toolSet[ToolMapper.PICKAXE_INDEX])
             .setCustomModelData(111) //TODO: set in config
             .setName(ChatColor.WHITE + displayName)
             .setLore(ChatColor.GRAY + displayName) //The reason for setting the lore too is because the player can rename the tool
             .setPersistentData(this.getPaxelKey(), PersistentDataType.BOOLEAN, true)
             .build();
+    }
+
+    /**
+     * Get the name of a paxel for a given tier
+     * @param tier mineral tier of the item (e.g. IRON or DIAMOND)
+     * @return name of this tier's paxel
+     */
+    public String getPaxelName(String tier) {
+        return tier.charAt(0) + tier.substring(1).toLowerCase() + " Paxel";
     }
 }
