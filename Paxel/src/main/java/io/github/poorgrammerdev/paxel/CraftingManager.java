@@ -7,16 +7,17 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.inventory.recipe.CraftingBookCategory;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.event.Listener;
 
 /**
  * This class handles the crafting of the different Paxel items.
  * @author Thomas Tran
  */
-public class Crafting {
+public class CraftingManager implements Listener {
     private final Paxel plugin;
     private final ToolMapper toolMapper;
 
-    public Crafting(Paxel plugin, ToolMapper toolMapper) {
+    public CraftingManager(Paxel plugin, ToolMapper toolMapper) {
         this.plugin = plugin;
         this.toolMapper = toolMapper;
     }

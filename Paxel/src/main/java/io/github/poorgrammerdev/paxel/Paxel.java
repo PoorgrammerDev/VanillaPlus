@@ -12,8 +12,14 @@ public final class Paxel extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        // Plugin startup logic
+        final ToolMapper toolMapper = new ToolMapper(this);
 
+        final CraftingManager craftingManager = new CraftingManager(this, toolMapper);
+        craftingManager.registerAllRecipes();
+        // this.getServer().getPluginManager().registerEvents(craftingManager, this);
+
+        final PaxelMechanism paxelMechanism = new PaxelMechanism(this, toolMapper);
+        this.getServer().getPluginManager().registerEvents(paxelMechanism, this);
     }
 
     @Override
