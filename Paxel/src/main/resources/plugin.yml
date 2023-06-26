@@ -1,0 +1,4 @@
+name: Paxel
+version: '${project.version}'
+main: io.github.poorgrammerdev.paxel.Paxel
+api-version: '1.20'
