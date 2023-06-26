@@ -6,6 +6,7 @@ import java.util.Arrays;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
@@ -80,6 +81,9 @@ public class RepairingManager implements Listener {
         final ItemStack[] ingredients = event.getInventory().getStorageContents();
         if (ingredients.length != 2) return;
 
+        //If player is grindstoning a single item (one of them is null), ignore
+        if (ingredients[0] == null ^ ingredients[1] == null) return;
+
         final boolean isPaxel1 = plugin.isPaxel(ingredients[0]);
         final boolean isPaxel2 = plugin.isPaxel(ingredients[1]);
 
@@ -105,6 +109,9 @@ public class RepairingManager implements Listener {
         final ItemStack[] items = event.getInventory().getStorageContents();
         if (items.length != 2) return;
 
+        //If player is anvil'ing a single item (maybe renaming) -> ignore
+        if (items[0] == null ^ items[1] == null) return;
+
         //Attempting paxel-nonpaxel cross repair -> disallow
         if (plugin.isPaxel(items[0]) ^ plugin.isPaxel(items[1])) {
             event.setResult(null);
@@ -119,18 +126,23 @@ public class RepairingManager implements Listener {
     @EventHandler
     public void smithingTable(PrepareSmithingEvent event) {
         final ItemStack result = event.getResult();
+        if (result == null) return;
+
         final ItemMeta meta = result.getItemMeta();
         if (meta == null || !plugin.isPaxel(result)) return;
         
         //Compare the existing name with the expected name
         //If they match then nothing needs to be changed
-        final String oldName = meta.getDisplayName();
+        final String oldName = ChatColor.stripColor(meta.getDisplayName());
         final String newName = plugin.getPaxelName(toolMapper.getToolTier(result.getType()));
         if (oldName.equals(newName)) return;
 
         //Add the new name and description
-        meta.setDisplayName(newName);
-        meta.setLore(Arrays.asList(newName));
+        meta.setDisplayName(ChatColor.RESET + newName);
+
+        if (plugin.getConfig().getBoolean("write_description", true)) {
+            meta.setLore(Arrays.asList(ChatColor.GRAY + newName));
+        }
 
         result.setItemMeta(meta);
         event.setResult(result);

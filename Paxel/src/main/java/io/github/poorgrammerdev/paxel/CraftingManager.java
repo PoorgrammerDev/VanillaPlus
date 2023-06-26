@@ -1,5 +1,7 @@
 package io.github.poorgrammerdev.paxel;
 
+import java.util.HashMap;
+
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
@@ -12,7 +14,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 
 /**
- * This class handles the crafting of the different Paxel items.
+ * Handles the crafting of the different Paxel items.
  * @author Thomas Tran
  */
 public class CraftingManager implements Listener {
@@ -27,7 +29,9 @@ public class CraftingManager implements Listener {
     /**
      * Registers all craftable paxels
      */
-    public void registerAllRecipes() {
+    public HashMap<String, NamespacedKey> registerAllRecipes() {
+        final HashMap<String, NamespacedKey> ret = new HashMap<String, NamespacedKey>();
+
         //Loops through every defined tool mineral tier and creates a paxel for each tier
         for (final String tier : toolMapper.getAllTiers()) {
             final NamespacedKey key = new NamespacedKey(plugin, tier.toLowerCase() + "_paxel");
@@ -54,7 +58,10 @@ public class CraftingManager implements Listener {
 
             recipe.setCategory(CraftingBookCategory.EQUIPMENT);
             plugin.getServer().addRecipe(recipe);
+            ret.put(tier, key);
         }
+
+        return ret;
     }
 
     /**

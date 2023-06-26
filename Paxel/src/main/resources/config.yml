@@ -1,0 +1,10 @@
+######################
+#    PAXEL CONFIG    #
+######################
+
+# The CustomModelData value that the paxel's base tools (pickaxes,axes,shovels) use
+# Used for assigning custom textures in resource packs
+custom_model_data: 100
+
+# If paxels should have their name written into the item's description (lore)
+write_description: true

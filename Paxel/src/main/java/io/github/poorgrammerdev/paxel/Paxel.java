@@ -1,5 +1,7 @@
 package io.github.poorgrammerdev.paxel;
 
+import java.util.HashMap;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -20,7 +22,7 @@ public final class Paxel extends JavaPlugin {
     @Override
     public void onEnable() {
         final CraftingManager craftingManager = new CraftingManager(this, this.toolMapper);
-        craftingManager.registerAllRecipes();
+        final HashMap<String, NamespacedKey> paxelRecipeMap = craftingManager.registerAllRecipes();
         this.getServer().getPluginManager().registerEvents(craftingManager, this);
 
         final RepairingManager repairingManager = new RepairingManager(this, toolMapper);
@@ -28,6 +30,9 @@ public final class Paxel extends JavaPlugin {
 
         final PaxelMechanism paxelMechanism = new PaxelMechanism(this, this.toolMapper);
         this.getServer().getPluginManager().registerEvents(paxelMechanism, this);
+
+        final RecipeManager recipeManager = new RecipeManager(toolMapper, paxelRecipeMap);
+        this.getServer().getPluginManager().registerEvents(recipeManager, this);
     }
 
     @Override
@@ -68,12 +73,18 @@ public final class Paxel extends JavaPlugin {
         if (toolSet == null) return null;
 
         final String displayName = getPaxelName(tier);
-        return new ItemBuilder(toolSet[ToolMapper.PICKAXE_INDEX])
-            .setCustomModelData(111) //TODO: set in config
-            .setName(ChatColor.WHITE + displayName)
-            .setLore(ChatColor.GRAY + displayName) //The reason for setting the lore too is because the player can rename the tool
-            .setPersistentData(this.getPaxelKey(), PersistentDataType.BOOLEAN, true)
-            .build();
+
+        final ItemBuilder builder = new ItemBuilder(toolSet[ToolMapper.PICKAXE_INDEX])
+            .setCustomModelData(this.getConfig().getInt("custom_model_data", 100))
+            .setName(ChatColor.RESET + displayName)
+            .setPersistentData(this.getPaxelKey(), PersistentDataType.BOOLEAN, true);
+        
+        if (this.getConfig().getBoolean("write_description", true)) {
+            //The reason for setting the lore too is because the player can rename the tool
+            builder.setLore(ChatColor.GRAY + displayName);
+        }
+
+        return builder.build();
     }
 
     /**
