@@ -3,7 +3,7 @@ author: PoorgrammerDev
 description: Adds craftable Paxel multitools 
 version: '${project.version}'
 main: io.github.poorgrammerdev.paxel.Paxel
-api-version: '1.20'
+api-version: '1.19'
 commands:
   givepaxel:
     usage: /givepaxel <username> <type> [count] [damage]
