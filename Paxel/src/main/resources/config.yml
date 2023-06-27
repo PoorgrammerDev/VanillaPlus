@@ -7,4 +7,6 @@
 custom_model_data: 100
 
 # If paxels should have their name written into the item's description (lore)
+# The motivation for this is if players rename the paxels, this would distinguish them
+# from regular tools without advanced tooltips or a resource pack
 write_description: true

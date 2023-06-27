@@ -21,6 +21,8 @@ public final class Paxel extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        this.saveDefaultConfig();
+
         final CraftingManager craftingManager = new CraftingManager(this, this.toolMapper);
         final HashMap<String, NamespacedKey> paxelRecipeMap = craftingManager.registerAllRecipes();
         this.getServer().getPluginManager().registerEvents(craftingManager, this);
@@ -33,6 +35,10 @@ public final class Paxel extends JavaPlugin {
 
         final RecipeManager recipeManager = new RecipeManager(toolMapper, paxelRecipeMap);
         this.getServer().getPluginManager().registerEvents(recipeManager, this);
+
+        final GiveCommand giveCommand = new GiveCommand(this, toolMapper);
+        this.getCommand("givepaxel").setExecutor(giveCommand);
+        this.getCommand("givepaxel").setTabCompleter(giveCommand);
     }
 
     @Override

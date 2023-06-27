@@ -66,6 +66,13 @@ public class ToolMapper {
     }
 
     /**
+     * Checks if the string is a valid mineral tier
+     */
+    public boolean isTier(String tier) {
+        return (this.toolsMap.containsKey(tier));
+    }
+
+    /**
      * For a category of tools (e.g. pickaxes), initialize their values in the maps
      * @param toolCategory
      * @param toolSetIndex

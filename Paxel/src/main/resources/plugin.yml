@@ -1,4 +1,12 @@
 name: Paxel
+author: PoorgrammerDev
+description: Adds craftable Paxel multitools 
 version: '${project.version}'
 main: io.github.poorgrammerdev.paxel.Paxel
 api-version: '1.20'
+commands:
+  givepaxel:
+    usage: /givepaxel <username> <type> [count] [damage]
+    description: Give players paxels.
+    permission: paxel.givepaxel
+    permission-message: You do not have permission to use this command.
