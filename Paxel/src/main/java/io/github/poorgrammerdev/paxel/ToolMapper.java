@@ -73,6 +73,13 @@ public class ToolMapper {
     }
 
     /**
+     * Checks to see if the material is a tool
+     */
+    public boolean isTool(Material material) {
+        return this.tierMap.containsKey(material);
+    }
+
+    /**
      * For a category of tools (e.g. pickaxes), initialize their values in the maps
      * @param toolCategory
      * @param toolSetIndex

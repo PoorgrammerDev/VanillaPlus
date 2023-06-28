@@ -6,6 +6,7 @@ import java.util.Arrays;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -110,7 +111,10 @@ public class RepairingManager implements Listener {
         if (items.length != 2) return;
 
         //If player is anvil'ing a single item (maybe renaming) -> ignore
-        if (items[0] == null ^ items[1] == null) return;
+        if (items[0] == null || items[1] == null) return;
+
+        //If player is anvil'ing the paxel against a non-tool (repairing with mineral or apply ench. book) -> ignore
+        if (!toolMapper.isTool(items[0].getType()) || !toolMapper.isTool(items[1].getType())) return;
 
         //Attempting paxel-nonpaxel cross repair -> disallow
         if (plugin.isPaxel(items[0]) ^ plugin.isPaxel(items[1])) {
