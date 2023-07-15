@@ -1,0 +1,44 @@
+#####################################################
+# Activate or deactivate each module of the plugin. #
+# Write "true" to enable or "false" to disable.     #
+#####################################################
+modules:
+  # QuickReplant: Right click a fully grown crop to harvest it and replant it.
+  # Holding a seed in your hand will replant that crop instead of the existing.
+  quick_replant: true
+
+  # CropCascade: Right click fully grown crops with a hoe to harvest them in an area.
+  # Holding a seed in your offhand will replant that crop instead of the existing.
+  crop_cascade: true
+
+  # AutoPlanter: Dispensers can plant crops onto farmland
+  # Dispensers can plant in a short range in a straight line directly in front of them.
+  auto_planter: true
+
+
+##################
+# MODULE OPTIONS #
+##################
+
+# Defines the maximum area that each hoe type harvests/replants in.
+# Values cannot be less than 1. If it is not specified, the default is 1.
+# It is not recommended to set these values too high for both balance and performance reasons.
+# Measured in blocks out in each direction from the center
+cascade_radii:
+  wooden_hoe: 2
+  golden_hoe: 3
+  stone_hoe: 3
+  iron_hoe: 5
+  diamond_hoe: 7
+  netherite_hoe: 10
+
+# When using CropCascade, the hoe is left at a durability of 1 instead of breaking.
+cascade_preserve_hoe: true
+
+# CropCascade will stop if the seeds in the offhand run out.
+# If disabled, it will continue, replacing the remaining crops with themselves as if you held nothing in the offhand.
+cascade_seed_cancel: true
+
+# How far (in blocks) can a dispenser can plant a crop
+# Value cannot be less than 1. If it is not specified, the default is 4.
+auto_planter_max_range: 4

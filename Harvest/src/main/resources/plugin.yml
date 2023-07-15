@@ -1,0 +1,6 @@
+name: Harvest
+author: PoorgrammerDev
+description: Simplifies and automates crop farming
+version: '${project.version}'
+main: io.github.poorgrammerdev.harvest.Harvest
+api-version: '1.20'
