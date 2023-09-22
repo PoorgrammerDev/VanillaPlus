@@ -20,10 +20,12 @@ import org.bukkit.event.inventory.PrepareItemCraftEvent;
 public class CraftingManager implements Listener {
     private final Paxel plugin;
     private final ToolMapper toolMapper;
+    private final ExternalItemManager externalItemManager;
 
-    public CraftingManager(Paxel plugin, ToolMapper toolMapper) {
+    public CraftingManager(Paxel plugin, ToolMapper toolMapper, ExternalItemManager externalItemManager) {
         this.plugin = plugin;
         this.toolMapper = toolMapper;
+        this.externalItemManager = externalItemManager;
     }
 
     /**
@@ -111,10 +113,10 @@ public class CraftingManager implements Listener {
         //Make sure the item to be crafted is a paxel
         if (!plugin.isPaxel(result)) return;
 
-        //Loop through the ingredients and make sure none of the tools are paxels
+        //Loop through the ingredients and make sure none of the tools are paxels or some conflicting external tool
         final ItemStack[] matrix = event.getInventory().getMatrix();
         for (int i = 0; i < matrix.length; ++i) {
-            if (plugin.isPaxel(matrix[i])) {
+            if (plugin.isPaxel(matrix[i]) || this.externalItemManager.isExternalItem(matrix[i])) {
                 event.getInventory().setResult(null);
                 return;
             }            

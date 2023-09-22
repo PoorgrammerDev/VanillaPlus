@@ -23,7 +23,9 @@ public final class Paxel extends JavaPlugin {
     public void onEnable() {
         this.saveDefaultConfig();
 
-        final CraftingManager craftingManager = new CraftingManager(this, this.toolMapper);
+        final ExternalItemManager externalItemManager = new ExternalItemManager(this);
+
+        final CraftingManager craftingManager = new CraftingManager(this, this.toolMapper, externalItemManager);
         final HashMap<String, NamespacedKey> paxelRecipeMap = craftingManager.registerAllRecipes();
         this.getServer().getPluginManager().registerEvents(craftingManager, this);
 

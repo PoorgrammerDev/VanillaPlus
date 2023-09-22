@@ -10,3 +10,8 @@ custom_model_data: 100
 # The motivation for this is if players rename the paxels, this would distinguish them
 # from regular tools without advanced tooltips or a resource pack
 write_description: true
+
+# Items from other plugins that should not be allowed to be crafted into a paxel
+# Identified by a boolean namespaced key in the item's PersistentDataContainer
+external_tool_keys:
+- "hammer:is_hammer"
