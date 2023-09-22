@@ -1,0 +1,25 @@
+#######################
+#    HAMMER CONFIG    #
+#######################
+
+# The CustomModelData value that the hammer's base tool (the pickaxe) uses
+# Used for assigning custom textures in resource packs
+custom_model_data: 101
+
+# If hammers should have their name written into the item's description (lore)
+# The motivation for this is if players rename the hammers, this would distinguish them
+# from regular tools without advanced tooltips or a resource pack
+write_description: true
+
+# When a hammer is breaking the surrounding blocks,
+# it will only break if the hardness value of the adjacent block
+# is less than or equal to (the middle block's hardness value + this buffer value)
+hardness_buffer: 3.0
+
+# A ray is casted out from the player towards the block they mined
+# to determine which blockface they were viewing to select the hammer break plane.
+# This is the maximum distance of that ray.
+raytrace_distance: 10.0
+
+# Rate to further exhaust the player when area mining vs. regular mining
+exhaustion_multiplier: 2.0
