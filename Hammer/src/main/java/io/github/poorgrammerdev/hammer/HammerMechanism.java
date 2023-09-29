@@ -132,7 +132,7 @@ public class HammerMechanism implements Listener {
             final Block adjacent = middleLocation.add(offset).getBlock();
             final Material type = adjacent.getType();
 
-            if (Tag.MINEABLE_PICKAXE.isTagged(type) && type.getHardness() <= hardness) {
+            if (Tag.MINEABLE_PICKAXE.isTagged(type) && adjacent.getBlockData().isPreferredTool(tool) && type.getHardness() <= hardness) {
                 //Break block
                 adjacent.breakNaturally(tool);
 
