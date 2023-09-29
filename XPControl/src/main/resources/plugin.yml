@@ -1,0 +1,12 @@
+name: XPControl
+author: PoorgrammerDev
+description: Adds additional XP-related mechanics.
+version: '${project.version}'
+main: io.github.poorgrammerdev.xpcontrol.XPControl
+api-version: '1.20'
+commands:
+  givexpbottle:
+    usage: /givexpbottle <selector> <storedxp> [count]
+    description: Give players stored experience bottles.
+    permission: xpcontrol.givexpbottle
+    permission-message: You do not have permission to use this command.

@@ -1,0 +1,66 @@
+########################
+#   XPCONTROL CONFIG   #
+########################
+
+#########################################################################
+#                        DEATH XP CONTROL MODULE                        #
+# Control how much percent XP a player keeps, drops, and loses on death #
+#########################################################################
+death_xp_control:
+  # Enable/disable this module
+  enabled: true
+
+  # Percentage of experience points that the player will keep on death
+  # Value is an integer and must stay within the [0, 100] range.
+  # Additionally, (percent_keep + percent_drop) should not exceed 100!
+  percent_keep: 25
+  
+  # Percentage of experience points that the player will drop along with their items on death
+  # Value is an integer and must stay within the [0, 100] range.
+  # Additionally, (percent_keep + percent_drop) should not exceed 100! 
+  percent_drop: 50
+
+  # If these two numbers above add up to less than 100, the remaining percentage of XP will be lost on death.
+
+  # Set a max level to be registered by the system. If the player has any level above this on death, it will be limited to this number.
+  # For no limits, set it to -1.
+  max_level: -1
+
+  # At large levels that are realistically unattainable in Minecraft, this system breaks down due to integer limits.
+  # This happens when the KEPT or DROPPED experience reaches approx. 21,863 levels worth of EXP points.
+  # Experimental workarounds have been made to attempt to counteract this, but they may exhibit unintended behaviour.
+  # Enabling this option allows these workarounds to be used, otherwise the kept and dropped EXP are independently capped at the integer limit.
+  # If the above max_level is set sufficiently low, this may never even be reached.
+  allow_experimental_workarounds: false
+
+  # Experimental XP Voucher Workaround CustomModelData value
+  # Used for assigning custom textures in resource packs
+  # If the above setting is false, this item will never be used.
+  # If it is true, this item will be dropped instead of experience if it exceeds the integer limit.
+  voucher_custom_model_data: 103
+
+#######################################################################
+#                          XP STORAGE MODULE                          #
+# Allow players to store experience points into Bottles O' Enchanting #
+#            by right clicking an Enchanting Table with it            #
+#######################################################################
+xp_storage:
+  # Enable/disable this module
+  enabled: true
+
+  # Percentage of EXP that will be lost upon storing into a bottle.
+  # Value is an integer and must stay within the [0, 100] range.
+  percent_loss: 25
+
+  # The vanilla Bottle O' Enchanting comes with some XP inside of it.
+  # If true, throwing a bottle with stored XP will add the stored value onto the base vanilla amount.
+  # If false, throwing the stored bottle will forfeit the vanilla amount and only give you the stored amount.
+  bottle_keep_vanilla_xp: true
+
+  # EXP Storage Bottle CustomModelData value
+  # Used for assigning custom textures in resource packs
+  storage_bottle_custom_model_data: 104
+
+  # Maximum amount of experience points that can be stored into a bottle.
+  # If set to -1, then the limit is the integer limit (most likely 2,147,483,647)
+  bottle_max_exp: -1
