@@ -26,13 +26,13 @@ public class CropSeedMapper {
         this.cropToSeedMap.put(Material.WHEAT, Material.WHEAT_SEEDS);
         this.cropToSeedMap.put(Material.CARROTS, Material.CARROT);
         this.cropToSeedMap.put(Material.POTATOES, Material.POTATO);
-        this.cropToSeedMap.put(Material.BEETROOTS, Material.BEETROOT);
+        this.cropToSeedMap.put(Material.BEETROOTS, Material.BEETROOT_SEEDS);
         this.cropToSeedMap.put(Material.NETHER_WART, Material.NETHER_WART);
 
         this.seedToCropMap.put(Material.WHEAT_SEEDS, Material.WHEAT);
         this.seedToCropMap.put(Material.CARROT, Material.CARROTS);
         this.seedToCropMap.put(Material.POTATO, Material.POTATOES);
-        this.seedToCropMap.put(Material.BEETROOT, Material.BEETROOTS);
+        this.seedToCropMap.put(Material.BEETROOT_SEEDS, Material.BEETROOTS);
         this.seedToCropMap.put(Material.NETHER_WART, Material.NETHER_WART);
     }
 
