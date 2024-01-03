@@ -27,6 +27,8 @@ public final class Paxel extends JavaPlugin {
     @Override
     public void onEnable() {
         this.saveDefaultConfig();
+        this.getConfig().options().copyDefaults(true);
+        this.saveConfig();
 
         final ExternalItemManager externalItemManager = new ExternalItemManager(this);
 
