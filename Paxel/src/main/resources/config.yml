@@ -15,3 +15,10 @@ write_description: true
 # Identified by a boolean namespaced key in the item's PersistentDataContainer
 external_tool_keys:
 - "hammer:is_hammer"
+
+# [!] Experimental Feature - DISABLED by default
+# Gives all paxels instant (+999) attack speed to fix a cosmetic bug
+# where constant swapping results in the paxel always being in cooldown.
+# Attack damage modifiers are removed from the tool to prevent it being used as a weapon.
+# Only affects NEW paxels, will not convert existing ones!
+experimental_attack_speed: false

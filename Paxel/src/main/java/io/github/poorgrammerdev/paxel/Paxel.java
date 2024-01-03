@@ -1,10 +1,15 @@
 package io.github.poorgrammerdev.paxel;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.attribute.AttributeModifier.Operation;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -90,6 +95,11 @@ public final class Paxel extends JavaPlugin {
         if (this.getConfig().getBoolean("write_description", true)) {
             //The reason for setting the lore too is because the player can rename the tool
             builder.setLore(ChatColor.GRAY + displayName);
+        }
+
+        if (this.getConfig().getBoolean("experimental_attack_speed", false)) {
+            //Adds instant attack speed modifier
+            builder.addAttributeModifier(Attribute.GENERIC_ATTACK_SPEED, new AttributeModifier(UUID.randomUUID(), "Paxel Cosmetic Speed", 999, Operation.ADD_NUMBER, EquipmentSlot.HAND));
         }
 
         return builder.build();
