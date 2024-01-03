@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
@@ -129,8 +130,9 @@ public class RepairingManager implements Listener {
     @EventHandler
     public void smithingTable(PrepareSmithingEvent event) {
         final ItemStack result = event.getResult();
-        if (result == null) return;
+        if (result == null || result.getType() == Material.AIR) return;
 
+        //Result must be a paxel
         final ItemMeta meta = result.getItemMeta();
         if (meta == null || !plugin.isPaxel(result)) return;
         
@@ -140,9 +142,21 @@ public class RepairingManager implements Listener {
         final String newName = plugin.getPaxelName(toolMapper.getToolTier(result.getType()));
         if (oldName.equals(newName)) return;
 
-        //Add the new name and description
-        meta.setDisplayName(ChatColor.RESET + newName);
+        //Search for the ingredient (base) paxel
+        ItemStack oldPaxel = null;
+        for (final ItemStack ingredient : event.getInventory()) {
+            if (this.plugin.isPaxel(ingredient)) {
+                oldPaxel = ingredient;
+                break;
+            }
+        }
 
+        //Add the new name if the tool is not already renamed
+        if (oldPaxel == null || oldName.equals(plugin.getPaxelName(toolMapper.getToolTier(oldPaxel.getType())))) {
+            meta.setDisplayName(ChatColor.RESET + newName);
+        }
+
+        //Add the new description
         if (plugin.getConfig().getBoolean("write_description", true)) {
             meta.setLore(Arrays.asList(ChatColor.GRAY + newName));
         }
