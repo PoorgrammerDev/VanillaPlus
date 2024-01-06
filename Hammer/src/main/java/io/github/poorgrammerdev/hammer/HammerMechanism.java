@@ -5,7 +5,11 @@ import java.util.Random;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.Tag;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.enchantments.Enchantment;
@@ -126,12 +130,16 @@ public class HammerMechanism implements Listener {
 
         //More hammer information
         final int unbreaking = damageableMeta.getEnchantLevel(Enchantment.DURABILITY);
-        final int maxDamage = tool.getType().getMaxDurability();
+        final int maxDamage = tool.getType().getMaxDurability() - 1;
         int damage = damageableMeta.getDamage();
         
         //Loop through blocks in plane and break them if they can be broken
         int count = 0;
         for (final Vector offset : this.planeOffsets[planeIndex]) {
+            //If tool is broken, stop area mining early
+            if (damage >= maxDamage) break;
+
+            //Get location of current block
             targetBlock.getLocation(middleLocation);
             final Block adjacent = middleLocation.add(offset).getBlock();
 
@@ -146,19 +154,25 @@ public class HammerMechanism implements Listener {
                 }
                 
                 ++count;
-
-                //If tool is broken, stop area mining early
-                if (damage == maxDamage) break;
             }
         }
 
-        //No need to continue if in creative mode
+        //No need to continue if in creative mode -- the remaining parts only affect survival
         if (creativeMode) return;
 
-        //Commit damage to tool
+        //Check if tool should be broken
         if (damage >= maxDamage) {
-            tool.setAmount(tool.getAmount() - 1); //break the tool if it is broken
+            //Play SFX & VFX for tool breaking
+            final World world = player.getWorld();
+            if (world != null) {
+                world.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, SoundCategory.PLAYERS, 1.0f, 1.0f);
+                world.spawnParticle(Particle.ITEM_CRACK, player.getEyeLocation().subtract(0, 0.25, 0).add(player.getEyeLocation().getDirection().normalize().multiply(0.5f)), 15, 0.05, 0.01, 0.05, 0.1, tool);
+            }
+
+            //Break tool
+            tool.setAmount(tool.getAmount() - 1);
         }
+        //Otherwise commit damage to tool
         else {
             damageableMeta.setDamage(damage);
             tool.setItemMeta((ItemMeta) damageableMeta);
