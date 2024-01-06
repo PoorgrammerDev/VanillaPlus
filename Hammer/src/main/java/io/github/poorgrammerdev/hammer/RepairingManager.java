@@ -139,9 +139,21 @@ public class RepairingManager implements Listener {
         final String newName = plugin.getHammerName(result.getType());
         if (oldName.equals(newName)) return;
 
-        //Add the new name and description
-        meta.setDisplayName(ChatColor.RESET + newName);
+        //Search for the ingredient (base) hammer
+        ItemStack oldHammer = null;
+        for (final ItemStack ingredient : event.getInventory()) {
+            if (this.plugin.isHammer(ingredient)) {
+                oldHammer = ingredient;
+                break;
+            }
+        }
 
+        //Add the new name if the tool is not already renamed
+        if (oldHammer == null || oldName.equals(plugin.getHammerName(oldHammer.getType()))) {
+            meta.setDisplayName(ChatColor.RESET + newName);
+        }
+
+        //Add the new description
         if (plugin.getConfig().getBoolean("write_description", true)) {
             meta.setLore(Arrays.asList(ChatColor.GRAY + newName));
         }

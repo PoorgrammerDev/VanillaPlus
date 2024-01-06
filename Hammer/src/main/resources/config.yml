@@ -21,5 +21,9 @@ hardness_buffer: 3.0
 # This is the maximum distance of that ray.
 raytrace_distance: 10.0
 
-# Rate to further exhaust the player when area mining vs. regular mining
+# Rate to further exhaust the player when using the hammer
 exhaustion_multiplier: 2.0
+
+# Enables the system that displays block breaking visual effects
+# for the (up to) 8 adjacent blocks while using the hammer
+show_adjacent_breaking: true

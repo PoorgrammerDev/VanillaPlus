@@ -23,11 +23,19 @@ public class Hammer extends JavaPlugin {
     @Override
     public void onEnable() {
         this.saveDefaultConfig();
+        this.getConfig().options().copyDefaults(true);
+        this.saveConfig();
 
         final Random random = new Random();
         final HashMap<Material, NamespacedKey> recipeKeyMap = new CraftingManager(this).registerAllRecipes();
 
-        this.getServer().getPluginManager().registerEvents(new HammerMechanism(this, random), this);
+        final FauxBlockDamage fauxBlockDamage = new FauxBlockDamage(this, random);
+        if (fauxBlockDamage.isEnabled()) {
+            fauxBlockDamage.runTaskTimer(this, 0, 0);
+            this.getServer().getPluginManager().registerEvents(fauxBlockDamage, this);
+        }
+
+        this.getServer().getPluginManager().registerEvents(new HammerMechanism(this, random, fauxBlockDamage), this);
         this.getServer().getPluginManager().registerEvents(new RepairingManager(this), this);
         this.getServer().getPluginManager().registerEvents(new RecipeManager(recipeKeyMap), this);
 
