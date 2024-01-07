@@ -18,12 +18,14 @@ public class AutoPlanter extends AbstractModule {
 
     private final CropSeedMapper cropSeedMapper;
     private final int maxRange;
+    private final boolean allowWorkaround;
 
     public AutoPlanter(final Harvest plugin, final CropSeedMapper cropSeedMapper) {
         super(plugin);
         this.cropSeedMapper = cropSeedMapper;
 
         this.maxRange = Math.max(plugin.getConfig().getInt("auto_planter_max_range", 4), MIN_RANGE);
+        this.allowWorkaround = plugin.getConfig().getBoolean("auto_planter_allow_workaround", true);
     }
 
     @Override
@@ -58,25 +60,31 @@ public class AutoPlanter extends AbstractModule {
         //Special case -- item was not found
         // (More specifically, there is exactly one seed left in the dispenser: weird Bukkit quirk it seems)
         if (inventoryItem == null) {
-            //Prevent dispense and re-attempt one tick later
-            event.setItem(new ItemStack(Material.AIR, 0));
+            // Workaround is allowed by config
+            if (this.allowWorkaround) {
+                //Prevent dispense and re-attempt one tick later
+                event.setItem(new ItemStack(Material.AIR, 0));
 
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    final ItemStack inventoryItemNew = findMatchingItem((Dispenser) dispenserBlock.getState(), item);
-                    if (inventoryItemNew != null) {
-                        //Since one tick has passed, it's EXTREMELY unlikely but also possible
-                        //that the cropBlock location from earlier may be infeasible now
-                        //So we will search for a valid location again
-                        final Block cropBlockNew = findValidCropPlacement(dispenserBlock, facing, baseBlock);
-                        if (cropBlockNew != null) {
-                            inventoryItemNew.setAmount(inventoryItemNew.getAmount() - 1);
-                            cropBlockNew.setType(crop);
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        final ItemStack inventoryItemNew = findMatchingItem((Dispenser) dispenserBlock.getState(), item);
+                        if (inventoryItemNew != null) {
+                            //Since one tick has passed, it's EXTREMELY unlikely but also possible
+                            //that the cropBlock location from earlier may be infeasible now
+                            //So we will search for a valid location again
+                            final Block cropBlockNew = findValidCropPlacement(dispenserBlock, facing, baseBlock);
+                            if (cropBlockNew != null) {
+                                inventoryItemNew.setAmount(inventoryItemNew.getAmount() - 1);
+                                cropBlockNew.setType(crop);
+                            }
                         }
                     }
-                }
-            }.runTaskLater(this.plugin, 1L);
+                }.runTaskLater(this.plugin, 1L);
+            }
+            else {
+                event.setCancelled(true);
+            }
         }
 
         //General case -- item was found, continue with planting

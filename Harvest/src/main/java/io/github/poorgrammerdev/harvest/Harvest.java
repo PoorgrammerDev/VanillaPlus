@@ -7,6 +7,8 @@ public class Harvest extends JavaPlugin {
     @Override
     public void onEnable() {
         this.saveDefaultConfig();
+        this.getConfig().options().copyDefaults(true);
+        this.saveConfig();
 
         final CropSeedMapper cropSeedMapper = new CropSeedMapper();
 

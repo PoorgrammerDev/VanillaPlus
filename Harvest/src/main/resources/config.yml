@@ -42,3 +42,9 @@ cascade_seed_cancel: true
 # How far (in blocks) can a dispenser can plant a crop
 # Value cannot be less than 1. If it is not specified, the default is 4.
 auto_planter_max_range: 4
+
+# When there is exactly one seed left in the dispenser, it cannot be detected by normal means.
+# A workaround is used to delay the planting by one tick. Proper checks are in place and should prevent any exploits.
+# However, if an exploit is found and abused through this system, you can disable it here.
+# With the system disabled, dispensers will not fire the last seed item in their inventory.
+auto_planter_allow_workaround: true
