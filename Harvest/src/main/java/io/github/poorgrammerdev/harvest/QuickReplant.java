@@ -34,11 +34,10 @@ public class QuickReplant extends AbstractModule {
      */
     @EventHandler(ignoreCancelled = true)
     public void cropInteract(PlayerInteractEvent event) {
-        //Has to be a right click and cannot be block placement
+        //Has to be a right click
         if (
             event.getAction() != Action.RIGHT_CLICK_BLOCK ||
-            event.getHand() != EquipmentSlot.HAND ||
-            event.isBlockInHand()
+            event.getHand() != EquipmentSlot.HAND
         ) return;
 
         //Players can disable this behaviour by sneaking
@@ -47,6 +46,11 @@ public class QuickReplant extends AbstractModule {
 
         final Block block = event.getClickedBlock();
         final ItemStack item = event.getItem();
+        
+        // Cannot be block placement
+        // If the block is a seed then it overrides this rule
+        // (e.g. nether wart right clicking is counted as a block placement)
+        if (event.isBlockInHand() && !this.cropSeedMapper.isSeed(item.getType())) return;
 
         attemptCropReplace(block, item);
     }
@@ -65,21 +69,23 @@ public class QuickReplant extends AbstractModule {
         final Collection<ItemStack> drops = block.getDrops();
 
         //Using seed in hand -> subtract from hand
-        if (item != null && cropSeedMapper.isSeed(item.getType()) && item.getAmount() > 0) {
-            final Material crop = cropSeedMapper.getCrop(item.getType());
+        if (item != null && item.getAmount() > 0) {
+            final Material replacementAsCrop = cropSeedMapper.getCrop(item.getType());
 
-            //Drop the expected drops
-            drops.forEach(drop -> world.dropItemNaturally(block.getLocation(), drop));
+            if (replacementAsCrop != null && cropSeedMapper.baseBlocksMatch(replacementAsCrop, block.getType())) {
+                //Drop the expected drops
+                drops.forEach(drop -> world.dropItemNaturally(block.getLocation(), drop));
 
-            //Plant the crop
-            item.setAmount(item.getAmount() - 1);
-            block.setType(crop, true);
-            return true;
+                //Plant the crop
+                item.setAmount(item.getAmount() - 1);
+                block.setType(replacementAsCrop, true);
+                return true;
+            }
         }
 
         //Not a seed -> subtract from crop seed drop
         //Cannot be a hoe, that is handled elsewhere
-        else if (item == null || (item.getType() != Material.BONE_MEAL && !this.cropSeedMapper.isHoe(item.getType()))) {
+        if (item == null || (item.getType() != Material.BONE_MEAL && !this.cropSeedMapper.isHoe(item.getType()))) {
             //Remove one seed from the drops if possible
             final Material seed = cropSeedMapper.getSeed(block.getType());
             for (final ItemStack drop : drops) {

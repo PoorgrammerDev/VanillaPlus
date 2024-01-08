@@ -48,7 +48,7 @@ public class AutoPlanter extends AbstractModule {
         if (item == null || !this.cropSeedMapper.isSeed(item.getType())) return;
 
         final Material crop = this.cropSeedMapper.getCrop(item.getType());
-        final Material baseBlock = (crop == Material.NETHER_WART) ? Material.SOUL_SAND : Material.FARMLAND;
+        final Material baseBlock = this.cropSeedMapper.getBaseBlock(crop);
 
         //Find a valid block to plant the crop on
         final Block cropBlock = findValidCropPlacement(dispenserBlock, facing, baseBlock);

@@ -107,7 +107,7 @@ public class CropCascade extends AbstractModule {
         if (equipment == null) return;
 
         final ItemStack offhand = equipment.getItemInOffHand();
-        final boolean isSeed = offhand != null && this.cropSeedMapper.isSeed(offhand.getType());
+        final boolean isValidSeed = isOffhandValidSeed(offhand, centerMat);
 
         //Do a BFS floodfill within range constraints
         final Queue<Block> queue = new ArrayDeque<>();
@@ -123,7 +123,7 @@ public class CropCascade extends AbstractModule {
             hoeMeta.getDamage() < maxDamage //tool hasn't broken
         ) {
             //Check the seed count if enabled
-            if (this.seedCancel && isSeed && offhand.getAmount() <= 0) break;
+            if (this.seedCancel && isValidSeed && offhand.getAmount() <= 0) break;
             
             //replace the crop and if it is successful, enqueue all its neighbors
             final Block block = queue.remove();
@@ -158,5 +158,12 @@ public class CropCascade extends AbstractModule {
             hoe.setItemMeta((ItemMeta) hoeMeta);
         }
 
+    }
+
+    private boolean isOffhandValidSeed(final ItemStack offhand, final Material centerCrop) {
+        if (offhand == null) return false;
+
+        final Material offhandCrop = this.cropSeedMapper.getCrop(offhand.getType());
+        return (this.cropSeedMapper.baseBlocksMatch(centerCrop, offhandCrop));
     }
 }
