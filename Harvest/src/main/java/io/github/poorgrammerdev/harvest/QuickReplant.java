@@ -3,6 +3,7 @@ package io.github.poorgrammerdev.harvest;
 import java.util.Collection;
 
 import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
@@ -85,7 +86,7 @@ public class QuickReplant extends AbstractModule {
 
         //Not a seed -> subtract from crop seed drop
         //Cannot be a hoe, that is handled elsewhere
-        if (item == null || (item.getType() != Material.BONE_MEAL && !this.cropSeedMapper.isHoe(item.getType()))) {
+        if (item == null || (item.getType() != Material.BONE_MEAL && !Tag.ITEMS_HOES.isTagged(item.getType()))) {
             //Remove one seed from the drops if possible
             final Material seed = cropSeedMapper.getSeed(block.getType());
             for (final ItemStack drop : drops) {

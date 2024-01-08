@@ -7,6 +7,7 @@ import java.util.Random;
 
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.enchantments.Enchantment;
@@ -52,7 +53,7 @@ public class CropCascade extends AbstractModule {
         this.seedCancel = plugin.getConfig().getBoolean("cascade_seed_cancel", true);
 
         this.radiusMap = new HashMap<>();
-        for (final Material hoe : this.cropSeedMapper.getHoes()) {
+        for (final Material hoe : Tag.ITEMS_HOES.getValues()) {
             final String path = "cascade_radii." + hoe.name().toLowerCase();
 
             this.radiusMap.put(

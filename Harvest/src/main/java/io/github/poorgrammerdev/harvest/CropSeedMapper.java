@@ -1,6 +1,5 @@
 package io.github.poorgrammerdev.harvest;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,13 +19,10 @@ public class CropSeedMapper {
     private final HashMap<Material, Material> cropToSeedMap;
     private final HashMap<Material, Material> seedToCropMap;
     private final HashMap<Material, Material> cropToBaseMap;
-    private final List<Material> hoes;
 
     public CropSeedMapper(final Harvest plugin) {
         this.plugin = plugin;
 
-        //Not using Tag.ITEMS_HOES for previous version support (not added until 1.19.4)
-        hoes = Arrays.asList(Material.WOODEN_HOE, Material.STONE_HOE, Material.IRON_HOE, Material.GOLDEN_HOE, Material.DIAMOND_HOE, Material.NETHERITE_HOE);
         this.cropToSeedMap = new HashMap<>();
         this.seedToCropMap = new HashMap<>();
         this.cropToBaseMap = new HashMap<>();
@@ -94,21 +90,6 @@ public class CropSeedMapper {
 
     public boolean baseBlocksMatch(final Material crop1, final Material crop2) {
         return (isCrop(crop1) && isCrop(crop2) && this.cropToBaseMap.get(crop1) == this.cropToBaseMap.get(crop2));
-    }
-
-    /**
-     * Checks if this material is a hoe or not
-     */
-    public boolean isHoe(Material material) {
-        //I know this is an O(n) operation where hashset is O(1) but the array size is fixed and small
-        return this.hoes.contains(material);
-    }
-
-    /**
-     * Returns a list of hoes.
-     */
-    public List<Material> getHoes() {
-        return this.hoes;
     }
 
     private boolean populateCropDefinitions() {
