@@ -53,6 +53,10 @@ public class QuickReplant extends AbstractModule {
         // (e.g. nether wart right clicking is counted as a block placement)
         if (event.isBlockInHand() && !this.cropSeedMapper.isSeed(item.getType())) return;
 
+        // Make sure that the held item is not a hoe
+        // Since this triggers a different system (Crop Cascade)
+        if (item != null && Tag.ITEMS_HOES.isTagged(item.getType())) return;
+
         attemptCropReplace(block, item);
     }
 
@@ -85,8 +89,7 @@ public class QuickReplant extends AbstractModule {
         }
 
         //Not a seed -> subtract from crop seed drop
-        //Cannot be a hoe, that is handled elsewhere
-        if (item == null || (item.getType() != Material.BONE_MEAL && !Tag.ITEMS_HOES.isTagged(item.getType()))) {
+        if (item == null || item.getType() != Material.BONE_MEAL) {
             //Remove one seed from the drops if possible
             final Material seed = cropSeedMapper.getSeed(block.getType());
             for (final ItemStack drop : drops) {
