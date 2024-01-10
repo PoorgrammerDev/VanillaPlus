@@ -15,6 +15,20 @@ modules:
   # Dispensers can plant in a short range in a straight line directly in front of them.
   auto_planter: true
 
+######################
+# PLUGIN DEFINITIONS #
+######################
+# This maps placed crop blocks to their seed items and base blocks (the block they can be planted on).
+# The format is:
+# - ["CROP BLOCK", "SEED ITEM", "BASE BLOCK"]
+# where CROP BLOCK is the placed block, SEED ITEM is the held item, and BASE BLOCK is the block the crop is planted on
+# All of these values use Bukkit Material enum names, found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html (This link is valid as of 07 January 2024)
+crop_definitions:
+  - ["WHEAT", "WHEAT_SEEDS", "FARMLAND"]
+  - ["CARROTS", "CARROT", "FARMLAND"]
+  - ["POTATOES", "POTATO", "FARMLAND"]
+  - ["BEETROOTS", "BEETROOT_SEEDS", "FARMLAND"]
+  - ["NETHER_WART", "NETHER_WART", "SOUL_SAND"]
 
 ##################
 # MODULE OPTIONS #
@@ -42,3 +56,9 @@ cascade_seed_cancel: true
 # How far (in blocks) can a dispenser can plant a crop
 # Value cannot be less than 1. If it is not specified, the default is 4.
 auto_planter_max_range: 4
+
+# When there is exactly one seed left in the dispenser, it cannot be detected by normal means.
+# A workaround is used to delay the planting by one tick. Proper checks are in place and should prevent any exploits.
+# However, if an exploit is found and abused through this system, you can disable it here.
+# With the system disabled, dispensers will not fire the last seed item in their inventory.
+auto_planter_allow_workaround: true
