@@ -1,0 +1,6 @@
+name: Nightmare
+author: PoorgrammerDev
+description: Reworks phantoms into a new game mechanic
+version: '${project.version}'
+main: io.github.poorgrammerdev.nightmare.Nightmare
+api-version: '1.20'
