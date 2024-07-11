@@ -1,0 +1,17 @@
+###############################
+#    RECOVERY TOTEM CONFIG    #
+###############################
+
+# The CustomModelData value that the totem's base item uses
+# Used for assigning custom textures in resource packs
+custom_model_data: 100
+
+# If the totems should have a written description explaining how they work
+# Changing this setting will not affect already created totems.
+write_description: true
+
+# Items from other plugins that should not be allowed to be crafted into a Totem of Recovery
+# Identified by a namespaced key representing a field in the item's PersistentDataContainer
+# The field can be any type, any value. As long as it exists on the item, it will be rejected.
+external_item_keys: {}
+

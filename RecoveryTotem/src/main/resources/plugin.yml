@@ -1,0 +1,12 @@
+name: RecoveryTotem
+author: PoorgrammerDev
+description: Adds a consumable Totem that recovers lost items on death
+version: '${project.version}'
+main: io.github.poorgrammerdev.recoverytotem.RecoveryTotem
+api-version: '1.21'
+commands:
+  giverecoverytotem:
+    usage: /giverecoverytotem <username> [count]
+    description: Give players Totem of Recovery items.
+    permission: recoverytotem.giverecoverytotem
+    permission-message: You do not have permission to use this command.
