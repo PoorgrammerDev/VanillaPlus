@@ -4,7 +4,7 @@
 
 # The CustomModelData value that the totem's base item uses
 # Used for assigning custom textures in resource packs
-custom_model_data: 100
+custom_model_data: 105
 
 # If the totems should have a written description explaining how they work
 # Changing this setting will not affect already created totems.

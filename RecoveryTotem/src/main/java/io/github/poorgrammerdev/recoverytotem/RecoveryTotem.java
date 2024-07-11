@@ -79,7 +79,7 @@ public final class RecoveryTotem extends JavaPlugin {
 
         // TODO: find a way to remove the enchantment storage component on the item
         meta.setItemName("Totem of Recovery");
-        meta.setCustomModelData(this.getConfig().getInt("custom_model_data", 100));
+        meta.setCustomModelData(this.getConfig().getInt("custom_model_data", 105));
         meta.getPersistentDataContainer().set(this.recoveryTotemKey, PersistentDataType.BOOLEAN, true);
         meta.setEnchantmentGlintOverride(false);
 
