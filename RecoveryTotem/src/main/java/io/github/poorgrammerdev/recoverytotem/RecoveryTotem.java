@@ -81,14 +81,14 @@ public final class RecoveryTotem extends JavaPlugin {
         meta.setItemName("Totem of Recovery");
         meta.setCustomModelData(this.getConfig().getInt("custom_model_data", 100));
         meta.getPersistentDataContainer().set(this.recoveryTotemKey, PersistentDataType.BOOLEAN, true);
+        meta.setEnchantmentGlintOverride(false);
 
         if (this.getConfig().getBoolean("write_description", true)) {
             meta.setLore(Arrays.asList(
-                ChatColor.GRAY.toString() + "Upon a single death, if this",
-                ChatColor.GRAY.toString() + "totem is present anywhere",
-                ChatColor.GRAY.toString() + "within your inventory, your",
-                ChatColor.GRAY.toString() + "items shall follow you",
-                ChatColor.GRAY.toString() + "into the next life."
+                ChatColor.GRAY.toString() + "Upon death, if this totem is present",
+                ChatColor.GRAY.toString() + "anywhere within your inventory, your",
+                ChatColor.GRAY.toString() + "items shall follow you into the",
+                ChatColor.GRAY.toString() + "next life at the totem's expense."
             ));
         }
 

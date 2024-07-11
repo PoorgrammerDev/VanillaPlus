@@ -61,12 +61,12 @@ public class GiveCommand implements CommandExecutor, TabCompleter {
         final ItemStack totem = this.plugin.createTotem();
 
         //Adjust count if necessary
-        if (args.length >= 3) {
+        if (args.length >= 2) {
             final int count;
 
             //atoi
             try {
-                count = Integer.parseInt(args[2]);
+                count = Integer.parseInt(args[1]);
             }
             catch (NumberFormatException e) {
                 sender.sendMessage(ChatColor.RED + "Invalid quantity, expected a number.");
@@ -90,7 +90,7 @@ public class GiveCommand implements CommandExecutor, TabCompleter {
 
             // If the player couldn't receive the item directly, drop it on the ground instead
             if (returnedMap.size() > 0) {
-                player.getWorld().dropItemNaturally(player.getEyeLocation(), totem);
+                player.getWorld().dropItemNaturally(player.getLocation(), totem);
             }
 
             //Send message
