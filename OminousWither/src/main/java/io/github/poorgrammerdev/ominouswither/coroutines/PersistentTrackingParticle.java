@@ -1,11 +1,14 @@
-package io.github.poorgrammerdev.ominouswither;
+package io.github.poorgrammerdev.ominouswither.coroutines;
 
 import java.util.UUID;
 import java.util.function.Predicate;
 
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
+import org.bukkit.util.Vector;
 
+import io.github.poorgrammerdev.ominouswither.OminousWither;
+import io.github.poorgrammerdev.ominouswither.ParticleInfo;
 import io.github.poorgrammerdev.ominouswither.backend.ICoroutine;
 
 /**
@@ -16,6 +19,7 @@ public class PersistentTrackingParticle implements ICoroutine {
     private final OminousWither plugin;
     private final Predicate<UUID> stopCondition;
     private final UUID entityID;
+    private final Vector offset;
     private final ParticleInfo particleInfo;
 
     /**
@@ -24,10 +28,11 @@ public class PersistentTrackingParticle implements ICoroutine {
      * @param entityID entity to track
      * @param particleInfo the particle itself along with other summoning details
      */
-    public PersistentTrackingParticle(OminousWither plugin, Predicate<UUID> stopCondition, UUID entityID, ParticleInfo particleInfo) {
+    public PersistentTrackingParticle(OminousWither plugin, Predicate<UUID> stopCondition, UUID entityID, Vector offset, ParticleInfo particleInfo) {
         this.plugin = plugin;
         this.stopCondition = stopCondition;
         this.entityID = entityID;
+        this.offset = offset;
         this.particleInfo = particleInfo;
     }
 
@@ -40,7 +45,7 @@ public class PersistentTrackingParticle implements ICoroutine {
         if (world != null) {
             world.spawnParticle(
                 particleInfo.particle,
-                entity.getLocation(),
+                entity.getLocation().add(this.offset),
                 particleInfo.count,
                 particleInfo.offsetX,
                 particleInfo.offsetY,

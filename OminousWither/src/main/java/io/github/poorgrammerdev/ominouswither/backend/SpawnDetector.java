@@ -20,6 +20,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import io.github.poorgrammerdev.ominouswither.OminousWither;
+import io.github.poorgrammerdev.ominouswither.Utils;
 
 /**
  * Detects if the Wither Boss was spawned by a Player with Bad Omen.
@@ -27,6 +28,7 @@ import io.github.poorgrammerdev.ominouswither.OminousWither;
  * @author Thomas Tran
  */
 public class SpawnDetector implements Listener {
+    private static final int MAX_LEVEL = 5;
     /*
      * IMPLEMENTATION:
      * Since there's no trivial way to get who/what spawned a Wither, the system will work as follows:
@@ -94,7 +96,7 @@ public class SpawnDetector implements Listener {
         if (badOmen == null) return;
 
         // *** Fire Ominous Wither Spawn event ***
-        this.plugin.getServer().getPluginManager().callEvent(new OminousWitherSpawnEvent(wither, spawner, badOmen.getAmplifier() + 1));
+        this.plugin.getServer().getPluginManager().callEvent(new OminousWitherSpawnEvent(wither, spawner, Utils.clamp(badOmen.getAmplifier() + 1, 0, MAX_LEVEL)));
     }
 
     /**

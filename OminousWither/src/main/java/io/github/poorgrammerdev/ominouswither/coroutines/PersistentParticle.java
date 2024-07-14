@@ -1,10 +1,11 @@
-package io.github.poorgrammerdev.ominouswither;
+package io.github.poorgrammerdev.ominouswither.coroutines;
 
 import java.util.function.BooleanSupplier;
 
 import org.bukkit.Location;
 import org.bukkit.World;
 
+import io.github.poorgrammerdev.ominouswither.ParticleInfo;
 import io.github.poorgrammerdev.ominouswither.backend.ICoroutine;
 
 /**

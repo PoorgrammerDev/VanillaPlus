@@ -1,4 +1,4 @@
-package io.github.poorgrammerdev.ominouswither;
+package io.github.poorgrammerdev.ominouswither.coroutines;
 
 import java.util.Random;
 import java.util.function.Consumer;
@@ -9,6 +9,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.Vector;
 
+import io.github.poorgrammerdev.ominouswither.Utils;
 import io.github.poorgrammerdev.ominouswither.backend.ICoroutine;
 
 /**

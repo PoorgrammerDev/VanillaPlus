@@ -5,32 +5,45 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Wither;
+import org.bukkit.entity.WitherSkeleton;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import io.github.poorgrammerdev.ominouswither.backend.CoroutineManager;
+import io.github.poorgrammerdev.ominouswither.backend.ICoroutine;
 import io.github.poorgrammerdev.ominouswither.backend.OminousWitherSpawnEvent;
+import io.github.poorgrammerdev.ominouswither.coroutines.PassableLocationFinder;
+import io.github.poorgrammerdev.ominouswither.coroutines.PersistentParticle;
 import net.md_5.bungee.api.ChatColor;
 
 /**
- * This handles all of the mechanics that happen right as the Ominous Wither is spawned.
- * For example, the stat buffs, its name, spawning minion Wither Skeletons, etc.
+ * This handles all of the mechanics that happen as the Ominous Wither is spawning.
+ * For example, its stat buffs and name, spawning minion Wither Skeletons, etc.
+ * @author Thomas Tran
  */
 public class SpawnMechanics implements Listener {
     private final OminousWither plugin;
+
+    /**
+     * Holds the locations of minions to be summoned once the Wither is fully spawned.
+     */
     private final HashMap<UUID, List<Location>> spawnMinionMap;
 
     public SpawnMechanics(final OminousWither plugin) {
@@ -38,7 +51,7 @@ public class SpawnMechanics implements Listener {
         this.spawnMinionMap = new HashMap<>();
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onOminousSpawn(final OminousWitherSpawnEvent event) {
         final Wither wither = event.getWither();
         final Player player = event.getSpawner();
@@ -50,58 +63,188 @@ public class SpawnMechanics implements Listener {
 
         //Modify the Wither's stats
         wither.getPersistentDataContainer().set(this.plugin.getOminousWitherKey(), PersistentDataType.BOOLEAN, true);
+        wither.getPersistentDataContainer().set(this.plugin.getLevelKey(), PersistentDataType.INTEGER, level);
+        wither.getPersistentDataContainer().set(this.plugin.getSpawnerKey(), PersistentDataType.STRING, player.getUniqueId().toString());
         wither.setCustomName(ChatColor.DARK_PURPLE + "Ominous Wither");
         wither.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(calculateMaxHealth(world.getDifficulty()));
-        // wither.getAttribute(Attribute.GENERIC_ARMOR).setBaseValue(level * 2);
         wither.getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS).setBaseValue(level * 2);
         wither.getAttribute(Attribute.GENERIC_FOLLOW_RANGE).setBaseValue(1024);
 
-        //Handle finding locations to summon minions
-        //Adds them to a list under the Wither's ID so they can be summoned later
-        this.spawnMinionMap.put(wither.getUniqueId(), new ArrayList<>());
+        //Wither looks at its spawner while spawning
+        this.performOminousStare(wither, player);
+
+        //Get locations for spawning minions
+        this.populateMinionSpawnLocations(wither);
+    }
+
+    /**
+     * Handles events that occur when the Ominous Wither is fully spawned
+     * (i.e. when it blows up)
+     * @param event
+     */
+    @EventHandler(ignoreCancelled = true)
+    public void onFullySpawned(final EntityExplodeEvent event) {
+        if (event.getEntityType() != EntityType.WITHER || !(event.getEntity() instanceof Wither)) return;
+
+        final Wither wither = (Wither) event.getEntity();
+        if (!this.plugin.isOminous(wither)) return;
+
+        //Mark as fully spawned
+        wither.getPersistentDataContainer().set(this.plugin.getIsFullySpawnedKey(), PersistentDataType.BOOLEAN, true);
+
+        //Set Wither's health to its Max Health
+        //(This could not be done at spawn-time since it seems to be hardcoded in MC to set to 300 at explode-time)
+        wither.setHealth(wither.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
+
+        //Summon minions
+        this.spawnMinions(wither);
+    }
+
+    /**
+     * Makes the Wither look at its spawner while spawning in
+     * @param wither Ominous Wither boss
+     * @param player the player that spawned the wither
+     */
+    private void performOminousStare(final Wither wither, final Player player) {
+        final UUID witherID = wither.getUniqueId();
+        final UUID playerID = player.getUniqueId();
+        CoroutineManager.getInstance().enqueue(new ICoroutine() {
+
+            @Override
+            public void tick() {
+                final Entity wither = plugin.getServer().getEntity(witherID);
+                if (wither == null) return;
+
+                final Player spawner = plugin.getServer().getPlayer(playerID);
+                if (spawner == null) return;
+
+                final Vector direction = spawner.getLocation().subtract(wither.getLocation()).toVector();
+                wither.teleport(wither.getLocation().setDirection(direction));
+            }
+
+            @Override
+            public boolean shouldBeRescheduled() {
+                //Stop staring when the wither is fully spawned in
+                return spawnMinionMap.containsKey(witherID);
+            }
+            
+        });
+    }
+
+    /**
+     * Finds suitable locations to spawn minions and records them to spawn later
+     * Also displays a particle effect before they are spawned in
+     * @param wither Ominous Wither boss
+     */
+    private void populateMinionSpawnLocations(final Wither wither) {
+        final UUID witherUUID = wither.getUniqueId();
+        this.spawnMinionMap.put(witherUUID, new ArrayList<>());
+
+        //Find locations to summon minions
         CoroutineManager.getInstance().enqueue(new PassableLocationFinder(
             wither.getLocation(),
             new Vector(10, 10, 10),
             3,
             true,
             true,
-            20,
-            ((location) -> {
-                final List<Location> l = this.spawnMinionMap.get(wither.getUniqueId());
-                l.add(location);
+            10,
+            (location) -> {
+                //Adds them to a list under the Wither's ID so they can be summoned once the wither is fully spawned
+                final List<Location> list = this.spawnMinionMap.getOrDefault(wither.getUniqueId(), null);
+                
+                //If for some reason the list is null (e.g. this took too long and the Wither has already fully spawned)
+                //Then just ignore all future locations
+                if (list == null) return; 
 
-                CoroutineManager.getInstance().enqueue(new PersistentParticle(() -> {return false;}, location.clone().add(0, 1, 0), new ParticleInfo(Particle.SMOKE, 5, 0.25, 1.5, 0.25, 0, null)));
+                list.add(location);
 
-                //TODO: DO SOMETHING WITH THIS
-            }),
+                //Play visual effect at future spawn place
+                CoroutineManager.getInstance().enqueue(new PersistentParticle(
+                    () -> (!this.spawnMinionMap.containsKey(witherUUID)),
+                    location.clone().add(0, 1, 0),
+                    new ParticleInfo(
+                        Particle.SMOKE,
+                        5,
+                        0.25,
+                        1.5,
+                        0.25,
+                        0,
+                        null
+                    )
+                ));
+            },
             null
         ));
 
-        //Constant ominous particle
-        CoroutineManager.getInstance().enqueue(new PersistentTrackingParticle(
-            this.plugin,
-            ((entityID) -> {
-                final Entity entity = plugin.getServer().getEntity(entityID);
-                if (entity == null || !(entity instanceof LivingEntity)) return false;
+    }
 
-                final LivingEntity livingEntity = (LivingEntity) entity;
-                return livingEntity.isDead();
-            }),
-            wither.getUniqueId(),
-            new ParticleInfo(Particle.TRIAL_OMEN, 2, 1, 1, 1, 0, null)
-        ));
-        CoroutineManager.getInstance().enqueue(new PersistentTrackingParticle(
-            this.plugin,
-            ((entityID) -> {
-                final Entity entity = plugin.getServer().getEntity(entityID);
-                if (entity == null || !(entity instanceof LivingEntity)) return false;
+    /**
+     * Spawn minions at the recorded locations for this Wither boss
+     * @param wither
+     */
+    private void spawnMinions(final Wither wither) {
+        final UUID witherID = wither.getUniqueId();
+        final List<Location> minionLocations = this.spawnMinionMap.getOrDefault(witherID, null);
+        if (minionLocations == null) return;
+        
+        //Regardless of what happens next, clear this wither from the list as it's been handled
+        this.spawnMinionMap.remove(witherID);
 
-                final LivingEntity livingEntity = (LivingEntity) entity;
-                return livingEntity.isDead();
-            }),
-            wither.getUniqueId(),
-            new ParticleInfo(Particle.RAID_OMEN, 2, 1, 1, 1, 0, null)
-        ));
+        final World world = wither.getWorld();
+        if (world == null) return;
+
+        //Get level of Wither; if invalid then failed -> clear locations and return
+        final int level = wither.getPersistentDataContainer().getOrDefault(this.plugin.getLevelKey(), PersistentDataType.INTEGER, -1);
+        if (level == -1) return;
+
+        //Get player who spawned Wither
+        final String playerIDString = wither.getPersistentDataContainer().getOrDefault(this.plugin.getSpawnerKey(), PersistentDataType.STRING, null);
+        if (playerIDString == null) return;
+
+        final Player spawner;
+        try {
+            final UUID playerID = UUID.fromString(playerIDString);
+            spawner = this.plugin.getServer().getPlayer(playerID);
+        }
+        catch (IllegalArgumentException e) {
+            return;
+        }
+
+        if (spawner == null) return;
+
+        for (Location location : minionLocations) {
+            //Make spawn location face the player who spawned the Wither
+            location = location.setDirection(spawner.getLocation().subtract(location).toVector());
+
+            //Play a flash particle
+            world.spawnParticle(Particle.FLASH, location, 1);
+
+            final Entity entity = world.spawnEntity(location, EntityType.WITHER_SKELETON);
+            if (!(entity instanceof WitherSkeleton)) continue;
+
+            final WitherSkeleton minion = (WitherSkeleton) entity;
+            minion.getPersistentDataContainer().set(this.plugin.getMinionKey(), PersistentDataType.BOOLEAN, true);
+            minion.setTarget(spawner);
+            minion.setCanPickupItems(false);
+            minion.getAttribute(Attribute.GENERIC_ARMOR).setBaseValue(level * 2.0);
+            minion.getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS).setBaseValue(level);
+            minion.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.375);
+            minion.getAttribute(Attribute.GENERIC_FOLLOW_RANGE).setBaseValue(128);
+
+            final EntityEquipment equipment = minion.getEquipment();
+            if (equipment == null) continue;
+
+            equipment.setItemInMainHandDropChance(-32768);
+            final ItemStack weapon = new ItemStack(Material.NETHERITE_SWORD);
+            weapon.addEnchantment(Enchantment.SHARPNESS, level);
+            weapon.addEnchantment(Enchantment.FIRE_ASPECT, 2);
+            equipment.setItemInMainHand(weapon);
+
+            if (level == 5) {
+                equipment.setItemInOffHandDropChance(-32768);
+                equipment.setItemInOffHand(new ItemStack(Material.TOTEM_OF_UNDYING));
+            }
+        }
     }
 
     /**

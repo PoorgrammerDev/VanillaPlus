@@ -1,7 +1,5 @@
 package io.github.poorgrammerdev.ominouswither;
 
-import java.util.List;
-
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -12,21 +10,9 @@ import org.bukkit.util.Vector;
 
 /**
  * A static class with utility functions.
+ * @author Thomas Tran
  */
 public final class Utils {
-
-    /**
-     * Gets nearby safe locations synchronously
-     * @param center the center location
-     * @param maxSpread max distance in each direction the locations can be
-     * @param requireSight the location must be within line of sight to the center
-     * @param requireGround the location must be on the ground, it cannot be midair
-     * @param amount how many locations to return
-     * @return a list of locations, up to <amount> length. length can be less or even empty if the search fails
-     */
-    public static List<Location> getNearbySafeLocations(final Location center, final Vector maxSpread, final boolean requireSight, final boolean requireGround, final int amount) {
-        return null;
-    }
 
     /**
      * Checks if a location is viable for an entity to spawn at (i.e. it's not inside a wall)
@@ -66,5 +52,24 @@ public final class Utils {
         final Block block = result.getHitBlock();
         return (block == null || block.isPassable());
     }
+
+    /**
+     * Restrict an integer value to a bound
+     * @return clamped value
+     */
+    public static int clamp(int value, int min, int max) {
+        if (value < min) return min;
+        if (value > max) return max;
+        return value;
+    }
     
+    /**
+     * Restrict a double value to a bound
+     * @return clamped value
+     */
+    public static double clamp(double value, double min, double max) {
+        if (value < min) return min;
+        if (value > max) return max;
+        return value;
+    }
 }
