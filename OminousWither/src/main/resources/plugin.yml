@@ -1,0 +1,6 @@
+name: OminousWither
+author: PoorgrammerDev
+description: Adds a stronger variant of the Wither Boss 
+version: '${project.version}'
+main: io.github.poorgrammerdev.ominouswither.OminousWither
+api-version: '1.21'
