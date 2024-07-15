@@ -62,7 +62,7 @@ public class SkullBarrage implements Listener {
         final World world = skull.getWorld();
         final Location location = skull.getLocation();
         final Vector acceleration = skull.getAcceleration();
-        final int amount = getBarrageAmount(level);
+        final int amount = getBarrageAmount(level) - 1; //Subtracting one to account for the already shot skull
         int[] i = {0};
         new BukkitRunnable() {
 
