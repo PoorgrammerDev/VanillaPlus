@@ -23,6 +23,7 @@ public final class OminousWither extends JavaPlugin {
         this.getServer().getPluginManager().registerEvents(new SpawnMechanics(this), this);
         this.getServer().getPluginManager().registerEvents(new OminousAura(this), this);
         this.getServer().getPluginManager().registerEvents(new SkullBarrage(this), this);
+        this.getServer().getPluginManager().registerEvents(new PreventFriendlyFire(this), this);
 
         CoroutineManager.getInstance().runTaskTimer(this, 0L, 1L);
     }
