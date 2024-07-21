@@ -28,7 +28,9 @@ import org.bukkit.util.Vector;
 import io.github.poorgrammerdev.ominouswither.backend.CoroutineManager;
 import io.github.poorgrammerdev.ominouswither.backend.ICoroutine;
 import io.github.poorgrammerdev.ominouswither.backend.OminousWitherActivateEvent;
+import io.github.poorgrammerdev.ominouswither.backend.OminousWitherLoadEvent;
 import io.github.poorgrammerdev.ominouswither.backend.OminousWitherSpawnEvent;
+import io.github.poorgrammerdev.ominouswither.backend.OminousWitherUnloadEvent;
 import io.github.poorgrammerdev.ominouswither.coroutines.PassableLocationFinder;
 import io.github.poorgrammerdev.ominouswither.coroutines.PersistentParticle;
 import net.md_5.bungee.api.ChatColor;
@@ -71,10 +73,32 @@ public class SpawnMechanics implements Listener {
         wither.getAttribute(Attribute.GENERIC_FOLLOW_RANGE).setBaseValue(1024);
 
         //Wither looks at its spawner while spawning
-        this.performOminousStare(wither, player);
+        this.performOminousStare(wither.getUniqueId(), player.getUniqueId());
 
         //Get locations for spawning minions
         this.populateMinionSpawnLocations(wither);
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onUnload(final OminousWitherUnloadEvent event) {
+        //Remove wither from map
+        this.spawnMinionMap.remove(event.getWither().getUniqueId());
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onLoad(final OminousWitherLoadEvent event) {
+        //Check if the Wither has not been fully spawned in yet
+        final Wither wither = event.getWither();
+        if (wither == null || wither.getPersistentDataContainer().getOrDefault(this.plugin.getIsFullySpawnedKey(), PersistentDataType.BOOLEAN, false)) return;
+
+        //Minion spawning process
+        this.populateMinionSpawnLocations(wither);
+        
+        //Stare
+        final String spawnerIDString = wither.getPersistentDataContainer().getOrDefault(this.plugin.getSpawnerKey(), PersistentDataType.STRING, null);
+        if (spawnerIDString == null) return;
+
+        this.performOminousStare(wither.getUniqueId(), UUID.fromString(spawnerIDString));
     }
 
     /**
@@ -97,12 +121,10 @@ public class SpawnMechanics implements Listener {
 
     /**
      * Makes the Wither look at its spawner while spawning in
-     * @param wither Ominous Wither boss
-     * @param player the player that spawned the wither
+     * @param witherID Ominous Wither boss's UUID
+     * @param playerID UUID of the player that spawned the wither
      */
-    private void performOminousStare(final Wither wither, final Player player) {
-        final UUID witherID = wither.getUniqueId();
-        final UUID playerID = player.getUniqueId();
+    private void performOminousStare(final UUID witherID, final UUID playerID) {
         CoroutineManager.getInstance().enqueue(new ICoroutine() {
 
             @Override
