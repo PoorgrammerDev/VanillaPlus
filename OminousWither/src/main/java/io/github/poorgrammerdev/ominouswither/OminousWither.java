@@ -6,7 +6,9 @@ import org.bukkit.entity.Wither;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import io.github.poorgrammerdev.ominouswither.backend.ActivationDetector;
 import io.github.poorgrammerdev.ominouswither.backend.CoroutineManager;
+import io.github.poorgrammerdev.ominouswither.backend.LoadDetector;
 import io.github.poorgrammerdev.ominouswither.backend.SpawnDetector;
 
 public final class OminousWither extends JavaPlugin {
@@ -20,12 +22,15 @@ public final class OminousWither extends JavaPlugin {
     @Override
     public void onEnable() {
         this.getServer().getPluginManager().registerEvents(new SpawnDetector(this), this);
+        this.getServer().getPluginManager().registerEvents(new ActivationDetector(this), this);
+        this.getServer().getPluginManager().registerEvents(new LoadDetector(this), this);
         this.getServer().getPluginManager().registerEvents(new SpawnMechanics(this), this);
         this.getServer().getPluginManager().registerEvents(new OminousAura(this), this);
         this.getServer().getPluginManager().registerEvents(new SkullBarrage(this), this);
         this.getServer().getPluginManager().registerEvents(new PreventFriendlyFire(this), this);
         this.getServer().getPluginManager().registerEvents(new PreventExploits(this), this);
         this.getServer().getPluginManager().registerEvents(new ExplosionResistance(this), this);
+        this.getServer().getPluginManager().registerEvents(new FlightSpeed(this), this);
 
 
         CoroutineManager.getInstance().runTaskTimer(this, 0L, 1L);

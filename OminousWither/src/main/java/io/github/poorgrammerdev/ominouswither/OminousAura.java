@@ -3,11 +3,13 @@ package io.github.poorgrammerdev.ominouswither;
 import org.bukkit.Particle;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Wither;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.util.Vector;
 
 import io.github.poorgrammerdev.ominouswither.backend.CoroutineManager;
+import io.github.poorgrammerdev.ominouswither.backend.OminousWitherLoadEvent;
 import io.github.poorgrammerdev.ominouswither.backend.OminousWitherSpawnEvent;
 import io.github.poorgrammerdev.ominouswither.coroutines.PersistentTrackingParticle;
 
@@ -24,6 +26,15 @@ public class OminousAura implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onOminousSpawn(final OminousWitherSpawnEvent event) {
+        this.runParticle(event.getWither());
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onLoad(final OminousWitherLoadEvent event) {
+        this.runParticle(event.getWither());
+    }
+
+    private void runParticle(final Wither wither) {
         //Constant ominous particle
         CoroutineManager.getInstance().enqueue(new PersistentTrackingParticle(
             this.plugin,
@@ -35,7 +46,7 @@ public class OminousAura implements Listener {
                 final LivingEntity livingEntity = (LivingEntity) entity;
                 return livingEntity.isDead();
             }),
-            event.getWither().getUniqueId(),
+            wither.getUniqueId(),
             new Vector(0, 1, 0),
             new ParticleInfo(Particle.RAID_OMEN, 3, 0.75, 1, 0.75, 0, null)
         ));

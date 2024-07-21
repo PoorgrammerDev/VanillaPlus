@@ -19,7 +19,6 @@ import org.bukkit.entity.Wither;
 import org.bukkit.entity.WitherSkeleton;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
@@ -28,6 +27,7 @@ import org.bukkit.util.Vector;
 
 import io.github.poorgrammerdev.ominouswither.backend.CoroutineManager;
 import io.github.poorgrammerdev.ominouswither.backend.ICoroutine;
+import io.github.poorgrammerdev.ominouswither.backend.OminousWitherActivateEvent;
 import io.github.poorgrammerdev.ominouswither.backend.OminousWitherSpawnEvent;
 import io.github.poorgrammerdev.ominouswither.coroutines.PassableLocationFinder;
 import io.github.poorgrammerdev.ominouswither.coroutines.PersistentParticle;
@@ -79,15 +79,10 @@ public class SpawnMechanics implements Listener {
 
     /**
      * Handles events that occur when the Ominous Wither is fully spawned
-     * (i.e. when it blows up)
-     * @param event
      */
     @EventHandler(ignoreCancelled = true)
-    public void onFullySpawned(final EntityExplodeEvent event) {
-        if (event.getEntityType() != EntityType.WITHER || !(event.getEntity() instanceof Wither)) return;
-
-        final Wither wither = (Wither) event.getEntity();
-        if (!this.plugin.isOminous(wither)) return;
+    public void onFullySpawned(final OminousWitherActivateEvent event) {
+        final Wither wither = event.getWither();
 
         //Mark as fully spawned
         wither.getPersistentDataContainer().set(this.plugin.getIsFullySpawnedKey(), PersistentDataType.BOOLEAN, true);
