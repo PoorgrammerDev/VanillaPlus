@@ -34,7 +34,7 @@ public class SkullBarrage implements Listener {
     /**
      * Each normal skull (black skull) an Ominous Wither fires will be a barrage 
      */
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
     public void onSkullLaunch(final ProjectileLaunchEvent event) {
         //Must be a skull
         if (event.getEntityType() != EntityType.WITHER_SKULL || !(event.getEntity() instanceof WitherSkull)) return;

@@ -21,16 +21,19 @@ public class PreventFriendlyFire implements Listener {
     }
 
     /**
-     * Cancels any damage done to a Minion caused by an Ominous Wither
+     * Cancels any damage done to a Minion caused by an Ominous Wither (or each other)
      */
     @EventHandler(ignoreCancelled = true)
     public void onDamage(final EntityDamageByEntityEvent event) {
         final DamageSource source = event.getDamageSource();
         if (source == null) return;
 
-        //Entity responsible for damage must exist and be an Ominous Wither
+        //Entity responsible for damage must exist and be a Minion or an Ominous Wither
         final Entity damager = source.getCausingEntity();
-        if (!(damager instanceof Wither) || !this.plugin.isOminous((Wither) damager)) return;
+        if (
+            (!(damager instanceof LivingEntity) || !this.plugin.isMinion((LivingEntity) damager)) &&
+            (!(damager instanceof Wither) || !this.plugin.isOminous((Wither) damager))
+        ) return;
 
         //Damaged entity must be a Minion
         if (!(event.getEntity() instanceof LivingEntity)) return;

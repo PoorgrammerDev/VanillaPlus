@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Difficulty;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -241,12 +242,17 @@ public class SpawnMechanics implements Listener {
 
             final WitherSkeleton minion = (WitherSkeleton) entity;
             minion.getPersistentDataContainer().set(this.plugin.getMinionKey(), PersistentDataType.BOOLEAN, true);
-            minion.setTarget(spawner);
+            minion.setLootTable(null);
             minion.setCanPickupItems(false);
             minion.getAttribute(Attribute.GENERIC_ARMOR).setBaseValue(level * 2.0);
             minion.getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS).setBaseValue(level);
             minion.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.375);
             minion.getAttribute(Attribute.GENERIC_FOLLOW_RANGE).setBaseValue(128);
+
+            //Targets the spawner if in survival or adventure mode
+            if (spawner.getGameMode() == GameMode.SURVIVAL || spawner.getGameMode() == GameMode.ADVENTURE) {
+                minion.setTarget(spawner);
+            }
 
             final EntityEquipment equipment = minion.getEquipment();
             if (equipment == null) continue;

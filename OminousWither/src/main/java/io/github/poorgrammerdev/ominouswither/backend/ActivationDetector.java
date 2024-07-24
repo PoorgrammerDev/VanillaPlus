@@ -5,6 +5,7 @@ import org.bukkit.entity.Wither;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.persistence.PersistentDataType;
 
 import io.github.poorgrammerdev.ominouswither.OminousWither;
 
@@ -31,6 +32,10 @@ public class ActivationDetector implements Listener {
         //Must be Ominous
         final Wither wither = (Wither) event.getEntity();
         if (!this.plugin.isOminous(wither)) return;
+
+        //Wither can cause explosions after it's spawned, we only want this to trigger once
+        //Check if it's already fully spawned
+        if (wither.getPersistentDataContainer().getOrDefault(this.plugin.getIsFullySpawnedKey(), PersistentDataType.BOOLEAN, false)) return;
 
         //*** Fire Event ***
         this.plugin.getServer().getPluginManager().callEvent(new OminousWitherActivateEvent(wither));
