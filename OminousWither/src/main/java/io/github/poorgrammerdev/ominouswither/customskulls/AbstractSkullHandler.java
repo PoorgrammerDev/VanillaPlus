@@ -16,11 +16,10 @@ import io.github.poorgrammerdev.ominouswither.coroutines.PersistentTrackingParti
  * @author Thomas Tran
  */
 public abstract class AbstractSkullHandler {
-    private static final int SKULL_LIFESPAN = 500;
+    protected static final int SKULL_LIFESPAN = 500;
 
-    private final double initialSpeed;
-    private final ParticleInfo trackingParticle;
-    
+    protected final double initialSpeed;
+    protected final ParticleInfo trackingParticle;
     protected final OminousWither plugin;
 
     public AbstractSkullHandler(final OminousWither plugin, final double initialSpeed, final ParticleInfo trackingParticle) {

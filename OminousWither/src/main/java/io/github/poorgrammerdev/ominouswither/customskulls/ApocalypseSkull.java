@@ -3,6 +3,9 @@ package io.github.poorgrammerdev.ominouswither.customskulls;
 import java.util.UUID;
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
+import org.bukkit.Tag;
 import org.bukkit.World;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Wither;
@@ -25,7 +28,7 @@ public class ApocalypseSkull extends AbstractSkullHandler {
     private final ApocalypseHorsemen apocalypseHorsemen;
 
     public ApocalypseSkull(final OminousWither plugin, final ApocalypseHorsemen apocalypseHorsemen) {
-        super(plugin, 5.0D, new ParticleInfo(Particle.CLOUD, 1, 0, 0, 0, 0, null));
+        super(plugin, 8.75D, new ParticleInfo(Particle.CLOUD, 1, 0, 0, 0, 0, null));
 
         this.apocalypseHorsemen = apocalypseHorsemen;
     }
@@ -35,9 +38,9 @@ public class ApocalypseSkull extends AbstractSkullHandler {
         //Projectile must have hit a living entity straight-on to activate
         if (!(event.getHitEntity() instanceof LivingEntity)) return;
 
-        //Hit entity cannot be a minion
+        //Hit entity cannot be undead ("wither friend") or a minion
         final LivingEntity hitEntity = (LivingEntity) event.getHitEntity();
-        if (this.plugin.isMinion(hitEntity)) return;
+        if (Tag.ENTITY_TYPES_WITHER_FRIENDS.isTagged(hitEntity.getType()) || this.plugin.isMinion(hitEntity)) return;
 
         //Last damage cause must be this skull and it must've done damage after negation
         //Unfortunately the Absorption potion effect seems to count as damage negation and the only method of detecting that is deprecated
@@ -54,10 +57,11 @@ public class ApocalypseSkull extends AbstractSkullHandler {
         final int level = wither.getPersistentDataContainer().getOrDefault(this.plugin.getLevelKey(), PersistentDataType.INTEGER, 1);
         final Location center = event.getEntity().getLocation();
 
-        //Strike lightning like in a real skeleton horse trap
+        //VFX + SFX
         final World centerWorld = center.getWorld();
         if (centerWorld != null) {
             centerWorld.strikeLightningEffect(center);
+            centerWorld.playSound(center, Sound.ITEM_TRIDENT_THUNDER, SoundCategory.HOSTILE, 5, 0.875f);
         }
         
         //Find viable locations and summon skeleton horsemen

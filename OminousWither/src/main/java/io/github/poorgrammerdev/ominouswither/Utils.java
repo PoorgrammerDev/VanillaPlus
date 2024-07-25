@@ -72,4 +72,75 @@ public final class Utils {
         if (value > max) return max;
         return value;
     }
+
+    /**
+     * Displays a particle circle on the Y axis at the given location
+     * @param particle information of particle to display
+     * @param radius radius of circle
+     * @param density how thick to make the line
+     * @param location where to display it
+     */
+    public static void particleCircle(final ParticleInfo particle, final double radius, final double density, Location location) {
+        final World world = location.getWorld();
+        if (world == null) return;
+
+        //Even though this method shouldn't have any effect on the location object,
+        //make a clone just to be extra safe
+        location = location.clone();
+
+        //Iterates through angles in radians up to 2pi
+        for (double theta = 0; theta <= 2*Math.PI; theta += Math.PI / density) {
+
+            //Calculates offsets from the center 
+            double x = radius * Math.cos(theta);
+            double z = radius * Math.sin(theta);
+
+            location.add(x, 0, z);
+
+            world.spawnParticle(
+                particle.particle,
+                location,
+                particle.count,
+                particle.offsetX,
+                particle.offsetY,
+                particle.offsetZ,
+                particle.extra,
+                particle.data
+            );
+
+            location.subtract(x, 0, z);
+        }
+    }
+
+    public static void particleLine(ParticleInfo particle, Location origin, Location target, double density) {
+        final World world = origin.getWorld();
+        final World targetWorld = target.getWorld();
+        if (world == null || targetWorld == null || !world.equals(targetWorld)) return;
+
+        final Vector begin = origin.toVector();
+        final Vector end = target.toVector();
+        for (double t = 0.0; t <= 1.0D; t += (1.0D / density)) {
+            world.spawnParticle(
+                particle.particle,
+                lerp(begin, end, t).toLocation(world, origin.getYaw(), origin.getPitch()),
+                particle.count,
+                particle.offsetX,
+                particle.offsetY,
+                particle.offsetZ,
+                particle.extra,
+                particle.data
+            );
+        }
+    }
+
+    public static Vector lerp(final Vector vecA, final Vector vecB, double t) {
+        //Clamp t to [0,1] range
+        t = clamp(t, 0.0D, 1.0D);
+
+        final Vector scaledA = vecA.clone().multiply(t);
+        final Vector scaledB = vecB.clone().multiply(1.0D - t);
+
+        return scaledA.add(scaledB);
+    }
+
 }

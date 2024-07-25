@@ -13,6 +13,7 @@ import io.github.poorgrammerdev.ominouswither.backend.SpawnDetector;
 import io.github.poorgrammerdev.ominouswither.customskulls.AbstractSkullHandler;
 import io.github.poorgrammerdev.ominouswither.customskulls.ApocalypseSkull;
 import io.github.poorgrammerdev.ominouswither.customskulls.ExplosiveSkull;
+import io.github.poorgrammerdev.ominouswither.customskulls.GravitySkull;
 
 public final class OminousWither extends JavaPlugin {
     private final NamespacedKey ominousWitherKey = new NamespacedKey(this, "is_ominous");
@@ -46,7 +47,7 @@ public final class OminousWither extends JavaPlugin {
         final AbstractSkullHandler[] skullHandlers = {
             new ExplosiveSkull(this),
             apocalypseSkull,
-
+            new GravitySkull(this),
         };
 
         this.getServer().getPluginManager().registerEvents(new DangerousSkullManager(this, skullHandlers), this);

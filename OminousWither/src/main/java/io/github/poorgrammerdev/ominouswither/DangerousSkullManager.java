@@ -88,7 +88,7 @@ public class DangerousSkullManager implements Listener {
          * The returned probability value is additive to this value, since it only overrides when the skull is not already charged.
          * Assuming a returned value of 0.05 below, the real rate of a blue skull is now 0.051 or 5.1%
          */
-        return (level * 0.015D);
+        return (level * 0.05D);
     }
 
 }
