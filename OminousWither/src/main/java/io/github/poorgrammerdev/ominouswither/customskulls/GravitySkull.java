@@ -35,9 +35,6 @@ public class GravitySkull extends AbstractSkullHandler {
         final World world = location.getWorld();
         if (world == null) return;
 
-        //Sound effect
-        // world.playSound(location, Sound.BLOCK_CONDUIT_DEACTIVATE, SoundCategory.HOSTILE, 3, 1);
-
         //Particle circle
         Utils.particleCircle(this.trackingParticle, RADIUS, 20, location);
 
