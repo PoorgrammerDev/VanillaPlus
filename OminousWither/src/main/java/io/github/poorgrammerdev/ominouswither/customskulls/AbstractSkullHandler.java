@@ -22,6 +22,12 @@ public abstract class AbstractSkullHandler {
     protected final ParticleInfo trackingParticle;
     protected final OminousWither plugin;
 
+    /**
+     * Constructor
+     * @param plugin instance of main plugin class
+     * @param initialSpeed speed multiplier on launch
+     * @param trackingParticle particle trail of skull
+     */
     public AbstractSkullHandler(final OminousWither plugin, final double initialSpeed, final ParticleInfo trackingParticle) {
         this.plugin = plugin;
         this.initialSpeed = initialSpeed;

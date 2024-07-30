@@ -24,11 +24,11 @@ import io.github.poorgrammerdev.ominouswither.coroutines.PassableLocationFinder;
  * Skull that spawns Skeleton Horsemen on hit
  * @author Thomas Tran
  */
-public class ApocalypseSkull extends AbstractSkullHandler {
+public class ApocalypseSkull extends AbstractHomingSkull {
     private final ApocalypseHorsemen apocalypseHorsemen;
 
     public ApocalypseSkull(final OminousWither plugin, final ApocalypseHorsemen apocalypseHorsemen) {
-        super(plugin, 8.75D, new ParticleInfo(Particle.CLOUD, 1, 0, 0, 0, 0, null));
+        super(plugin, 3.0D, new ParticleInfo(Particle.CLOUD, 1, 0, 0, 0, 0, null), (SKULL_LIFESPAN / 5), 5, 10, false);
 
         this.apocalypseHorsemen = apocalypseHorsemen;
     }

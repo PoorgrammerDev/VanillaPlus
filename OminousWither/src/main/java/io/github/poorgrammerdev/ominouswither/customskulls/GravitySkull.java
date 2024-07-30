@@ -42,18 +42,20 @@ public class GravitySkull extends AbstractSkullHandler {
         world.getNearbyEntities(location, RADIUS, RADIUS, RADIUS, (entity) -> (!Tag.ENTITY_TYPES_WITHER_FRIENDS.isTagged(entity.getType())))
             .stream()
             
-            //Entity cannot be invulnerable
-            .filter((entity) -> (!entity.isInvulnerable()))
+            .filter((entity) -> (
+                //Entity cannot be invulnerable
+                !entity.isInvulnerable() &&
 
-            //Friendly cases should all be handled already up top but as a double check:
-            .filter((entity) -> (!this.plugin.isMinion(entity))) //Cannot be a minion
-            .filter((entity) -> (!(entity instanceof Wither) || this.plugin.isOminous((Wither) entity))) //If it is a Wither, cannot be an Ominous Wither 
+                //Friendly cases should all be handled already up top but as a double check:
+                !this.plugin.isMinion(entity) &&
+                !(entity instanceof Wither) &&
 
-            //Cannot affect other wither skulls
-            .filter((entity) -> (!(entity instanceof WitherSkull)))
+                //Cannot affect other wither skulls
+                !(entity instanceof WitherSkull) &&
 
-            //Must be in radius
-            .filter((entity) -> (location.distanceSquared(entity.getLocation()) <= (RADIUS * RADIUS)))
+                //Must be in radius
+                location.distanceSquared(entity.getLocation()) <= (RADIUS * RADIUS)
+            ))
 
             //NOTE: currently does not do a visibility check, meaning this can hit through walls | TODO: should this behaviour be changed?
 
