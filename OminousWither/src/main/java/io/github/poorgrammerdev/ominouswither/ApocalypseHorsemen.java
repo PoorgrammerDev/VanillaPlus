@@ -20,6 +20,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.world.EntitiesUnloadEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.loot.LootTables;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -170,7 +171,7 @@ public class ApocalypseHorsemen implements Listener {
     private void applySkeletonEffects(final Skeleton skeleton) {
         //Handle base stats, etc.
         skeleton.getPersistentDataContainer().set(this.plugin.getMinionKey(), PersistentDataType.BOOLEAN, true);
-        skeleton.setLootTable(null);
+        skeleton.setLootTable(LootTables.EMPTY.getLootTable());
         skeleton.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, PotionEffect.INFINITE_DURATION, 0));
         skeleton.getAttribute(Attribute.GENERIC_FOLLOW_RANGE).setBaseValue(128);
 
@@ -205,7 +206,7 @@ public class ApocalypseHorsemen implements Listener {
      */
     private void applyHorseEffects(final SkeletonHorse horse) {
         horse.getPersistentDataContainer().set(this.plugin.getMinionKey(), PersistentDataType.BOOLEAN, true);
-        horse.setLootTable(null);
+        horse.setLootTable(LootTables.EMPTY.getLootTable());
         horse.setTamed(true);
         horse.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, PotionEffect.INFINITE_DURATION, 0));
         horse.getAttribute(Attribute.GENERIC_FOLLOW_RANGE).setBaseValue(128);

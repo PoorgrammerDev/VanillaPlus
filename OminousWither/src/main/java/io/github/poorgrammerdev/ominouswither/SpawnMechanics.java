@@ -22,6 +22,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.loot.LootTables;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
@@ -242,7 +243,7 @@ public class SpawnMechanics implements Listener {
 
             final WitherSkeleton minion = (WitherSkeleton) entity;
             minion.getPersistentDataContainer().set(this.plugin.getMinionKey(), PersistentDataType.BOOLEAN, true);
-            minion.setLootTable(null);
+            minion.setLootTable(LootTables.EMPTY.getLootTable());
             minion.setCanPickupItems(false);
             minion.getAttribute(Attribute.GENERIC_ARMOR).setBaseValue(level * 2.0);
             minion.getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS).setBaseValue(level);
