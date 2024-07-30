@@ -28,7 +28,9 @@ public final class OminousWither extends JavaPlugin {
     public void onEnable() {
         this.getServer().getPluginManager().registerEvents(new SpawnDetector(this), this);
         this.getServer().getPluginManager().registerEvents(new ActivationDetector(this), this);
-        this.getServer().getPluginManager().registerEvents(new LoadDetector(this), this);
+        
+        final LoadDetector loadDetector = new LoadDetector(this);
+        this.getServer().getPluginManager().registerEvents(loadDetector, this);
 
         this.getServer().getPluginManager().registerEvents(new PreventFriendlyFire(this), this);
         this.getServer().getPluginManager().registerEvents(new PreventExploits(this), this);
@@ -54,6 +56,7 @@ public final class OminousWither extends JavaPlugin {
 
 
         CoroutineManager.getInstance().runTaskTimer(this, 0L, 1L);
+        loadDetector.onPluginEnable();
     }
 
     /**
