@@ -17,6 +17,7 @@ import org.bukkit.entity.SkeletonHorse;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.world.EntitiesUnloadEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
@@ -80,6 +81,22 @@ public class ApocalypseHorsemen implements Listener {
                 entity.remove();
             })
         ;
+    }
+
+    /**
+     * Prevents a non-minion entity from riding a Skeleton Horse minion and vice versa
+     * This should already be impossible in regular gameplay since the Skeleton Horse will disappear if the Skeleton dies
+     * The only known edge case is if the difficulty is set to Peaceful after the skull is launched
+     */
+    @EventHandler(ignoreCancelled = true)
+    public void onRide(final VehicleEnterEvent event) {
+        //Both entities must exist; vehicle must be a skeleton horse
+        if (event.getEntered() == null || !(event.getVehicle() instanceof SkeletonHorse)) return;
+
+        //If not matching type then cancel
+        if (this.plugin.isMinion(event.getEntered()) ^ this.plugin.isMinion(event.getVehicle())) {
+            event.setCancelled(true);
+        }
     }
 
     /**
