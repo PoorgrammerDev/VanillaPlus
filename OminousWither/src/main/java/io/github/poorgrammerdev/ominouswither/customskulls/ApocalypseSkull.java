@@ -11,14 +11,13 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Wither;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Vector;
 
 import io.github.poorgrammerdev.ominouswither.ApocalypseHorsemen;
 import io.github.poorgrammerdev.ominouswither.OminousWither;
 import io.github.poorgrammerdev.ominouswither.ParticleInfo;
-import io.github.poorgrammerdev.ominouswither.backend.CoroutineManager;
 import io.github.poorgrammerdev.ominouswither.coroutines.PassableLocationFinder;
+import io.github.poorgrammerdev.ominouswither.internal.CoroutineManager;
 
 /**
  * Skull that spawns Skeleton Horsemen on hit
@@ -54,7 +53,7 @@ public class ApocalypseSkull extends AbstractHomingSkull {
             lastDamageCause.getFinalDamage() <= 0.0D
         ) return;
 
-        final int level = wither.getPersistentDataContainer().getOrDefault(this.plugin.getLevelKey(), PersistentDataType.INTEGER, 1);
+        final int level = this.plugin.getLevel(wither, 1);
         final Location center = event.getEntity().getLocation();
 
         //VFX + SFX

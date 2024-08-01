@@ -9,7 +9,7 @@ import org.bukkit.util.Vector;
 
 import io.github.poorgrammerdev.ominouswither.OminousWither;
 import io.github.poorgrammerdev.ominouswither.ParticleInfo;
-import io.github.poorgrammerdev.ominouswither.backend.ICoroutine;
+import io.github.poorgrammerdev.ominouswither.internal.ICoroutine;
 
 /**
  * Continuously displays a TRACKING particle following an entity until a stop condition is reached

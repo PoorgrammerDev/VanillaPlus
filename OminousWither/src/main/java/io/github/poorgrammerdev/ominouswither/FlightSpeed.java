@@ -10,10 +10,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.persistence.PersistentDataType;
 
-import io.github.poorgrammerdev.ominouswither.backend.CoroutineManager;
-import io.github.poorgrammerdev.ominouswither.backend.ICoroutine;
-import io.github.poorgrammerdev.ominouswither.backend.OminousWitherActivateEvent;
-import io.github.poorgrammerdev.ominouswither.backend.OminousWitherLoadEvent;
+import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherActivateEvent;
+import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherLoadEvent;
+import io.github.poorgrammerdev.ominouswither.internal.CoroutineManager;
+import io.github.poorgrammerdev.ominouswither.internal.ICoroutine;
 
 public class FlightSpeed implements Listener {
     private static final int DISTANCE_THRESHOLD = 15;
@@ -28,7 +28,7 @@ public class FlightSpeed implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onActivate(final OminousWitherActivateEvent event) {
         final Wither wither = event.getWither();
-        final int level = wither.getPersistentDataContainer().getOrDefault(this.plugin.getLevelKey(), PersistentDataType.INTEGER, 1);
+        final int level = this.plugin.getLevel(wither, 1);
 
         this.flightBehavior(wither, level);
     }
@@ -36,7 +36,7 @@ public class FlightSpeed implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onLoad(final OminousWitherLoadEvent event) {
         final Wither wither = event.getWither();
-        final int level = wither.getPersistentDataContainer().getOrDefault(this.plugin.getLevelKey(), PersistentDataType.INTEGER, 1);
+        final int level = this.plugin.getLevel(wither, 1);
 
         //If the Wither has already been activated, then just enable the flight behavior
         final boolean isActivated = wither.getPersistentDataContainer().getOrDefault(this.plugin.getIsFullySpawnedKey(), PersistentDataType.BOOLEAN, false);

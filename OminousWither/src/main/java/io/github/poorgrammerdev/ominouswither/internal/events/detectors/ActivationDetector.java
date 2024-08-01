@@ -1,4 +1,4 @@
-package io.github.poorgrammerdev.ominouswither.backend;
+package io.github.poorgrammerdev.ominouswither.internal.events.detectors;
 
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Wither;
@@ -8,9 +8,12 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.persistence.PersistentDataType;
 
 import io.github.poorgrammerdev.ominouswither.OminousWither;
+import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherActivateEvent;
 
 /**
- * Detects when an Ominous Wither is fully spawned in and can begin moving (activates)
+ * <p>Detects when an Ominous Wither is fully spawned in and can begin moving (activates)</p>
+ * <p>Fires event {@link OminousWitherActivateEvent}</p>
+ * @author Thomas Tran
  */
 public class ActivationDetector implements Listener {
     private final OminousWither plugin;
@@ -36,6 +39,9 @@ public class ActivationDetector implements Listener {
         //Wither can cause explosions after it's spawned, we only want this to trigger once
         //Check if it's already fully spawned
         if (wither.getPersistentDataContainer().getOrDefault(this.plugin.getIsFullySpawnedKey(), PersistentDataType.BOOLEAN, false)) return;
+
+        //Mark as fully spawned
+        wither.getPersistentDataContainer().set(this.plugin.getIsFullySpawnedKey(), PersistentDataType.BOOLEAN, true);
 
         //*** Fire Event ***
         this.plugin.getServer().getPluginManager().callEvent(new OminousWitherActivateEvent(wither));

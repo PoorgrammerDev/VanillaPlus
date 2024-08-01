@@ -51,7 +51,7 @@ public class SkullBarrage implements Listener {
         if (!this.plugin.isOminous(wither)) return;
 
         //Get level -- if nonexistent for whatever reason assume lowest
-        final int level = wither.getPersistentDataContainer().getOrDefault(this.plugin.getLevelKey(), PersistentDataType.INTEGER, 1);
+        final int level = this.plugin.getLevel(wither, 1);
         
         //Velocity buff of black skulls based on level
         final Vector velocity = skull.getVelocity().multiply((1.0D + (level * 0.2D)));

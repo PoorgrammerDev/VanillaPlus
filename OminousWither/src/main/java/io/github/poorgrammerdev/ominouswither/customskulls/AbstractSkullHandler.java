@@ -8,8 +8,8 @@ import org.bukkit.util.Vector;
 
 import io.github.poorgrammerdev.ominouswither.OminousWither;
 import io.github.poorgrammerdev.ominouswither.ParticleInfo;
-import io.github.poorgrammerdev.ominouswither.backend.CoroutineManager;
 import io.github.poorgrammerdev.ominouswither.coroutines.PersistentTrackingParticle;
+import io.github.poorgrammerdev.ominouswither.internal.CoroutineManager;
 
 /**
  * Abstract class for custom dangerous (blue) skulls

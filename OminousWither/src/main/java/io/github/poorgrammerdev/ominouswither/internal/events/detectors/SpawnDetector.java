@@ -1,4 +1,4 @@
-package io.github.poorgrammerdev.ominouswither.backend;
+package io.github.poorgrammerdev.ominouswither.internal.events.detectors;
 
 import java.util.HashSet;
 import java.util.UUID;
@@ -15,16 +15,18 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import io.github.poorgrammerdev.ominouswither.OminousWither;
 import io.github.poorgrammerdev.ominouswither.Utils;
+import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherSpawnEvent;
 
 /**
- * Detects if the Wither Boss was spawned by a Player with Bad Omen.
- * If so, fires an OminousWitherSpawnEvent.
+ * <p>Detects if the Wither Boss was spawned by a Player with Bad Omen</p>
+ * <p>Fires event {@link OminousWitherSpawnEvent}</p>
  * @author Thomas Tran
  */
 public class SpawnDetector implements Listener {
@@ -95,8 +97,15 @@ public class SpawnDetector implements Listener {
         final PotionEffect badOmen = spawner.getPotionEffect(PotionEffectType.BAD_OMEN);
         if (badOmen == null) return;
 
+        final int level = Utils.clamp(badOmen.getAmplifier() + 1, 0, MAX_LEVEL);
+
+        //Tag Wither entity as Ominous and other important info
+        wither.getPersistentDataContainer().set(this.plugin.getOminousWitherKey(), PersistentDataType.BOOLEAN, true);
+        wither.getPersistentDataContainer().set(this.plugin.getLevelKey(), PersistentDataType.INTEGER, level);
+        wither.getPersistentDataContainer().set(this.plugin.getSpawnerKey(), PersistentDataType.STRING, spawner.getUniqueId().toString());
+
         // *** Fire Ominous Wither Spawn event ***
-        this.plugin.getServer().getPluginManager().callEvent(new OminousWitherSpawnEvent(wither, spawner, Utils.clamp(badOmen.getAmplifier() + 1, 0, MAX_LEVEL)));
+        this.plugin.getServer().getPluginManager().callEvent(new OminousWitherSpawnEvent(wither, spawner, level));
     }
 
     /**

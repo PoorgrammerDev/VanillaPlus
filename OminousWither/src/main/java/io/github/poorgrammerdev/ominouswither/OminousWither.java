@@ -6,14 +6,15 @@ import org.bukkit.entity.Wither;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import io.github.poorgrammerdev.ominouswither.backend.ActivationDetector;
-import io.github.poorgrammerdev.ominouswither.backend.CoroutineManager;
-import io.github.poorgrammerdev.ominouswither.backend.LoadDetector;
-import io.github.poorgrammerdev.ominouswither.backend.SpawnDetector;
+import io.github.poorgrammerdev.ominouswither.internal.events.detectors.ActivationDetector;
+import io.github.poorgrammerdev.ominouswither.internal.events.detectors.LoadDetector;
+import io.github.poorgrammerdev.ominouswither.internal.events.detectors.PhaseChangeDetector;
+import io.github.poorgrammerdev.ominouswither.internal.events.detectors.SpawnDetector;
 import io.github.poorgrammerdev.ominouswither.customskulls.AbstractSkullHandler;
 import io.github.poorgrammerdev.ominouswither.customskulls.ApocalypseSkull;
 import io.github.poorgrammerdev.ominouswither.customskulls.ExplosiveSkull;
 import io.github.poorgrammerdev.ominouswither.customskulls.GravitySkull;
+import io.github.poorgrammerdev.ominouswither.internal.CoroutineManager;
 
 public final class OminousWither extends JavaPlugin {
     private final NamespacedKey ominousWitherKey = new NamespacedKey(this, "is_ominous");
@@ -22,12 +23,14 @@ public final class OminousWither extends JavaPlugin {
     private final NamespacedKey spawnerKey = new NamespacedKey(this, "spawner");
     private final NamespacedKey minionKey = new NamespacedKey(this, "is_minion");
     private final NamespacedKey skullTypeKey = new NamespacedKey(this, "skull_type");
+    private final NamespacedKey secondPhaseKey = new NamespacedKey(this, "is_in_second_phase");
 
 
     @Override
     public void onEnable() {
         this.getServer().getPluginManager().registerEvents(new SpawnDetector(this), this);
         this.getServer().getPluginManager().registerEvents(new ActivationDetector(this), this);
+        this.getServer().getPluginManager().registerEvents(new PhaseChangeDetector(this), this);
         
         final LoadDetector loadDetector = new LoadDetector(this);
         this.getServer().getPluginManager().registerEvents(loadDetector, this);
@@ -54,6 +57,10 @@ public final class OminousWither extends JavaPlugin {
 
         this.getServer().getPluginManager().registerEvents(new DangerousSkullManager(this, skullHandlers), this);
 
+        this.getServer().getPluginManager().registerEvents(new SecondPhaseBuffs(this), this);
+        this.getServer().getPluginManager().registerEvents(new PreventPhaseRevert(this), this);
+
+
 
         CoroutineManager.getInstance().runTaskTimer(this, 0L, 1L);
         loadDetector.onPluginEnable();
@@ -71,6 +78,16 @@ public final class OminousWither extends JavaPlugin {
      */
     public boolean isMinion(final Entity entity) {
         return entity.getPersistentDataContainer().getOrDefault(this.minionKey, PersistentDataType.BOOLEAN, false);
+    }
+
+    /**
+     * Gets the level of an Ominous Wither
+     * @param wither Ominous Wither
+     * @param defaultValue value to return if missing
+     * @return Ominous Wither level or defaultValue if missing
+     */
+    public int getLevel(final Wither wither, final int defaultValue) {
+        return wither.getPersistentDataContainer().getOrDefault(this.levelKey, PersistentDataType.INTEGER, defaultValue);
     }
 
     /**
@@ -114,6 +131,13 @@ public final class OminousWither extends JavaPlugin {
      */
     public NamespacedKey getSkullTypeKey() {
         return this.skullTypeKey;
+    }
+
+    /**
+     * PDC Key (boolean) to determine if an Ominous Wither has entered the Second Phase
+     */
+    public NamespacedKey getSecondPhaseKey() {
+        return this.secondPhaseKey;
     }
 
 }

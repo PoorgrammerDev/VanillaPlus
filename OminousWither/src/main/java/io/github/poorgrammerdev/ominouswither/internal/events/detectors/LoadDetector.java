@@ -1,4 +1,4 @@
-package io.github.poorgrammerdev.ominouswither.backend;
+package io.github.poorgrammerdev.ominouswither.internal.events.detectors;
 
 import org.bukkit.World;
 import org.bukkit.entity.Wither;
@@ -8,9 +8,12 @@ import org.bukkit.event.world.EntitiesLoadEvent;
 import org.bukkit.event.world.EntitiesUnloadEvent;
 
 import io.github.poorgrammerdev.ominouswither.OminousWither;
+import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherLoadEvent;
+import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherUnloadEvent;
 
 /**
- * Handles firing events for Ominous Withers loading and unloading
+ * <p>Handles firing events for Ominous Withers loading and unloading</p>
+ * <p>Fires events {@link OminousWitherLoadEvent} and {@link OminousWitherUnloadEvent}</p>
  * @author Thomas Tran
  */
 public class LoadDetector implements Listener {

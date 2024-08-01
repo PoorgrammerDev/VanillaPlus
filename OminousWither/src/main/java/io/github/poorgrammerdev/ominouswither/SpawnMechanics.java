@@ -27,14 +27,14 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
-import io.github.poorgrammerdev.ominouswither.backend.CoroutineManager;
-import io.github.poorgrammerdev.ominouswither.backend.ICoroutine;
-import io.github.poorgrammerdev.ominouswither.backend.OminousWitherActivateEvent;
-import io.github.poorgrammerdev.ominouswither.backend.OminousWitherLoadEvent;
-import io.github.poorgrammerdev.ominouswither.backend.OminousWitherSpawnEvent;
-import io.github.poorgrammerdev.ominouswither.backend.OminousWitherUnloadEvent;
+import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherActivateEvent;
+import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherLoadEvent;
+import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherSpawnEvent;
+import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherUnloadEvent;
 import io.github.poorgrammerdev.ominouswither.coroutines.PassableLocationFinder;
 import io.github.poorgrammerdev.ominouswither.coroutines.PersistentParticle;
+import io.github.poorgrammerdev.ominouswither.internal.CoroutineManager;
+import io.github.poorgrammerdev.ominouswither.internal.ICoroutine;
 import net.md_5.bungee.api.ChatColor;
 
 /**
@@ -66,9 +66,6 @@ public class SpawnMechanics implements Listener {
         player.removePotionEffect(PotionEffectType.BAD_OMEN);
 
         //Modify the Wither's stats
-        wither.getPersistentDataContainer().set(this.plugin.getOminousWitherKey(), PersistentDataType.BOOLEAN, true);
-        wither.getPersistentDataContainer().set(this.plugin.getLevelKey(), PersistentDataType.INTEGER, level);
-        wither.getPersistentDataContainer().set(this.plugin.getSpawnerKey(), PersistentDataType.STRING, player.getUniqueId().toString());
         wither.setCustomName(ChatColor.DARK_PURPLE + "Ominous Wither");
         wither.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(calculateMaxHealth(world.getDifficulty()));
         wither.getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS).setBaseValue(level * 2);
@@ -109,9 +106,6 @@ public class SpawnMechanics implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onFullySpawned(final OminousWitherActivateEvent event) {
         final Wither wither = event.getWither();
-
-        //Mark as fully spawned
-        wither.getPersistentDataContainer().set(this.plugin.getIsFullySpawnedKey(), PersistentDataType.BOOLEAN, true);
 
         //Set Wither's health to its Max Health
         //(This could not be done at spawn-time since it seems to be hardcoded in MC to set to 300 at explode-time)
@@ -213,7 +207,7 @@ public class SpawnMechanics implements Listener {
         if (world == null) return;
 
         //Get level of Wither; if invalid then failed -> clear locations and return
-        final int level = wither.getPersistentDataContainer().getOrDefault(this.plugin.getLevelKey(), PersistentDataType.INTEGER, -1);
+        final int level = this.plugin.getLevel(wither, -1);
         if (level == -1) return;
 
         //Get player who spawned Wither

@@ -47,7 +47,7 @@ public class DangerousSkullManager implements Listener {
         if (!this.plugin.isOminous(wither)) return;
 
         //Get level -- if nonexistent for whatever reason assume lowest
-        final int level = wither.getPersistentDataContainer().getOrDefault(this.plugin.getLevelKey(), PersistentDataType.INTEGER, 1);
+        final int level = this.plugin.getLevel(wither, 1);
 
         //Apply random chance
         if (random.nextDouble() > this.getDangerousChance(level)) return;

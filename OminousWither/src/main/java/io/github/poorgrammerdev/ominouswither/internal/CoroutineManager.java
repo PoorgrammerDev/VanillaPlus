@@ -1,8 +1,12 @@
-package io.github.poorgrammerdev.ominouswither.backend;
+package io.github.poorgrammerdev.ominouswither.internal;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 
 /**
  * Manages running operations of tasks that have been split across multiple ticks with a CPU time limitation
@@ -24,6 +28,9 @@ public class CoroutineManager extends BukkitRunnable {
 
     @Override
     public void run() {
+        //TODO: FIXME: remove
+        Bukkit.getServer().getOnlinePlayers().forEach((p) -> {p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacy(scheduledTasks.size() + ""));});
+
         long stopTime = System.nanoTime() + MAX_NANOS_PER_TICK;
         
         // Maximum tasks that can be run in one tick is one entire run through of the queue

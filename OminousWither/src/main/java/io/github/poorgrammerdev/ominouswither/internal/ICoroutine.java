@@ -1,4 +1,4 @@
-package io.github.poorgrammerdev.ominouswither.backend;
+package io.github.poorgrammerdev.ominouswither.internal;
 
 /**
  * Represents a task that's split across multiple ticks 
