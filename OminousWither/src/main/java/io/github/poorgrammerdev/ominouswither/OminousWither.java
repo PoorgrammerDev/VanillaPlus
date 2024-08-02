@@ -10,10 +10,21 @@ import io.github.poorgrammerdev.ominouswither.internal.events.detectors.Activati
 import io.github.poorgrammerdev.ominouswither.internal.events.detectors.LoadDetector;
 import io.github.poorgrammerdev.ominouswither.internal.events.detectors.PhaseChangeDetector;
 import io.github.poorgrammerdev.ominouswither.internal.events.detectors.SpawnDetector;
-import io.github.poorgrammerdev.ominouswither.customskulls.AbstractSkullHandler;
-import io.github.poorgrammerdev.ominouswither.customskulls.ApocalypseSkull;
-import io.github.poorgrammerdev.ominouswither.customskulls.ExplosiveSkull;
-import io.github.poorgrammerdev.ominouswither.customskulls.GravitySkull;
+import io.github.poorgrammerdev.ominouswither.mechanics.ApocalypseHorsemen;
+import io.github.poorgrammerdev.ominouswither.mechanics.DangerousSkullManager;
+import io.github.poorgrammerdev.ominouswither.mechanics.ExplosionResistance;
+import io.github.poorgrammerdev.ominouswither.mechanics.FlightSpeed;
+import io.github.poorgrammerdev.ominouswither.mechanics.OminousAura;
+import io.github.poorgrammerdev.ominouswither.mechanics.PreventExploits;
+import io.github.poorgrammerdev.ominouswither.mechanics.PreventFriendlyFire;
+import io.github.poorgrammerdev.ominouswither.mechanics.PreventPhaseRevert;
+import io.github.poorgrammerdev.ominouswither.mechanics.SecondPhaseBuffs;
+import io.github.poorgrammerdev.ominouswither.mechanics.SkullBarrage;
+import io.github.poorgrammerdev.ominouswither.mechanics.SpawnMechanics;
+import io.github.poorgrammerdev.ominouswither.mechanics.customskulls.AbstractSkullHandler;
+import io.github.poorgrammerdev.ominouswither.mechanics.customskulls.ApocalypseSkull;
+import io.github.poorgrammerdev.ominouswither.mechanics.customskulls.ExplosiveSkull;
+import io.github.poorgrammerdev.ominouswither.mechanics.customskulls.GravitySkull;
 import io.github.poorgrammerdev.ominouswither.internal.CoroutineManager;
 
 public final class OminousWither extends JavaPlugin {

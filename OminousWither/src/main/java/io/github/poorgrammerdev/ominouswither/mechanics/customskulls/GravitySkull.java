@@ -1,4 +1,4 @@
-package io.github.poorgrammerdev.ominouswither.customskulls;
+package io.github.poorgrammerdev.ominouswither.mechanics.customskulls;
 
 import org.bukkit.Color;
 import org.bukkit.GameMode;
@@ -15,8 +15,8 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.util.Vector;
 
 import io.github.poorgrammerdev.ominouswither.OminousWither;
-import io.github.poorgrammerdev.ominouswither.ParticleInfo;
-import io.github.poorgrammerdev.ominouswither.Utils;
+import io.github.poorgrammerdev.ominouswither.utils.ParticleInfo;
+import io.github.poorgrammerdev.ominouswither.utils.Utils;
 
 /**
  * Skull that pulls in enemies 

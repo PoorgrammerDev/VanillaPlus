@@ -5,8 +5,8 @@ import java.util.function.BooleanSupplier;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-import io.github.poorgrammerdev.ominouswither.ParticleInfo;
 import io.github.poorgrammerdev.ominouswither.internal.ICoroutine;
+import io.github.poorgrammerdev.ominouswither.utils.ParticleInfo;
 
 /**
  * Continuously displays a STATIONARY particle at a location until a stop condition is reached

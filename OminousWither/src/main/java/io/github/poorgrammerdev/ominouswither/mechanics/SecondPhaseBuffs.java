@@ -1,9 +1,11 @@
-package io.github.poorgrammerdev.ominouswither;
+package io.github.poorgrammerdev.ominouswither.mechanics;
 
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Wither;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+
+import io.github.poorgrammerdev.ominouswither.OminousWither;
 import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherPhaseChangeBeginEvent;
 
 /**

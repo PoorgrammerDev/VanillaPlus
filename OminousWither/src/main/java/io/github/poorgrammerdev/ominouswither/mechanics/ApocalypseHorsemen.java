@@ -1,4 +1,4 @@
-package io.github.poorgrammerdev.ominouswither;
+package io.github.poorgrammerdev.ominouswither.mechanics;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,6 +26,8 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import io.github.poorgrammerdev.ominouswither.OminousWither;
 
 /**
  * Handles the Skeletons and Skeleton Horses spawned by the Apocalpyse Skull

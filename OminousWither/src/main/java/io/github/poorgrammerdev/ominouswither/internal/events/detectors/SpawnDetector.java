@@ -21,8 +21,8 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import io.github.poorgrammerdev.ominouswither.OminousWither;
-import io.github.poorgrammerdev.ominouswither.Utils;
 import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherSpawnEvent;
+import io.github.poorgrammerdev.ominouswither.utils.Utils;
 
 /**
  * <p>Detects if the Wither Boss was spawned by a Player with Bad Omen</p>

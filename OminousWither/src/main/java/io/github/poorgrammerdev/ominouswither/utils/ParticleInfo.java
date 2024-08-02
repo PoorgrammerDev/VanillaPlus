@@ -1,4 +1,4 @@
-package io.github.poorgrammerdev.ominouswither;
+package io.github.poorgrammerdev.ominouswither.utils;
 
 import org.bukkit.Particle;
 

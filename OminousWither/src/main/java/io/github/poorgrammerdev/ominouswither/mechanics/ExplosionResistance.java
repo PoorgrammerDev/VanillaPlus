@@ -1,4 +1,4 @@
-package io.github.poorgrammerdev.ominouswither;
+package io.github.poorgrammerdev.ominouswither.mechanics;
 
 import org.bukkit.damage.DamageSource;
 import org.bukkit.entity.Entity;
@@ -8,6 +8,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+
+import io.github.poorgrammerdev.ominouswither.OminousWither;
 
 /**
  * The Ominous Wither is resistant to explosion damage

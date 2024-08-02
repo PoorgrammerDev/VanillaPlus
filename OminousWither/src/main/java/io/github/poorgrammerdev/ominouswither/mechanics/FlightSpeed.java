@@ -1,4 +1,4 @@
-package io.github.poorgrammerdev.ominouswither;
+package io.github.poorgrammerdev.ominouswither.mechanics;
 
 import java.util.UUID;
 
@@ -12,6 +12,7 @@ import org.bukkit.persistence.PersistentDataType;
 
 import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherActivateEvent;
 import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherLoadEvent;
+import io.github.poorgrammerdev.ominouswither.OminousWither;
 import io.github.poorgrammerdev.ominouswither.internal.CoroutineManager;
 import io.github.poorgrammerdev.ominouswither.internal.ICoroutine;
 

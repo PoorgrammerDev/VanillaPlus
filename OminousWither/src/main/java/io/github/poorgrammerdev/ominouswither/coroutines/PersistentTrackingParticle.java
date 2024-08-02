@@ -8,8 +8,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.util.Vector;
 
 import io.github.poorgrammerdev.ominouswither.OminousWither;
-import io.github.poorgrammerdev.ominouswither.ParticleInfo;
 import io.github.poorgrammerdev.ominouswither.internal.ICoroutine;
+import io.github.poorgrammerdev.ominouswither.utils.ParticleInfo;
 
 /**
  * Continuously displays a TRACKING particle following an entity until a stop condition is reached

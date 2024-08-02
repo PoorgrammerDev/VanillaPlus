@@ -1,4 +1,4 @@
-package io.github.poorgrammerdev.ominouswither.customskulls;
+package io.github.poorgrammerdev.ominouswither.mechanics.customskulls;
 
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -9,7 +9,7 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.projectiles.ProjectileSource;
 
 import io.github.poorgrammerdev.ominouswither.OminousWither;
-import io.github.poorgrammerdev.ominouswither.ParticleInfo;
+import io.github.poorgrammerdev.ominouswither.utils.ParticleInfo;
 
 /**
  * Skull that creates a large fiery explosion on hit

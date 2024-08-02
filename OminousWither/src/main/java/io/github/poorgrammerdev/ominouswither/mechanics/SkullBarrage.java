@@ -1,4 +1,4 @@
-package io.github.poorgrammerdev.ominouswither;
+package io.github.poorgrammerdev.ominouswither.mechanics;
 
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
@@ -16,6 +16,8 @@ import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
+
+import io.github.poorgrammerdev.ominouswither.OminousWither;
 
 public class SkullBarrage implements Listener {
     private final OminousWither plugin;

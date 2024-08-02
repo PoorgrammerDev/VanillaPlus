@@ -1,4 +1,4 @@
-package io.github.poorgrammerdev.ominouswither.customskulls;
+package io.github.poorgrammerdev.ominouswither.mechanics.customskulls;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Wither;
@@ -7,9 +7,9 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.util.Vector;
 
 import io.github.poorgrammerdev.ominouswither.OminousWither;
-import io.github.poorgrammerdev.ominouswither.ParticleInfo;
 import io.github.poorgrammerdev.ominouswither.coroutines.PersistentTrackingParticle;
 import io.github.poorgrammerdev.ominouswither.internal.CoroutineManager;
+import io.github.poorgrammerdev.ominouswither.utils.ParticleInfo;
 
 /**
  * Abstract class for custom dangerous (blue) skulls

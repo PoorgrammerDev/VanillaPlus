@@ -1,4 +1,4 @@
-package io.github.poorgrammerdev.ominouswither;
+package io.github.poorgrammerdev.ominouswither.mechanics;
 
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Wither;
@@ -6,6 +6,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.persistence.PersistentDataType;
+
+import io.github.poorgrammerdev.ominouswither.OminousWither;
 
 /**
  * Prevents an Ominous Wither from regenerating above half health

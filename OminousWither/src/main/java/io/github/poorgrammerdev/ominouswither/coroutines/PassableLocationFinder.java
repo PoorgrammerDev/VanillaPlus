@@ -9,8 +9,8 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.Vector;
 
-import io.github.poorgrammerdev.ominouswither.Utils;
 import io.github.poorgrammerdev.ominouswither.internal.ICoroutine;
+import io.github.poorgrammerdev.ominouswither.utils.Utils;
 
 /**
  * Finds passable locations using the Coroutine system (is non-blocking and not instant)

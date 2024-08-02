@@ -1,4 +1,4 @@
-package io.github.poorgrammerdev.ominouswither;
+package io.github.poorgrammerdev.ominouswither.mechanics;
 
 import org.bukkit.damage.DamageSource;
 import org.bukkit.entity.Entity;
@@ -7,6 +7,8 @@ import org.bukkit.entity.Wither;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+
+import io.github.poorgrammerdev.ominouswither.OminousWither;
 
 /**
  * Prevents the Wither from killing its own minions

@@ -1,4 +1,4 @@
-package io.github.poorgrammerdev.ominouswither.customskulls;
+package io.github.poorgrammerdev.ominouswither.mechanics.customskulls;
 
 import java.util.UUID;
 import org.bukkit.Location;
@@ -13,11 +13,11 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.util.Vector;
 
-import io.github.poorgrammerdev.ominouswither.ApocalypseHorsemen;
 import io.github.poorgrammerdev.ominouswither.OminousWither;
-import io.github.poorgrammerdev.ominouswither.ParticleInfo;
 import io.github.poorgrammerdev.ominouswither.coroutines.PassableLocationFinder;
 import io.github.poorgrammerdev.ominouswither.internal.CoroutineManager;
+import io.github.poorgrammerdev.ominouswither.mechanics.ApocalypseHorsemen;
+import io.github.poorgrammerdev.ominouswither.utils.ParticleInfo;
 
 /**
  * Skull that spawns Skeleton Horsemen on hit

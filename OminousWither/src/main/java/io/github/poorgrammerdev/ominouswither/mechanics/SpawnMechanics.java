@@ -1,4 +1,4 @@
-package io.github.poorgrammerdev.ominouswither;
+package io.github.poorgrammerdev.ominouswither.mechanics;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +31,8 @@ import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherActiv
 import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherLoadEvent;
 import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherSpawnEvent;
 import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherUnloadEvent;
+import io.github.poorgrammerdev.ominouswither.utils.ParticleInfo;
+import io.github.poorgrammerdev.ominouswither.OminousWither;
 import io.github.poorgrammerdev.ominouswither.coroutines.PassableLocationFinder;
 import io.github.poorgrammerdev.ominouswither.coroutines.PersistentParticle;
 import io.github.poorgrammerdev.ominouswither.internal.CoroutineManager;

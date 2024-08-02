@@ -1,4 +1,4 @@
-package io.github.poorgrammerdev.ominouswither;
+package io.github.poorgrammerdev.ominouswither.mechanics;
 
 import java.util.Random;
 
@@ -12,7 +12,8 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.persistence.PersistentDataType;
 
-import io.github.poorgrammerdev.ominouswither.customskulls.AbstractSkullHandler;
+import io.github.poorgrammerdev.ominouswither.OminousWither;
+import io.github.poorgrammerdev.ominouswither.mechanics.customskulls.AbstractSkullHandler;
 
 /**
  * Manages custom dangerous (blue) skulls being shot from the Wither

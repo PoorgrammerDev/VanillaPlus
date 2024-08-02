@@ -16,11 +16,11 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import io.github.poorgrammerdev.ominouswither.OminousWither;
-import io.github.poorgrammerdev.ominouswither.ParticleInfo;
-import io.github.poorgrammerdev.ominouswither.Utils;
 import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherLoadEvent;
 import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherPhaseChangeBeginEvent;
 import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherPhaseChangeEndEvent;
+import io.github.poorgrammerdev.ominouswither.utils.ParticleInfo;
+import io.github.poorgrammerdev.ominouswither.utils.Utils;
 
 /**
  * <p>Detects when the Wither reaches half health and enters Second Phase</p>

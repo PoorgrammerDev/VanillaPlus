@@ -1,4 +1,4 @@
-package io.github.poorgrammerdev.ominouswither.customskulls;
+package io.github.poorgrammerdev.ominouswither.mechanics.customskulls;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -15,7 +15,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import io.github.poorgrammerdev.ominouswither.OminousWither;
-import io.github.poorgrammerdev.ominouswither.ParticleInfo;
+import io.github.poorgrammerdev.ominouswither.utils.ParticleInfo;
 
 /**
  * Represents any dangerous skull that homes in on its target and follows it
