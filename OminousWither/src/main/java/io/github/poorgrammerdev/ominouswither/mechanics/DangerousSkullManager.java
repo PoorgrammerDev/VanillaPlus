@@ -32,7 +32,7 @@ public class DangerousSkullManager implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
-    public void onSkullLaunch(final ProjectileLaunchEvent event) {
+    private void onSkullLaunch(final ProjectileLaunchEvent event) {
         //Must be a skull
         if (event.getEntityType() != EntityType.WITHER_SKULL || !(event.getEntity() instanceof WitherSkull)) return;
 
@@ -62,7 +62,7 @@ public class DangerousSkullManager implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
-    public void onSkullHit(final ProjectileHitEvent event) {
+    private void onSkullHit(final ProjectileHitEvent event) {
         if (!(event.getEntity() instanceof WitherSkull) || !(event.getEntity().getShooter() instanceof Wither)) return;
         
         final WitherSkull skull = (WitherSkull) event.getEntity();

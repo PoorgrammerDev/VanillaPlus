@@ -33,10 +33,10 @@ import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherSpawn
 import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherUnloadEvent;
 import io.github.poorgrammerdev.ominouswither.utils.ParticleInfo;
 import io.github.poorgrammerdev.ominouswither.OminousWither;
+import io.github.poorgrammerdev.ominouswither.coroutines.EntityStare;
 import io.github.poorgrammerdev.ominouswither.coroutines.PassableLocationFinder;
 import io.github.poorgrammerdev.ominouswither.coroutines.PersistentParticle;
 import io.github.poorgrammerdev.ominouswither.internal.CoroutineManager;
-import io.github.poorgrammerdev.ominouswither.internal.ICoroutine;
 import net.md_5.bungee.api.ChatColor;
 
 /**
@@ -58,7 +58,7 @@ public class SpawnMechanics implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onOminousSpawn(final OminousWitherSpawnEvent event) {
+    private void onOminousSpawn(final OminousWitherSpawnEvent event) {
         final Wither wither = event.getWither();
         final Player player = event.getSpawner();
         final World world = wither.getWorld();
@@ -81,13 +81,13 @@ public class SpawnMechanics implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onUnload(final OminousWitherUnloadEvent event) {
+    private void onUnload(final OminousWitherUnloadEvent event) {
         //Remove wither from map
         this.spawnMinionMap.remove(event.getWither().getUniqueId());
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onLoad(final OminousWitherLoadEvent event) {
+    private void onLoad(final OminousWitherLoadEvent event) {
         //Check if the Wither has not been fully spawned in yet
         final Wither wither = event.getWither();
         if (wither == null || wither.getPersistentDataContainer().getOrDefault(this.plugin.getIsFullySpawnedKey(), PersistentDataType.BOOLEAN, false)) return;
@@ -106,7 +106,7 @@ public class SpawnMechanics implements Listener {
      * Handles events that occur when the Ominous Wither is fully spawned
      */
     @EventHandler(ignoreCancelled = true)
-    public void onFullySpawned(final OminousWitherActivateEvent event) {
+    private void onFullySpawned(final OminousWitherActivateEvent event) {
         final Wither wither = event.getWither();
 
         //Set Wither's health to its Max Health
@@ -123,27 +123,14 @@ public class SpawnMechanics implements Listener {
      * @param playerID UUID of the player that spawned the wither
      */
     private void performOminousStare(final UUID witherID, final UUID playerID) {
-        CoroutineManager.getInstance().enqueue(new ICoroutine() {
-
-            @Override
-            public void tick() {
-                final Entity wither = plugin.getServer().getEntity(witherID);
-                if (wither == null) return;
-
-                final Player spawner = plugin.getServer().getPlayer(playerID);
-                if (spawner == null) return;
-
-                final Vector direction = spawner.getLocation().subtract(wither.getLocation()).toVector();
-                wither.teleport(wither.getLocation().setDirection(direction));
-            }
-
-            @Override
-            public boolean shouldBeRescheduled() {
-                //Stop staring when the wither is fully spawned in
-                return spawnMinionMap.containsKey(witherID);
-            }
-            
-        });
+        CoroutineManager.getInstance().enqueue(new EntityStare(
+            this.plugin,
+            witherID,
+            playerID,
+            true,
+            (starerID, targetID) -> {return true;},
+            (starerID, targetID) -> {return !spawnMinionMap.containsKey(starerID);}            
+        ));
     }
 
     /**

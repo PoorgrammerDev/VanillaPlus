@@ -28,7 +28,7 @@ public class ActivationDetector implements Listener {
      * @param event
      */
     @EventHandler(ignoreCancelled = true)
-    public void onFullySpawned(final EntityExplodeEvent event) {
+    private void onFullySpawned(final EntityExplodeEvent event) {
         //Must be a Wither
         if (event.getEntityType() != EntityType.WITHER || !(event.getEntity() instanceof Wither)) return;
 

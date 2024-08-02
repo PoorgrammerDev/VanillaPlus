@@ -57,7 +57,7 @@ public class SpawnDetector implements Listener {
      * Using lowest priority for this event to run first (I find this a bit confusing but this description is from the Spigot API documentation)
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    public void onSkullPlace(final BlockPlaceEvent event) {
+    private void onSkullPlace(final BlockPlaceEvent event) {
         final Block block = event.getBlockPlaced();
         if (block == null || (
             block.getType() != Material.WITHER_SKELETON_SKULL &&
@@ -69,7 +69,6 @@ public class SpawnDetector implements Listener {
         this.candidateSpawners.add(playerID);
 
         //Remove the next game tick
-        // TODO: is it wasteful to make a new anonymous class every call?
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -82,7 +81,7 @@ public class SpawnDetector implements Listener {
      * Checks if candidate spawner has Bad Omen and fires an event if so
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
-    public void onWitherSpawn(final CreatureSpawnEvent event) {
+    private void onWitherSpawn(final CreatureSpawnEvent event) {
         // Spawned entity must be a Wither
         if (event.getSpawnReason() != SpawnReason.BUILD_WITHER || event.getEntityType() != EntityType.WITHER) return;
         if (!(event.getEntity() instanceof Wither)) return;

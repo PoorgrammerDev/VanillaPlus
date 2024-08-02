@@ -26,7 +26,7 @@ public class PreventFriendlyFire implements Listener {
      * Cancels any damage done to a Minion caused by an Ominous Wither (or each other)
      */
     @EventHandler(ignoreCancelled = true)
-    public void onDamage(final EntityDamageByEntityEvent event) {
+    private void onDamage(final EntityDamageByEntityEvent event) {
         final DamageSource source = event.getDamageSource();
         if (source == null) return;
 

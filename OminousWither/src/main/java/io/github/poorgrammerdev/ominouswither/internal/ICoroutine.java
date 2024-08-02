@@ -7,12 +7,8 @@ package io.github.poorgrammerdev.ominouswither.internal;
 public interface ICoroutine {
     /**
      * Run a single operation of the task
+     * @return if the task should be rescheduled (put back into the queue) to run again next tick
      */
-    public void tick();
+    public boolean tick();
 
-    /**
-     * Should this task be put back into the queue?
-     * @return if the task should be rescheduled to run again next tick
-     */
-    public boolean shouldBeRescheduled();
 }

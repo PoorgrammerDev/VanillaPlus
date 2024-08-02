@@ -37,27 +37,18 @@ public class PersistentTrackingParticle implements ICoroutine {
     }
 
     @Override
-    public void tick() {
+    public boolean tick() {
+        //If lost entity, do not reschedule
         final Entity entity = this.plugin.getServer().getEntity(this.entityID);
-        if (entity == null) return;
+        if (entity == null) return false;
 
+        //Spawn particle at entity's current location
         final World world = entity.getWorld();
         if (world != null) {
-            world.spawnParticle(
-                particleInfo.particle,
-                entity.getLocation().add(this.offset),
-                particleInfo.count,
-                particleInfo.offsetX,
-                particleInfo.offsetY,
-                particleInfo.offsetZ,
-                particleInfo.extra,
-                particleInfo.data
-            );
+            particleInfo.spawnParticle(world, entity.getLocation().add(this.offset));
         }
-    }
 
-    @Override
-    public boolean shouldBeRescheduled() {
+        //If stop condition trips, do not reschedule
         return !this.stopCondition.test(this.entityID);
     }
     

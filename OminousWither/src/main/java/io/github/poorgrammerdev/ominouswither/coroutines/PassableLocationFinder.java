@@ -59,7 +59,7 @@ public class PassableLocationFinder implements ICoroutine {
     }
 
     @Override
-    public void tick() {
+    public boolean tick() {
         //Get a random location within range
         Location location = this.center.clone().add(
             random.nextDouble(this.maxSpread.getX() * 2) - this.maxSpread.getX(),
@@ -71,7 +71,7 @@ public class PassableLocationFinder implements ICoroutine {
         if (!Utils.isLocationPassable(location, this.heightSpaceRequired)) {
             //Failed
             this.consecutiveFails++;
-            return;    
+            return this.shouldBeRescheduled();
         }
 
         //If requires ground, tries to get a valid ground location by iterating downwards
@@ -80,7 +80,7 @@ public class PassableLocationFinder implements ICoroutine {
             if (ground == null) {
                 //Failed
                 this.consecutiveFails++;
-                return;
+                return this.shouldBeRescheduled();
             }
     
             //Found a location in range that's on the ground, use that instead
@@ -91,17 +91,17 @@ public class PassableLocationFinder implements ICoroutine {
         if (this.requireSight && !Utils.hasLineOfSight(this.center, location)) {
             //Failed
             this.consecutiveFails++;
-            return; 
+            return this.shouldBeRescheduled();
         }
 
         //Location is valid
         this.successCount++;
         this.consecutiveFails = 0;
         if (this.consumer != null) this.consumer.accept(location);
+        return this.shouldBeRescheduled();
     }
 
-    @Override
-    public boolean shouldBeRescheduled() {
+    private boolean shouldBeRescheduled() {
         // Check if stop condition reached (pass or fail) and run callback
         if (successCount >= amount || this.consecutiveFails >= MAX_CONSECUTIVE_FAILS) {
             if (this.callback != null) this.callback.accept(this.successCount);

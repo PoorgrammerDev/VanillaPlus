@@ -43,10 +43,10 @@ public class CoroutineManager extends BukkitRunnable {
             if (System.nanoTime() > stopTime || ((coroutine = this.scheduledTasks.poll()) == null)) return;
 
             //Run task operation
-            coroutine.tick();
+            final boolean shouldBeRescheduled = coroutine.tick();
 
             //Schedule again if necessary
-            if (coroutine.shouldBeRescheduled()) {
+            if (shouldBeRescheduled) {
                 enqueue(coroutine);
             }
         }

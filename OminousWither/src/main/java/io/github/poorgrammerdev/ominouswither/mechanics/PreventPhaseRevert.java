@@ -21,7 +21,7 @@ public class PreventPhaseRevert implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onHeal(final EntityRegainHealthEvent event) {
+    private void onHeal(final EntityRegainHealthEvent event) {
         if (!(event.getEntity() instanceof Wither)) return;
 
         //Only affects Ominous Withers

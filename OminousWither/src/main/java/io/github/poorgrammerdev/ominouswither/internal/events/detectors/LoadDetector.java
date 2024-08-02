@@ -27,7 +27,7 @@ public class LoadDetector implements Listener {
      * Handles Ominous Withers being loaded
      */
     @EventHandler(ignoreCancelled = true)
-    public void onLoad(EntitiesLoadEvent event) {
+    private void onLoad(EntitiesLoadEvent event) {
         event.getEntities()
             .stream()
             .filter((entity) -> (entity instanceof Wither))
@@ -40,7 +40,7 @@ public class LoadDetector implements Listener {
      * Handles Ominous Withers going into unloaded chunks
      */
     @EventHandler(ignoreCancelled = true)
-    public void onUnload(EntitiesUnloadEvent event) {
+    private void onUnload(EntitiesUnloadEvent event) {
         event.getEntities()
             .stream()
             .filter((entity) -> (entity instanceof Wither))
@@ -50,8 +50,9 @@ public class LoadDetector implements Listener {
     }
 
     /**
-     * In case the plugin was /reloaded (which is currently the only known case that would require this)
-     * existing already-loaded Ominous Withers must be recognized by the system
+     * <p>In case the plugin was /reloaded, call the load event for existing already-loaded Ominous Withers</p>
+     * <p>The /reload case is the currently only known case that requires this method</p>
+     * <p><strong>IMPORTANT</strong>: Call this method AFTER all listeners have been registered in the onEnable!</p>
      */
     public void onPluginEnable() {
         for (final World world : this.plugin.getServer().getWorlds()) {

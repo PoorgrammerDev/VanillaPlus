@@ -20,7 +20,7 @@ import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherLoadE
 import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherPhaseChangeBeginEvent;
 import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherPhaseChangeEndEvent;
 import io.github.poorgrammerdev.ominouswither.utils.ParticleInfo;
-import io.github.poorgrammerdev.ominouswither.utils.Utils;
+import io.github.poorgrammerdev.ominouswither.utils.ParticleShapes;
 
 /**
  * <p>Detects when the Wither reaches half health and enters Second Phase</p>
@@ -41,7 +41,7 @@ public class PhaseChangeDetector implements Listener {
      * Checks health going below half to fire event
      */
     @EventHandler(ignoreCancelled = true)
-    public void onDamage(final EntityDamageEvent event) {
+    private void onDamage(final EntityDamageEvent event) {
         if (!(event.getEntity() instanceof Wither)) return;
         
         //Must be an Ominous Wither
@@ -145,7 +145,7 @@ public class PhaseChangeDetector implements Listener {
                     //TODO: EXTREMELY CURSED VALUE; IS THERE A BETTER WAY?
                     final int index = Math.min((-ticks + 2*BUFF_ANIMATION_TICKS) / (BUFF_ANIMATION_TICKS / 4), 3);
                     for (int i = 0; i <= index ; i++) {
-                        Utils.particleLine(new ParticleInfo(Particle.SOUL_FIRE_FLAME, 3, 0.125, 0.125, 0.125, 0, null), wither.getEyeLocation().subtract(0,1,0), wither.getLocation().add(this.anchorDirections[i]), 100.0);
+                        ParticleShapes.line(new ParticleInfo(Particle.SOUL_FIRE_FLAME, 3, 0.125, 0.125, 0.125, 0, null), wither.getEyeLocation().subtract(0,1,0), wither.getLocation().add(this.anchorDirections[i]), 100.0);
                     }
 
                     if (ticks <= (BUFF_ANIMATION_TICKS + 5)) {

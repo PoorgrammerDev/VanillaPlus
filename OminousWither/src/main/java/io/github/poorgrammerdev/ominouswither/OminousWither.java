@@ -3,6 +3,7 @@ package io.github.poorgrammerdev.ominouswither;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Wither;
+import org.bukkit.event.Listener;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -39,43 +40,44 @@ public final class OminousWither extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        this.getServer().getPluginManager().registerEvents(new SpawnDetector(this), this);
-        this.getServer().getPluginManager().registerEvents(new ActivationDetector(this), this);
-        this.getServer().getPluginManager().registerEvents(new PhaseChangeDetector(this), this);
-        
+        //Construct required objects
+        //These objects have some sort of dependency aside from just registering, so must be made first and tracked
         final LoadDetector loadDetector = new LoadDetector(this);
-        this.getServer().getPluginManager().registerEvents(loadDetector, this);
-
-        this.getServer().getPluginManager().registerEvents(new PreventFriendlyFire(this), this);
-        this.getServer().getPluginManager().registerEvents(new PreventExploits(this), this);
-        this.getServer().getPluginManager().registerEvents(new ExplosionResistance(this), this);
-        this.getServer().getPluginManager().registerEvents(new FlightSpeed(this), this);
-        this.getServer().getPluginManager().registerEvents(new OminousAura(this), this);
-
-        this.getServer().getPluginManager().registerEvents(new SpawnMechanics(this), this);
-
-        this.getServer().getPluginManager().registerEvents(new SkullBarrage(this), this);
-
         final ApocalypseHorsemen apocalypseHorsemen = new ApocalypseHorsemen(this);
-        this.getServer().getPluginManager().registerEvents(apocalypseHorsemen, this);
 
-        final ApocalypseSkull apocalypseSkull = new ApocalypseSkull(this, apocalypseHorsemen);
+        //This isn't necessarily required to be up here, just moved for readability
         final AbstractSkullHandler[] skullHandlers = {
             new ExplosiveSkull(this),
-            apocalypseSkull,
+            new ApocalypseSkull(this, apocalypseHorsemen),
             new GravitySkull(this),
         };
 
-        this.getServer().getPluginManager().registerEvents(new DangerousSkullManager(this, skullHandlers), this);
+        //Register all events
+        this.registerEvents(
+            new SpawnDetector(this),
+            new ActivationDetector(this),
+            new PhaseChangeDetector(this),
+            loadDetector,
+            new PreventFriendlyFire(this),
+            new PreventExploits(this),
+            new ExplosionResistance(this),
+            new FlightSpeed(this),
+            new OminousAura(this),
+            new SpawnMechanics(this),
+            new SkullBarrage(this),
+            apocalypseHorsemen,
+            new DangerousSkullManager(this, skullHandlers),
+            new SecondPhaseBuffs(this),
+            new PreventPhaseRevert(this)
+        );
 
-        this.getServer().getPluginManager().registerEvents(new SecondPhaseBuffs(this), this);
-        this.getServer().getPluginManager().registerEvents(new PreventPhaseRevert(this), this);
-
-
-
+        //Begin Coroutine Manager
         CoroutineManager.getInstance().runTaskTimer(this, 0L, 1L);
+
+        //Call load event for all existing loaded OminousWithers
         loadDetector.onPluginEnable();
     }
+
 
     /**
      * Checks if a Wither is Ominous or not
@@ -151,4 +153,13 @@ public final class OminousWither extends JavaPlugin {
         return this.secondPhaseKey;
     }
 
+    /**
+     * Registers all listeners
+     * @param listeners all listeners to register
+     */
+    private void registerEvents(Listener... listeners) {
+        for (final Listener listener : listeners) {
+            this.getServer().getPluginManager().registerEvents(listener, this);
+        }
+    }
 }

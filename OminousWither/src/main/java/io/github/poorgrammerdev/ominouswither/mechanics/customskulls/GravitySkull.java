@@ -16,7 +16,7 @@ import org.bukkit.util.Vector;
 
 import io.github.poorgrammerdev.ominouswither.OminousWither;
 import io.github.poorgrammerdev.ominouswither.utils.ParticleInfo;
-import io.github.poorgrammerdev.ominouswither.utils.Utils;
+import io.github.poorgrammerdev.ominouswither.utils.ParticleShapes;
 
 /**
  * Skull that pulls in enemies 
@@ -36,7 +36,7 @@ public class GravitySkull extends AbstractSkullHandler {
         if (world == null) return;
 
         //Particle circle
-        Utils.particleCircle(this.trackingParticle, RADIUS, 20, location);
+        ParticleShapes.circle(this.trackingParticle, RADIUS, 20, location);
 
         //Gravity mechanic
         world.getNearbyEntities(location, RADIUS, RADIUS, RADIUS, (entity) -> (!Tag.ENTITY_TYPES_WITHER_FRIENDS.isTagged(entity.getType())))
@@ -72,7 +72,7 @@ public class GravitySkull extends AbstractSkullHandler {
                 }
 
                 //Draw a particle line to the pulled entity
-                Utils.particleLine(this.trackingParticle, location, entity.getLocation().add(0, 0.5, 0), 10);
+                ParticleShapes.line(this.trackingParticle, location, entity.getLocation().add(0, 0.5, 0), 10);
 
                 //Gravity effect
                 final double forceLimit = Math.pow(entity.getLocation().distanceSquared(location), 0.125);

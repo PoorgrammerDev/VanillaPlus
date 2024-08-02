@@ -20,7 +20,7 @@ public class SecondPhaseBuffs implements Listener {
     } 
 
     @EventHandler(ignoreCancelled = true)
-    public void onPhaseChange(final OminousWitherPhaseChangeBeginEvent event) {
+    private void onPhaseChange(final OminousWitherPhaseChangeBeginEvent event) {
         final Wither wither = event.getWither();
         final int level = this.plugin.getLevel(wither, 1);
         

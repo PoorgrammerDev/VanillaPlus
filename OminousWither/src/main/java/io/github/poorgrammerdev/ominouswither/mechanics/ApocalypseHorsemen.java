@@ -51,7 +51,7 @@ public class ApocalypseHorsemen implements Listener {
      * If the skeleton dies, then the horse flashes out of existence
      */
     @EventHandler(ignoreCancelled = true)
-    public void onSkeletonDeath(final EntityDeathEvent event) {
+    private void onSkeletonDeath(final EntityDeathEvent event) {
         //Must be a skeleton horseman
         if (event.getEntityType() != EntityType.SKELETON) return;
 
@@ -75,7 +75,7 @@ public class ApocalypseHorsemen implements Listener {
      * Horsemen get removed when unloaded
      */
     @EventHandler(ignoreCancelled = true)
-    public void onUnload(final EntitiesUnloadEvent event) {
+    private void onUnload(final EntitiesUnloadEvent event) {
         event.getEntities()
             .stream()
             .filter((entity) -> (this.plugin.isMinion(entity) && (entity.getType() == EntityType.SKELETON || entity.getType() == EntityType.SKELETON_HORSE)))
@@ -91,7 +91,7 @@ public class ApocalypseHorsemen implements Listener {
      * The only known edge case is if the difficulty is set to Peaceful after the skull is launched
      */
     @EventHandler(ignoreCancelled = true)
-    public void onRide(final VehicleEnterEvent event) {
+    private void onRide(final VehicleEnterEvent event) {
         //Both entities must exist; vehicle must be a skeleton horse
         if (event.getEntered() == null || !(event.getVehicle() instanceof SkeletonHorse)) return;
 

@@ -30,24 +30,14 @@ public class PersistentParticle implements ICoroutine {
     }
 
     @Override
-    public void tick() {
+    public boolean tick() {
+        //Spawn particle at location
         final World world = location.getWorld();
         if (world != null) {
-            world.spawnParticle(
-                particleInfo.particle,
-                location,
-                particleInfo.count,
-                particleInfo.offsetX,
-                particleInfo.offsetY,
-                particleInfo.offsetZ,
-                particleInfo.extra,
-                particleInfo.data
-            );
+            particleInfo.spawnParticle(world, location);
         }
-    }
 
-    @Override
-    public boolean shouldBeRescheduled() {
+        //If stop condition trips, do not reschedule
         return !this.stopCondition.getAsBoolean();
     }
     

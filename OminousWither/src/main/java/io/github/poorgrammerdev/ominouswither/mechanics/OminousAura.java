@@ -30,7 +30,7 @@ public class OminousAura implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onOminousSpawn(final OminousWitherSpawnEvent event) {
+    private void onOminousSpawn(final OminousWitherSpawnEvent event) {
         this.runPhaseOneParticle(event.getWither().getUniqueId());
     }
 
@@ -40,7 +40,7 @@ public class OminousAura implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onLoad(final OminousWitherLoadEvent event) {
+    private void onLoad(final OminousWitherLoadEvent event) {
         //If second phase began already, run second phase particle
         final Wither wither = event.getWither();
         if (wither.getPersistentDataContainer().getOrDefault(this.plugin.getSecondPhaseKey(), PersistentDataType.BOOLEAN, false)) {

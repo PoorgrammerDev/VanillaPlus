@@ -1,6 +1,8 @@
 package io.github.poorgrammerdev.ominouswither.utils;
 
+import org.bukkit.Location;
 import org.bukkit.Particle;
+import org.bukkit.World;
 
 /**
  * Dataclass/struct for holding a particle and info pertaining to its spawning
@@ -27,5 +29,23 @@ public class ParticleInfo {
             this.data = data;
         }
         else throw new IllegalArgumentException();
+    }
+
+    /**
+     * Convenience method for spawning this particle somewhere
+     * @param world world to spawn in
+     * @param location location to spawn at
+     */
+    public void spawnParticle(final World world, final Location location) {
+        world.spawnParticle(
+            this.particle,
+            location,
+            this.count,
+            this.offsetX,
+            this.offsetY,
+            this.offsetZ,
+            this.extra,
+            this.data
+        );
     }
 }

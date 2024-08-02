@@ -25,7 +25,7 @@ public class ExplosionResistance implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onExplode(final EntityDamageEvent event) {
+    private void onExplode(final EntityDamageEvent event) {
         //Must be an explosion
         final DamageCause cause = event.getCause();
         if (cause != DamageCause.BLOCK_EXPLOSION && cause != DamageCause.ENTITY_EXPLOSION) return;
