@@ -25,10 +25,10 @@ public class ParticleInfo {
         this.offsetZ = offsetZ;
         this.extra = extra;
 
-        if (data == null || data.getClass().equals(particle.getDataType())) {
+        if (data == null || particle.getDataType().isInstance(data)) {
             this.data = data;
         }
-        else throw new IllegalArgumentException();
+        else throw new IllegalArgumentException("Unexpected type for particle data");
     }
 
     /**

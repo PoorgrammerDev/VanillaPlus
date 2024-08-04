@@ -1,7 +1,6 @@
 package io.github.poorgrammerdev.ominouswither.mechanics.customskulls;
 
 import org.bukkit.Color;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -17,6 +16,7 @@ import org.bukkit.util.Vector;
 import io.github.poorgrammerdev.ominouswither.OminousWither;
 import io.github.poorgrammerdev.ominouswither.utils.ParticleInfo;
 import io.github.poorgrammerdev.ominouswither.utils.ParticleShapes;
+import io.github.poorgrammerdev.ominouswither.utils.Utils;
 
 /**
  * Skull that pulls in enemies 
@@ -53,6 +53,9 @@ public class GravitySkull extends AbstractSkullHandler {
                 //Cannot affect other wither skulls
                 !(entity instanceof WitherSkull) &&
 
+                //If player -> must be targetable
+                (!(entity instanceof Player) || (Utils.isTargetable((Player) entity))) &&
+
                 //Must be in radius
                 location.distanceSquared(entity.getLocation()) <= (RADIUS * RADIUS)
             ))
@@ -63,9 +66,6 @@ public class GravitySkull extends AbstractSkullHandler {
                 //Special case for players
                 if (entity instanceof Player) {
                     final Player player = (Player) entity;
-
-                    //Do not affect creative or spectator players
-                    if (player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR) return;
 
                     //Play SFX only to affected players
                     player.playSound(player.getLocation(), Sound.BLOCK_CONDUIT_DEACTIVATE, SoundCategory.HOSTILE, 3, 1);

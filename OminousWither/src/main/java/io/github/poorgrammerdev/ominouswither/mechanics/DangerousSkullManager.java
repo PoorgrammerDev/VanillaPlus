@@ -74,7 +74,6 @@ public class DangerousSkullManager implements Listener {
 
         //NOTE: This is an O(N) operation but at this small value of N a hashmap probably isn't worth the overhead
         for (final AbstractSkullHandler handler : this.skullHandlers) {
-            //TODO: is this amt. of string comparison slow? should this be switched to an integer-based system instead?
             if (handler.getSkullTag().equals(tag)) {
                 handler.onHit(event, wither);
                 return;

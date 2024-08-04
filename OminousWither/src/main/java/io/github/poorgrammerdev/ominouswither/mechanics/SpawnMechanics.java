@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Difficulty;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -32,6 +31,7 @@ import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherLoadE
 import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherSpawnEvent;
 import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherUnloadEvent;
 import io.github.poorgrammerdev.ominouswither.utils.ParticleInfo;
+import io.github.poorgrammerdev.ominouswither.utils.Utils;
 import io.github.poorgrammerdev.ominouswither.OminousWither;
 import io.github.poorgrammerdev.ominouswither.coroutines.EntityStare;
 import io.github.poorgrammerdev.ominouswither.coroutines.PassableLocationFinder;
@@ -144,7 +144,7 @@ public class SpawnMechanics implements Listener {
 
         //Find locations to summon minions
         CoroutineManager.getInstance().enqueue(new PassableLocationFinder(
-            wither.getLocation(),
+            wither.getEyeLocation(),
             new Vector(10, 10, 10),
             3,
             true,
@@ -233,8 +233,8 @@ public class SpawnMechanics implements Listener {
             minion.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.375);
             minion.getAttribute(Attribute.GENERIC_FOLLOW_RANGE).setBaseValue(128);
 
-            //Targets the spawner if in survival or adventure mode
-            if (spawner.getGameMode() == GameMode.SURVIVAL || spawner.getGameMode() == GameMode.ADVENTURE) {
+            //Targets the spawner if possible
+            if (Utils.isTargetable(spawner)) {
                 minion.setTarget(spawner);
             }
 

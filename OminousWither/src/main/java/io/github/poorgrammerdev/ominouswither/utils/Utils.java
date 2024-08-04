@@ -1,10 +1,12 @@
 package io.github.poorgrammerdev.ominouswither.utils;
 
 import org.bukkit.FluidCollisionMode;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Player;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
@@ -48,7 +50,6 @@ public final class Utils {
         //From the docs: the method above returns "the ray trace hit result, or null if there is no hit"
         if (result == null) return true;
 
-        //TODO: is the null check correct behavior?
         final Block block = result.getHitBlock();
         return (block == null || block.isPassable());
     }
@@ -88,6 +89,13 @@ public final class Utils {
         final Vector scaledB = vecB.clone().multiply(t);
 
         return scaledA.add(scaledB);
+    }
+
+    /**
+     * Checks if a player is in survival or adventure mode
+     */
+    public static boolean isTargetable(final Player player) {
+        return (player.getGameMode() == GameMode.SURVIVAL || player.getGameMode() == GameMode.ADVENTURE);
     }
 
 }

@@ -21,7 +21,7 @@ public class PassableLocationFinder implements ICoroutine {
 
     private final Random random;
 
-    private final Location center; //TODO: is it unsafe to hold this reference?
+    private final Location center;
     private final Vector maxSpread;
     private final int heightSpaceRequired;
     private final boolean requireSight; 

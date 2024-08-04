@@ -3,7 +3,6 @@ package io.github.poorgrammerdev.ominouswither.mechanics.customskulls;
 import java.util.Arrays;
 import java.util.Random;
 
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Tag;
 import org.bukkit.entity.LivingEntity;
@@ -16,6 +15,7 @@ import org.bukkit.util.Vector;
 
 import io.github.poorgrammerdev.ominouswither.OminousWither;
 import io.github.poorgrammerdev.ominouswither.utils.ParticleInfo;
+import io.github.poorgrammerdev.ominouswither.utils.Utils;
 
 /**
  * Represents any dangerous skull that homes in on its target and follows it
@@ -160,8 +160,8 @@ public abstract class AbstractHomingSkull extends AbstractSkullHandler {
                 !this.plugin.isMinion(entity) &&
                 !(entity instanceof Wither) &&
 
-                //If it is a player, it must be in survival or adventure mode
-                (!(entity instanceof Player) || (((Player) entity).getGameMode() == GameMode.SURVIVAL || (((Player) entity).getGameMode() == GameMode.ADVENTURE)))
+                //If it is a player, it must be targetable
+                (!(entity instanceof Player) || (Utils.isTargetable((Player) entity)))
             ))
             .map((entity) -> ((LivingEntity) entity))
             

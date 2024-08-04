@@ -12,6 +12,10 @@ import org.bukkit.util.Vector;
 import io.github.poorgrammerdev.ominouswither.OminousWither;
 import io.github.poorgrammerdev.ominouswither.internal.ICoroutine;
 
+/**
+ * Makes an entity stare at another entity
+ * @author Thomas Tran
+ */
 public class EntityStare implements ICoroutine {
     private final OminousWither plugin;
     private final UUID starerID;
