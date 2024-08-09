@@ -3,10 +3,8 @@ package io.github.poorgrammerdev.ominouswither.mechanics.customskulls;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Wither;
 import org.bukkit.event.entity.ProjectileHitEvent;
-import org.bukkit.projectiles.ProjectileSource;
 
 import io.github.poorgrammerdev.ominouswither.OminousWither;
 import io.github.poorgrammerdev.ominouswither.utils.ParticleInfo;
@@ -18,19 +16,18 @@ import io.github.poorgrammerdev.ominouswither.utils.ParticleInfo;
 public class ExplosiveSkull extends AbstractSkullHandler {
 
     public ExplosiveSkull(OminousWither plugin) {
-        super(plugin, 10.0D, new ParticleInfo(Particle.FLAME, 1, 0, 0, 0, 0, null));
+        super(plugin, "explosive_skull_speed", new ParticleInfo(Particle.FLAME, 1, 0, 0, 0, 0, null));
     }
 
     @Override
     public void onHit(final ProjectileHitEvent event, final Wither wither) {
-        final Location location = event.getEntity().getLocation();
+        final Location location = wither.getLocation();
         final World world = location.getWorld();
         if (world == null) return;
 
-        final ProjectileSource source = event.getEntity().getShooter();
-        final Entity shooter = (source instanceof Entity) ? (Entity) source : null;
-
-        world.createExplosion(location, 3.75f, true, true, shooter);
+        // Boom
+        final float explosionPower = (float) this.plugin.getBossSettingsManager().getSetting("explosive_skull_power", wither);
+        world.createExplosion(location, explosionPower, true, true, wither);
     }
 
     @Override

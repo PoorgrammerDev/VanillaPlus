@@ -16,21 +16,19 @@ import io.github.poorgrammerdev.ominouswither.utils.ParticleInfo;
  * @author Thomas Tran
  */
 public abstract class AbstractSkullHandler {
-    protected static final int SKULL_LIFESPAN = 500;
-
-    protected final double initialSpeed;
+    protected final String initialSpeedSetting;
     protected final ParticleInfo trackingParticle;
     protected final OminousWither plugin;
 
     /**
      * Constructor
      * @param plugin instance of main plugin class
-     * @param initialSpeed speed multiplier on launch
+     * @param initialSpeedSetting setting to look up for speed multiplier on launch
      * @param trackingParticle particle trail of skull
      */
-    public AbstractSkullHandler(final OminousWither plugin, final double initialSpeed, final ParticleInfo trackingParticle) {
+    public AbstractSkullHandler(final OminousWither plugin, final String initialSpeedSetting, final ParticleInfo trackingParticle) {
         this.plugin = plugin;
-        this.initialSpeed = initialSpeed;
+        this.initialSpeedSetting = initialSpeedSetting;
         this.trackingParticle = trackingParticle;
     }
 
@@ -41,10 +39,14 @@ public abstract class AbstractSkullHandler {
      * 
      * Base method sets velocity, lifespan, and tracking particle
      * @param skull fired projectile
+     * @param shooter Ominous Wither that fired the skull
      */
-    public void onSpawn(final WitherSkull skull) {
+    public void onSpawn(final WitherSkull skull, final Wither shooter) {
+        final double lifespan = this.plugin.getBossSettingsManager().getSetting("dangerous_skull_lifespan", shooter);
+
         //Velocity
-        skull.setVelocity(skull.getVelocity().multiply(this.initialSpeed));
+        final double initialSpeed = this.plugin.getBossSettingsManager().getSetting(this.initialSpeedSetting, shooter);
+        skull.setVelocity(skull.getVelocity().multiply(initialSpeed));
 
         //Tracking particle
         CoroutineManager.getInstance().enqueue(new PersistentTrackingParticle(
@@ -56,7 +58,7 @@ public abstract class AbstractSkullHandler {
 
                 //Remove the skull after its lifespan has finished
                 //TODO: is this a bad place to do it? it is technically inside of a particle check
-                if (entity.getTicksLived() >= SKULL_LIFESPAN) {
+                if (entity.getTicksLived() >= lifespan) {
                     entity.remove();
                     return true;
                 }

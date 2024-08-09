@@ -17,9 +17,6 @@ import io.github.poorgrammerdev.ominouswither.internal.CoroutineManager;
 import io.github.poorgrammerdev.ominouswither.internal.ICoroutine;
 
 public class FlightSpeed implements Listener {
-    private static final int DISTANCE_THRESHOLD = 15;
-    private static final int DISTANCE_THRESHOLD_SQUARED = DISTANCE_THRESHOLD * DISTANCE_THRESHOLD;
-
     private final OminousWither plugin;
 
     public FlightSpeed(final OminousWither plugin) {
@@ -73,6 +70,12 @@ public class FlightSpeed implements Listener {
         if (level < 3) return;
 
         final UUID witherID = wither.getUniqueId();
+        final double distanceThresholdSq = Math.pow(this.plugin.getBossSettingsManager().getSetting("flight_acceleration_distance_threshold", wither), 2);
+        final double flightSpeed = this.plugin.getBossSettingsManager().getSetting("flight_speed", wither);
+
+        //If flight speed is not positive then this Wither does not have the flight system enabled
+        if (flightSpeed <= 0.0D) return;
+
         CoroutineManager.getInstance().enqueue(new ICoroutine() {
             @Override
             public boolean tick() {
@@ -88,27 +91,13 @@ public class FlightSpeed implements Listener {
                 final Location witherLoc = wither.getLocation();
                 final Location targetLoc = target.getLocation();
                 final double distance = witherLoc.distanceSquared(targetLoc);
-                if (distance < DISTANCE_THRESHOLD_SQUARED) return true;
+                if (distance < distanceThresholdSq) return true;
 
                 //Sets velocity to face towards the target and multiplies it by the Wither's flight speed (determined by level)
-                entity.setVelocity(targetLoc.subtract(witherLoc).toVector().normalize().multiply(getFlightSpeed(level)));
+                entity.setVelocity(targetLoc.subtract(witherLoc).toVector().normalize().multiply(flightSpeed));
                 return true;
             }
 
         });
     }
-
-    private double getFlightSpeed(final int level) {
-        switch (level) {
-            case 3:
-                return 0.75;
-            case 4:
-                return 1.5;
-            case 5:
-                return 10.0;
-            default:
-                return 0.5;
-        }
-    }
-
 }

@@ -24,7 +24,7 @@ import io.github.poorgrammerdev.ominouswither.utils.Utils;
 public abstract class AbstractHomingSkull extends AbstractSkullHandler {
     protected static final double DEACTIVATE_DISTANCE_SQ = 1.0D;
 
-    protected final int homingLifespan;
+    protected final String homingLifespanSetting;
     protected final double searchRange;
     protected final int searchInterval;
     protected final boolean canChangeTarget;
@@ -34,17 +34,17 @@ public abstract class AbstractHomingSkull extends AbstractSkullHandler {
     /**
      * Constructor with target switching options
      * @param plugin instance of main plugin class
-     * @param initialSpeed speed on launch
+     * @param initialSpeedSetting setting to look up for speed multiplier on launch
      * @param trackingParticle skull particle trail
      * @param homingLifespan how long the projectile can continue homing for. set to SKULL_LIFESPAN to have the effect active for the entire lifespan of the skull
      * @param searchRange how far to search for a target
      * @param searchInterval how often to search for a target
      * @param canChangeTarget if the skull can search for a new target after one has already been found
      */
-    public AbstractHomingSkull(OminousWither plugin, double initialSpeed, ParticleInfo trackingParticle, int homingLifespan, double searchRange, int searchInterval, boolean canChangeTarget) {
-        super(plugin, initialSpeed, trackingParticle);
+    public AbstractHomingSkull(OminousWither plugin, String initialSpeedSetting, ParticleInfo trackingParticle, String homingLifespanSetting, double searchRange, int searchInterval, boolean canChangeTarget) {
+        super(plugin, initialSpeedSetting, trackingParticle);
 
-        this.homingLifespan = homingLifespan;
+        this.homingLifespanSetting = homingLifespanSetting;
         this.searchRange = searchRange;
         this.canChangeTarget = canChangeTarget;
         this.searchInterval = searchInterval;
@@ -52,11 +52,12 @@ public abstract class AbstractHomingSkull extends AbstractSkullHandler {
     }
 
     @Override
-    public void onSpawn(WitherSkull skull) {
-        super.onSpawn(skull);
+    public void onSpawn(WitherSkull skull, Wither shooter) {
+        super.onSpawn(skull, shooter);
         
         final LivingEntity initialTarget = this.getInitialTarget(skull);
         final double speed = skull.getVelocity().length();
+        final double homingLifespan = this.plugin.getBossSettingsManager().getSetting(this.homingLifespanSetting, shooter);
 
         new BukkitRunnable() {
             private LivingEntity target = initialTarget;
@@ -65,7 +66,7 @@ public abstract class AbstractHomingSkull extends AbstractSkullHandler {
             @Override
             public void run() {
                 //Skull must be still alive
-                if (skull == null || skull.isDead() || skull.getTicksLived() >= homingLifespan || skull.getTicksLived() >= SKULL_LIFESPAN || !skull.isInWorld()) {
+                if (skull == null || skull.isDead() || skull.getTicksLived() >= homingLifespan || !skull.isInWorld()) {
                     this.cancel();
                     return;
                 }

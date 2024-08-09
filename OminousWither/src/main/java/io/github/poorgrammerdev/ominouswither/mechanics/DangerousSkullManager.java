@@ -47,18 +47,15 @@ public class DangerousSkullManager implements Listener {
         final Wither wither = (Wither) skull.getShooter();
         if (!this.plugin.isOminous(wither)) return;
 
-        //Get level -- if nonexistent for whatever reason assume lowest
-        final int level = this.plugin.getLevel(wither, 1);
-
         //Apply random chance
-        if (random.nextDouble() > this.getDangerousChance(level)) return;
+        if (random.nextDouble() > this.plugin.getBossSettingsManager().getSetting("dangerous_skull_chance_boost", wither)) return;
 
         //Skull is set to charged and custom blue skull effects are handled after
         skull.setCharged(true);
 
         final AbstractSkullHandler handler = this.skullHandlers[random.nextInt(this.skullHandlers.length)];
         skull.getPersistentDataContainer().set(this.plugin.getSkullTypeKey(), PersistentDataType.STRING, handler.getSkullTag());
-        handler.onSpawn(skull);
+        handler.onSpawn(skull, wither);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
@@ -79,16 +76,6 @@ public class DangerousSkullManager implements Listener {
                 return;
             }
         }
-    }
-
-    private double getDangerousChance(final int level) {
-        /*
-         * According to Minecraft Wiki (https://minecraft.wiki/w/Wither) as of July 2024,
-         * the vanilla blue skull rate is 0.1%, which equals 0.001.
-         * The returned probability value is additive to this value, since it only overrides when the skull is not already charged.
-         * Assuming a returned value of 0.05 below, the real rate of a blue skull is now 0.051 or 5.1%
-         */
-        return (level * 0.05D);
     }
 
 }
