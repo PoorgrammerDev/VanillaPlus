@@ -15,6 +15,7 @@ import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherLoadE
 import io.github.poorgrammerdev.ominouswither.OminousWither;
 import io.github.poorgrammerdev.ominouswither.internal.CoroutineManager;
 import io.github.poorgrammerdev.ominouswither.internal.ICoroutine;
+import io.github.poorgrammerdev.ominouswither.internal.config.BossStats;
 
 public class FlightSpeed implements Listener {
     private final OminousWither plugin;
@@ -70,8 +71,8 @@ public class FlightSpeed implements Listener {
         if (level < 3) return;
 
         final UUID witherID = wither.getUniqueId();
-        final double distanceThresholdSq = Math.pow(this.plugin.getBossSettingsManager().getSetting("flight_acceleration_distance_threshold", wither), 2);
-        final double flightSpeed = this.plugin.getBossSettingsManager().getSetting("flight_speed", wither);
+        final double distanceThresholdSq = Math.pow(this.plugin.getBossSettingsManager().getSetting(BossStats.FLIGHT_ACCELERATION_DISTANCE_THRESHOLD, wither), 2);
+        final double flightSpeed = this.plugin.getBossSettingsManager().getSetting(BossStats.FLIGHT_SPEED, wither);
 
         //If flight speed is not positive then this Wither does not have the flight system enabled
         if (flightSpeed <= 0.0D) return;

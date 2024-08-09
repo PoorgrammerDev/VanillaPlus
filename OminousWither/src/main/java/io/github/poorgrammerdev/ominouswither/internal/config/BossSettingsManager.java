@@ -1,17 +1,13 @@
 package io.github.poorgrammerdev.ominouswither.internal.config;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
 import org.bukkit.Difficulty;
 import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Wither;
 
 import io.github.poorgrammerdev.ominouswither.OminousWither;
+import redempt.crunch.functional.EvaluationEnvironment;
 
 /**
  * <p>Handles retrieval of configurable Ominouswither-related stats/settings from the plugin config</p>
@@ -21,10 +17,8 @@ import io.github.poorgrammerdev.ominouswither.OminousWither;
  * @author Thomas Tran
  */
 public class BossSettingsManager {
-    private static final String CONFIG_SECTION = "boss_settings";
-
     private final OminousWither plugin;
-    private final HashMap<String, CachedBossSetting> settingsMap;
+    private final HashMap<BossStats, CachedBossSetting> settingsMap;
 
     public BossSettingsManager(final OminousWither plugin) {
         this.plugin = plugin;
@@ -36,64 +30,35 @@ public class BossSettingsManager {
      * This will clear any values in the map if present
      * @param plugin instance of plugin class
      */
-    @SuppressWarnings("unchecked")
     public void load() {
         // Clear the map if not empty
         if (this.settingsMap.size() > 0) this.settingsMap.clear();
 
-        //Gets all boss settings and their respective rule lists
-        final Map<String, Object> rawMap = this.plugin.getConfig().getConfigurationSection(CONFIG_SECTION).getValues(false);
+        // Perform calculations and populate stat map
+        final EvaluationEnvironment evalEnv = new EvaluationEnvironment();
+        evalEnv.setVariableNames("level", "difficulty");
 
-        for (final Entry<String, Object> entry : rawMap.entrySet()) {
-            //Type check the list object
-            if (!(entry.getValue() instanceof List)) {
-                throw new IllegalArgumentException("Invalid type for boss setting " + entry.getKey() + ", expected List and got " + entry.getValue().getClass());
-            }
+        for (final BossStats stat : BossStats.values()) {
+            final ConfigurationSection entrySection = this.plugin.getConfig().getConfigurationSection(stat.getConfigPath());
+            final BossStatEntry entry = new BossStatEntry(entrySection.getValues(true));
 
-            //Type-check each modifier entry
-            //TODO: see if theres a cleaner and more robust way of doing this
-            final List<?> list = (List<?>) entry.getValue();
-            final List<BossModifier> modifierList = new ArrayList<>(list.size());
-            for (int i = 0; i < list.size(); ++i) {
-                final Object obj = list.get(i);
-
-                //Modifier must be a map
-                if (!(obj instanceof Map)) {
-                    throw new IllegalArgumentException("Invalid type for boss setting " + entry.getKey() + " modifier #" + i + ", expected Map and got " + obj.getClass());
-                }
-
-                //Map key must be a string
-                final Map<?, ?> map = (Map<?, ?>) obj;
-                if (!map.keySet().stream().allMatch(String.class::isInstance)) {
-                    throw new IllegalArgumentException("Invalid type for boss setting " + entry.getKey() + " modifier #" + i + " key, expected String");
-                }
-
-                //Entry must have required fields
-                if (!map.containsKey("type") || !map.containsKey("value")) {
-                    throw new IllegalArgumentException("Missing required field for boss setting " + entry.getKey() + " modifier #" + i + ", needs both \"type\" and \"value\" to function");
-                }
-
-                modifierList.add(new BossModifier((Map<String, Object>) map));
-            }
-
-            //Perform calculations and store in map
-            this.settingsMap.put(entry.getKey(), new CachedBossSetting(modifierList));
+            this.settingsMap.put(stat, new CachedBossSetting(entry, evalEnv));
         }
     }
 
     /**
-     * Gets a cached setting in the map
-     * @param settingName name of setting
+     * Gets a cached stat in the map
+     * @param bossStat the stat to retrieve
      * @param level level of Wither in [1,5] range
      * @param difficulty current difficulty of world
      * 
-     * @return setting value
+     * @return stat value
      * 
-     * @throws IllegalArgumentException if requested setting is not in the map
+     * @throws IllegalArgumentException if requested stat is not in the map
      * @throws ArrayIndexOutOfBoundsException if level is invalid
      */
-    public double getSetting(final String settingName, int level, Difficulty difficulty) throws IllegalArgumentException {
-        final CachedBossSetting setting = this.settingsMap.getOrDefault(settingName, null);
+    public double getSetting(final BossStats bossStat, int level, Difficulty difficulty) throws IllegalArgumentException {
+        final CachedBossSetting setting = this.settingsMap.getOrDefault(bossStat, null);
         if (setting == null) throw new IllegalArgumentException("Setting does not exist in the map");
 
         return setting.getValue(level, difficulty);
@@ -101,7 +66,7 @@ public class BossSettingsManager {
 
     /**
      * Convenience method to get a cached setting in the map without having to manually retrieve level and difficulty
-     * @param settingName name of setting
+     * @param bossStat the stat to retrieve
      * @param wither Ominous Wither entity
      * 
      * @return setting value
@@ -109,7 +74,7 @@ public class BossSettingsManager {
      * @throws IllegalArgumentException if requested setting is not in the map
      * @throws ArrayIndexOutOfBoundsException if stored level is invalid
      */
-    public double getSetting(final String settingName, final Wither wither) throws IllegalArgumentException {
+    public double getSetting(final BossStats bossStat, final Wither wither) throws IllegalArgumentException {
         final World world = wither.getWorld();
 
         //If world is not available for some reason, assume easy difficulty
@@ -118,14 +83,7 @@ public class BossSettingsManager {
         //If level is not availablef or some reason, assume lowest level
         final int level = this.plugin.getLevel(wither, 1);
 
-        return this.getSetting(settingName, level, difficulty);
-    }
-
-    /**
-     * Gets all settings' names
-     */
-    public Set<String> getSettingNames() {
-        return settingsMap.keySet();
+        return this.getSetting(bossStat, level, difficulty);
     }
 
 }

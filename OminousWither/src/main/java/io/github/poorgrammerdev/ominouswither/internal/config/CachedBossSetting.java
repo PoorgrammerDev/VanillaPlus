@@ -1,8 +1,10 @@
 package io.github.poorgrammerdev.ominouswither.internal.config;
 
-import java.util.List;
-
 import org.bukkit.Difficulty;
+
+import redempt.crunch.CompiledExpression;
+import redempt.crunch.Crunch;
+import redempt.crunch.functional.EvaluationEnvironment;
 
 /**
  * Holds the values for a single configurable Boss setting
@@ -11,116 +13,52 @@ import org.bukkit.Difficulty;
 public class CachedBossSetting {
     private static final int TABLE_WIDTH = 5;
 
-    private final MetricDependencyType dependencyType;
+    private boolean isLevelDependent;
+    private boolean isDifficultyDependent;
     private final double[] data;
 
-    //TODO: this whole class is quite messy and probably needs some sort of rewrite/refactor
+    public CachedBossSetting(final BossStatEntry entry, final EvaluationEnvironment evalEnv) {
+        //Determine if the formula depends on the level or difficulty variables
+        this.isLevelDependent = entry.getFormula().contains("level");
+        this.isDifficultyDependent = entry.getFormula().contains("difficulty");
 
-    public CachedBossSetting(final List<BossModifier> modifiers) {
-        boolean isLevelDependent = false;
-        boolean isDifficultyDependent = false;
+        //Create the data array based on that information
+        this.data = new double[this.getDataSize()];
 
-        //Loop through defined rules and update values above
-        for (final BossModifier modifier : modifiers) {
-            if (isLevelDependent && isDifficultyDependent) break;
+        //Compile the given expression, then evaluate and cache results for all possible values of level and difficulty
+        final CompiledExpression expression = Crunch.compileExpression(entry.getFormula(), evalEnv);
+        for (int levelIndex = 0; levelIndex < (this.isLevelDependent ? 5 : 1); ++levelIndex) {
+            for (int difficultyIndex = 0; difficultyIndex < (this.isDifficultyDependent ? 3 : 1); ++difficultyIndex) {
 
-            if (!isLevelDependent && modifier.getType().equals("level")) isLevelDependent = true;
-            if (!isDifficultyDependent && modifier.getType().equals("difficulty")) isDifficultyDependent = true;
+                //Apply manual mappings if present, otherwise transform indices to values {[0,(max-1)] range => [1,max] range}
+                final double level = entry.getLevelMapping() != null ? entry.getLevelMapping()[levelIndex] : levelIndex + 1;
+                final double difficulty = entry.getDifficultyMapping() != null ? entry.getDifficultyMapping()[difficultyIndex] : difficultyIndex + 1;
+
+                this.data[this.getDataIndex(levelIndex, difficultyIndex)] = expression.evaluate(level, difficulty);
+            }
         }
-
-        //Translate booleans to enum
-        if (isLevelDependent && isDifficultyDependent) this.dependencyType = MetricDependencyType.BOTH_LEVEL_AND_DIFFICULTY;
-        else if (isLevelDependent) this.dependencyType = MetricDependencyType.LEVEL_ONLY;
-        else if (isDifficultyDependent) this.dependencyType = MetricDependencyType.DIFFICULTY_ONLY;
-        else this.dependencyType = MetricDependencyType.NONE;
-
-        this.data = new double[this.dependencyType.getDataSize()];
-
-        switch (this.dependencyType) {
-            case BOTH_LEVEL_AND_DIFFICULTY:
-                for (int level = 0; level <= 4; ++level) {
-                    for (int difficulty = 0; difficulty <= 2; ++difficulty) {
-                        this.data[level + (TABLE_WIDTH * difficulty)] = this.calculate(modifiers, level, difficulty);
-                    }
-                }
-                break;
-            case LEVEL_ONLY:
-                for (int level = 0; level <= 4; ++level) {
-                    this.data[level] = this.calculate(modifiers, level, 0);
-                }
-                break;
-            case DIFFICULTY_ONLY:
-                for (int difficulty = 0; difficulty <= 2; ++difficulty) {
-                    this.data[difficulty] = this.calculate(modifiers, 0, difficulty);
-                }
-                break;
-            case NONE:
-                this.data[0] = this.calculate(modifiers, 0, 0);
-                break;
-            default:
-                throw new IllegalStateException("Dependency Type not set or invalid");
-
-        }
-
     }
 
     public double getValue(int level, final Difficulty difficulty) {
-        --level; //Levels in-game are on a [1-5] scale; we need a [0-4] scale for indexing
-        final int difficultyIndex = this.getDifficultyIndex(difficulty);
-
-        switch (this.dependencyType) {
-            case BOTH_LEVEL_AND_DIFFICULTY:
-                return this.data[level + (TABLE_WIDTH * difficultyIndex)];
-            case LEVEL_ONLY:
-                return this.data[level];
-            case DIFFICULTY_ONLY:
-                return this.data[difficultyIndex];
-            case NONE:
-                return this.data[0];
-            default:
-                throw new IllegalStateException("Dependency Type not set or invalid");
-
-        }
-
+        return this.data[this.getDataIndex(level - 1, this.getDifficultyIndex(difficulty))];
     }
 
-    private double calculate(final List<BossModifier> modifiers, final int levelIndex, final int difficultyIndex) {
-        double ret = 0.0D;
-
-        //Level calculations are done in a [1-5] scale but indexing is [0-4] scale, so add 1
-        final int level = levelIndex + 1;
-
-        //Difficulty calculations are done in [1-3] scale but indexing is [0-2] scale, so add 1
-        final int difficulty = difficultyIndex + 1;
-
-        for (final BossModifier modifier : modifiers) {
-            switch (modifier.getType()) {
-                case "level":
-                    ret = this.applyModifier(modifier.getMode(), ret, modifier.getValue(), level);
-                    break;
-                case "difficulty":
-                    ret = this.applyModifier(modifier.getMode(), ret, modifier.getValue(), difficulty);
-                    break;
-                case "base":
-                    ret = this.applyModifier(modifier.getMode(), ret, modifier.getValue(), 1);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Invalid modifier type " + modifier.getType());
-            }
-        }
-
-        return ret;
+    private int getDataSize() {
+        return 1 * (this.isLevelDependent ? 5 : 1) * (this.isDifficultyDependent ? 3 : 1);
     }
 
-    private double applyModifier(final String mode, final double accumulatingValue, final double modifierValue, final int metric) {
-        switch (mode) {
-            case "additive":
-                return accumulatingValue + (modifierValue * metric);
-            case "multiplicative":
-                return accumulatingValue * (modifierValue * metric);
-            default:
-                throw new IllegalArgumentException("Invalid modifier mode " + mode);
+    private int getDataIndex(int levelIndex, int difficultyIndex) {
+        if (this.isLevelDependent && this.isDifficultyDependent) {
+            return (levelIndex + (TABLE_WIDTH * difficultyIndex));
         }
+        else if (this.isLevelDependent) {
+            return levelIndex;
+        }
+        else if (this.isDifficultyDependent) {
+            return difficultyIndex;
+        }
+
+        return 0;
     }
 
     private int getDifficultyIndex(final Difficulty difficulty) {
@@ -140,5 +78,4 @@ public class CachedBossSetting {
             
         }
     }
-
 }

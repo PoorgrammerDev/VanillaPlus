@@ -33,6 +33,7 @@ import org.bukkit.util.Vector;
 import io.github.poorgrammerdev.ominouswither.OminousWither;
 import io.github.poorgrammerdev.ominouswither.coroutines.PassableLocationFinder;
 import io.github.poorgrammerdev.ominouswither.internal.CoroutineManager;
+import io.github.poorgrammerdev.ominouswither.internal.config.BossStats;
 
 /**
  * Handles the Skeletons and Skeleton Horses spawned by the Apocalpyse Skull
@@ -68,9 +69,9 @@ public class ApocalypseHorsemen implements Listener {
             4,
             true,
             true,
-            (int) this.plugin.getBossSettingsManager().getSetting("apocalypse_spawn_amount", wither),
+            (int) this.plugin.getBossSettingsManager().getSetting(BossStats.APOCALYPSE_SPAWN_AMOUNT, wither),
             (location) -> {this.spawnHorseman(groupID, location, target);},
-            (amount) -> {this.activateTimer(groupID, amount, (int) this.plugin.getBossSettingsManager().getSetting("apocalypse_horseman_lifespan", wither));}
+            (amount) -> {this.activateTimer(groupID, amount, (int) this.plugin.getBossSettingsManager().getSetting(BossStats.APOCALYPSE_HORSEMAN_LIFESPAN, wither));}
         ));
     }
 

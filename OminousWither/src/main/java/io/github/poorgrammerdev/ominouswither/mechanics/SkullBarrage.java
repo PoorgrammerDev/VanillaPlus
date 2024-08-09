@@ -19,6 +19,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import io.github.poorgrammerdev.ominouswither.OminousWither;
+import io.github.poorgrammerdev.ominouswither.internal.config.BossStats;
 
 public class SkullBarrage implements Listener {
     private final OminousWither plugin;
@@ -61,7 +62,7 @@ public class SkullBarrage implements Listener {
         final Difficulty difficulty = witherWorld.getDifficulty();
         
         //Velocity buff of black skulls based on level
-        final double speed = this.plugin.getBossSettingsManager().getSetting("normal_skull_speed", level, difficulty);
+        final double speed = this.plugin.getBossSettingsManager().getSetting(BossStats.NORMAL_SKULL_SPEED, level, difficulty);
         final Vector velocity = skull.getVelocity().multiply(speed);
         skull.setVelocity(velocity);
         skull.getPersistentDataContainer().set(this.isInvulnCancelling, PersistentDataType.BOOLEAN, true);
@@ -70,7 +71,7 @@ public class SkullBarrage implements Listener {
         final World world = skull.getWorld();
         final Location location = skull.getLocation();
         final Vector acceleration = skull.getAcceleration();
-        final int amount = (int) this.plugin.getBossSettingsManager().getSetting("skull_barrage_amount", level, difficulty) - 1; //Subtracting one to account for the already shot skull
+        final int amount = (int) this.plugin.getBossSettingsManager().getSetting(BossStats.SKULL_BARRAGE_AMOUNT, level, difficulty) - 1; //Subtracting one to account for the already shot skull
         new BukkitRunnable() {
             private int i = 0;
 

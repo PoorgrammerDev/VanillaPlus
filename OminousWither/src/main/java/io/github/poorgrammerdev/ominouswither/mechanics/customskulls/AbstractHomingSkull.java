@@ -14,6 +14,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import io.github.poorgrammerdev.ominouswither.OminousWither;
+import io.github.poorgrammerdev.ominouswither.internal.config.BossStats;
 import io.github.poorgrammerdev.ominouswither.utils.ParticleInfo;
 import io.github.poorgrammerdev.ominouswither.utils.Utils;
 
@@ -24,7 +25,7 @@ import io.github.poorgrammerdev.ominouswither.utils.Utils;
 public abstract class AbstractHomingSkull extends AbstractSkullHandler {
     protected static final double DEACTIVATE_DISTANCE_SQ = 1.0D;
 
-    protected final String homingLifespanSetting;
+    protected final BossStats homingLifespanSetting;
     protected final double searchRange;
     protected final int searchInterval;
     protected final boolean canChangeTarget;
@@ -41,7 +42,7 @@ public abstract class AbstractHomingSkull extends AbstractSkullHandler {
      * @param searchInterval how often to search for a target
      * @param canChangeTarget if the skull can search for a new target after one has already been found
      */
-    public AbstractHomingSkull(OminousWither plugin, String initialSpeedSetting, ParticleInfo trackingParticle, String homingLifespanSetting, double searchRange, int searchInterval, boolean canChangeTarget) {
+    public AbstractHomingSkull(OminousWither plugin, BossStats initialSpeedSetting, ParticleInfo trackingParticle, BossStats homingLifespanSetting, double searchRange, int searchInterval, boolean canChangeTarget) {
         super(plugin, initialSpeedSetting, trackingParticle);
 
         this.homingLifespanSetting = homingLifespanSetting;

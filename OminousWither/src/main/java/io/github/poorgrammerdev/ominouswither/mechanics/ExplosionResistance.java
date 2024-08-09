@@ -10,6 +10,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import io.github.poorgrammerdev.ominouswither.OminousWither;
+import io.github.poorgrammerdev.ominouswither.internal.config.BossStats;
 
 /**
  * The Ominous Wither is resistant to explosion damage
@@ -37,7 +38,7 @@ public class ExplosionResistance implements Listener {
         if (!this.plugin.isOminous(wither)) return;
 
         //Apply damage reduction
-        final double reduction = this.plugin.getBossSettingsManager().getSetting((this.isCrystal(event.getDamageSource()) ? "end_crystal_resistance" : "general_explosion_resistance"), wither);
+        final double reduction = this.plugin.getBossSettingsManager().getSetting((this.isCrystal(event.getDamageSource()) ? BossStats.END_CRYSTAL_RESISTANCE : BossStats.GENERAL_EXPLOSION_RESISTANCE), wither);
         final double remainingDamage = event.getDamage() * (1.0D - reduction);
         event.setDamage(Math.max(remainingDamage, 0.0D));
     }
