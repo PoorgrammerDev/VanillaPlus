@@ -3,4 +3,4 @@ author: PoorgrammerDev
 description: Adds a stronger variant of the Wither Boss 
 version: '${project.version}'
 main: io.github.poorgrammerdev.ominouswither.OminousWither
-api-version: '1.21'
+api-version: '1.21.1'
