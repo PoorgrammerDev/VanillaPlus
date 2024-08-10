@@ -6,6 +6,7 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.Tag;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -121,13 +122,20 @@ public class FlightAcceleration implements Listener {
                 final LivingEntity target = wither.getTarget();
                 if (target == null || !wither.hasLineOfSight(target)) return true;
 
+                //Must be in the same world
+                final World witherWorld = wither.getWorld();
+                final World targetWorld = target.getWorld();
+                if (witherWorld == null || targetWorld == null || !witherWorld.equals(targetWorld)) return true;
+
                 //Wither cannot be close to its target -- this would likely mess up its AI
                 final Location witherLoc = wither.getLocation();
                 final Location targetLoc = target.getLocation();
-                final double distance = witherLoc.distanceSquared(targetLoc);
-                if (distance < distanceThresholdSq) return true;
+                if (witherLoc.distanceSquared(targetLoc) < distanceThresholdSq) return true;
+                
+                //Target cannot be in the void unless Wither is at the same Y level or below
+                if (targetLoc.getY() < targetWorld.getMinHeight() && witherLoc.getY() > targetLoc.getY()) return true;
 
-                //Sets velocity to face towards the target and multiplies it by the Wither's flight speed (determined by level)
+                //Wither flies at constant speed towards target
                 entity.setVelocity(targetLoc.subtract(witherLoc).toVector().normalize().multiply(flightSpeed));
                 return true;
             }
@@ -156,11 +164,18 @@ public class FlightAcceleration implements Listener {
                 final LivingEntity target = wither.getTarget();
                 if (target == null || !Utils.hasBreakableLineOfSight(wither.getEyeLocation(), target.getEyeLocation())) return true;
 
+                //Must be in the same world
+                final World witherWorld = wither.getWorld();
+                final World targetWorld = target.getWorld();
+                if (witherWorld == null || targetWorld == null || !witherWorld.equals(targetWorld)) return true;
+
                 //Wither cannot be close to its target if there is direct line of sight
                 final Location witherLoc = wither.getLocation();
                 final Location targetLoc = target.getLocation();
-                final double distance = witherLoc.distanceSquared(targetLoc);
-                if (wither.hasLineOfSight(target) && distance < distanceThresholdSq) return true;
+                if (wither.hasLineOfSight(target) && witherLoc.distanceSquared(targetLoc) < distanceThresholdSq) return true;
+
+                //Target cannot be in the void unless Wither is at the same Y level or below
+                if (targetLoc.getY() < targetWorld.getMinHeight() && witherLoc.getY() > targetLoc.getY()) return true;
 
                 //Wither flies at constant speed towards target
                 entity.setVelocity(targetLoc.subtract(witherLoc).toVector().normalize().multiply(flightSpeed));

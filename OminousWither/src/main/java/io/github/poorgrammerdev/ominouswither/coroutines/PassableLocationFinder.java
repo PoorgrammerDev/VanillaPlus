@@ -25,7 +25,7 @@ public class PassableLocationFinder implements ICoroutine {
     private final Vector maxSpread;
     private final int heightSpaceRequired;
     private final boolean requireSight; 
-    private final boolean requireGround;
+    private final boolean requireImmediateGround;
     private final int amount;
     private final Consumer<Location> consumer;
     private final Consumer<Integer> callback;
@@ -39,18 +39,18 @@ public class PassableLocationFinder implements ICoroutine {
      * @param maxSpread The maximum distance from the center in all directions
      * @param heightSpaceRequired how many vertical blocks of air need to be present (e.g. 2 for a Player to fit, 3 for an Enderman) 
      * @param requireSight Does the found location need to be visible from the center?
-     * @param requireGround Does the found location need to be on solid ground?
+     * @param requireImmediateGround Does the found location need to be directly on solid ground? If false, will still search for some solid block between here and the bottom of the world to prevent falling into the Void
      * @param amount How many locations should be found
      * @param consumer What to do with the locations as they're found
      * @param callback Called after task is finished; integer is how many locations were found
      */
     public PassableLocationFinder(Location center, Vector maxSpread, int heightSpaceRequired, boolean requireSight,
-            boolean requireGround, int amount, Consumer<Location> consumer, Consumer<Integer> callback) {
+            boolean requireImmediateGround, int amount, Consumer<Location> consumer, Consumer<Integer> callback) {
         this.center = center;
         this.maxSpread = maxSpread;
         this.heightSpaceRequired = heightSpaceRequired;
         this.requireSight = requireSight;
-        this.requireGround = requireGround;
+        this.requireImmediateGround = requireImmediateGround;
         this.amount = amount;
         this.consumer = consumer;
         this.callback = callback;
@@ -60,12 +60,18 @@ public class PassableLocationFinder implements ICoroutine {
 
     @Override
     public boolean tick() {
+        final World world = this.center.getWorld();
+        if (world == null) return this.shouldBeRescheduled();
+
         //Get a random location within range
         Location location = this.center.clone().add(
             random.nextDouble(this.maxSpread.getX() * 2) - this.maxSpread.getX(),
             random.nextDouble(this.maxSpread.getY() * 2) - this.maxSpread.getY(),
             random.nextDouble(this.maxSpread.getZ() * 2) - this.maxSpread.getZ()
         );
+
+        //Make sure Y coordinate is not out of the world
+        location.setY(Utils.clamp(location.getY(), world.getMinHeight(), world.getMaxHeight()));
 
         //Passable check
         if (!Utils.isLocationPassable(location, this.heightSpaceRequired)) {
@@ -74,9 +80,12 @@ public class PassableLocationFinder implements ICoroutine {
             return this.shouldBeRescheduled();
         }
 
-        //If requires ground, tries to get a valid ground location by iterating downwards
-        if (this.requireGround) {
-            final Location ground = tryGetGround(location);
+        //If requires ground, tries to get a valid ground location that's in range
+        if (this.requireImmediateGround) {
+            //Get the lowest Y coordinate we can search at
+            final int minY = Math.max(this.center.getBlockY() - this.maxSpread.getBlockY(), world.getMinHeight());
+            final Location ground = this.tryGetGround(location, minY);
+
             if (ground == null) {
                 //Failed
                 this.consecutiveFails++;
@@ -85,6 +94,14 @@ public class PassableLocationFinder implements ICoroutine {
     
             //Found a location in range that's on the ground, use that instead
             location = ground;
+        }
+        //Otherwise, at least check if there is *some* ground between here and the void
+        else {
+            if (this.tryGetGround(location, world.getMinHeight()) == null) {
+                //Failed
+                this.consecutiveFails++;
+                return this.shouldBeRescheduled();
+            }
         }
 
         //Line of sight check if required
@@ -117,13 +134,12 @@ public class PassableLocationFinder implements ICoroutine {
      * @param location source location to begin at
      * @return a location on the ground within range if found, or null if not found
      */
-    private Location tryGetGround(Location location) {
+    private Location tryGetGround(Location location, final int minY) {
         //Get world to access the minimum height
         final World world = location.getWorld();
         if (world == null) return null;
 
-        // Get the lowest Y coordinate we can search at, and calculate how many times we can iterate
-        final int minY = Math.max(this.center.getBlockY() - this.maxSpread.getBlockY(), world.getMinHeight());
+        //Calculate how many times we can iterate based on the minimum Y bound
         final int limit = location.getBlockY() - minY;
         
         Block block = location.getBlock();
@@ -137,4 +153,6 @@ public class PassableLocationFinder implements ICoroutine {
         return null;
     }
     
+
+
 }
