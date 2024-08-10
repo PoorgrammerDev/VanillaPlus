@@ -6,6 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 import io.github.poorgrammerdev.ominouswither.OminousWither;
+import io.github.poorgrammerdev.ominouswither.internal.config.BossStat;
 import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherPhaseChangeBeginEvent;
 
 /**
@@ -22,10 +23,9 @@ public class SecondPhaseBuffs implements Listener {
     @EventHandler(ignoreCancelled = true)
     private void onPhaseChange(final OminousWitherPhaseChangeBeginEvent event) {
         final Wither wither = event.getWither();
-        final int level = this.plugin.getLevel(wither, 1);
         
-        wither.getAttribute(Attribute.GENERIC_ARMOR).setBaseValue(7.0 + (level * 3));
-        wither.getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS).setBaseValue(level * 4);
+        wither.getAttribute(Attribute.GENERIC_ARMOR).setBaseValue(this.plugin.getBossStatsManager().getStat(BossStat.SECOND_PHASE_ARMOR, wither));
+        wither.getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS).setBaseValue(this.plugin.getBossStatsManager().getStat(BossStat.SECOND_PHASE_ARMOR_TOUGHNESS, wither));
     }
 
 

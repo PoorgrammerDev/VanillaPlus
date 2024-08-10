@@ -2,3 +2,167 @@
 #    OMINOUS WITHER CONFIG    #
 ###############################
 
+
+############################
+#    BOSS STATS SECTION    #
+############################
+
+# This is a collection of different settings that pertain to the Ominous Wither's stats
+# These values essentially control how strong it is and how strong each of its moves are
+# 
+# Each setting has one required component: `formula`, a string
+#   This is a mathematical expression to determine the value of the stat. 
+#   This expression can use the variables `level` and `difficulty`, but doesn't have to.
+#   - `level` refers to the level of an Ominous Wither, or equivalently: the level of Bad Omen used when spawning the Ominous Wither. This value is in the interval [1,5]
+#   - `difficulty` refers to the Difficulty of the world that the Wither is in. The mapping is {Easy: 1, Normal: 2, Hard: 3}. Peaceful is disregarded since Withers can't exist in that mode.
+#   Not using a variable will simply make the stat constant across all different assignments of that variable.
+#   The system uses boxbeam's Crunch package, found here: https://github.com/boxbeam/Crunch
+# 
+#   Here is an example using a non-existent stat called "wither_power"
+#     wither_power:
+#       formula: "(level * 2) - 1"
+#   The resulting "wither_power" values for Ominous Withers level 1 through 5 would be 1, 3, 5, 7, and 9 respectively
+#   Since difficulty is not included in this formula, it will not affect the stat values at all.
+#   i.e. A level 3 Ominous Wither in Easy difficulty will have the same "wither power" as a level 3 Ominous Wither in Hard difficulty.
+#
+# There are two additional optional components: `level-mapping` and `difficulty-mapping`, both arrays of numbers
+#   If `level-mapping` is present, it must be an array of 5 numeric values.
+#   If `difficulty-mapping` is present, it must be an array of 3 numeric values.
+#   
+#   These mappings replace their respective variable in the formula calculation above.
+#   The variable's assignment will be used as an index (assuming a 1-based indexing system) to this mapping / lookup table
+#   This allows for more custom calculations that can't be easily represented by an expression.
+# 
+#   Here is an example using a non-existent stat called "wither_reach"
+#     wither_reach:
+#       formula: "level + 0.5"
+#       level-mapping: [0, 0, 3, 7, 20]
+#   The resulting "wither_reach" values for Ominous Withers level 1 through 5 would be 0.5, 0.5, 3.5, 7.5, and 20.5 respectively
+
+# [!] WARNING: Adjusting any of these values to extreme amounts may cause server instability or crashes!
+boss_stats:
+  # Speed of normal (black) skulls at launch
+  normal_skull_speed:
+    formula: "(0.2 * level) + 1.0"
+  
+  # Speed of Explosive skull (blue with orange fire trail) at launch
+  explosive_skull_speed:
+    formula: "10.0"
+
+  # Constant homing speed of Apocalypse skull (blue with large white dust trail)
+  apocalypse_skull_speed:
+    formula: "3.0"
+
+  # Speed of Gravity skull (blue with small pink dust trail) at launch
+  gravity_skull_speed:
+    formula: "5.0"
+
+  # Lifespan of all custom blue skulls in ticks
+  dangerous_skull_lifespan:
+    formula: "500"
+
+  # How long the homing effect on Apocalypse Skulls lasts, in ticks
+  # If this amount is less than the `dangerous_skull_lifespan` setting, the skull will simply stop homing and fly straight after this amount of ticks.
+  apocalypse_homing_lifespan:
+    formula: "100"
+
+  # The strength of explosion from the Explosive skull
+  explosive_skull_power:
+    formula: "3.75"
+
+  # Gravity Skull: Radius of circle to search for entities to apply gravity effect to
+  gravity_radius:
+    formula: "6.25"
+
+  # Gravity Skull: Intensity of gravity effect
+  gravity_force_intensity:
+    formula: "2.0"
+
+  # Apocalypse Skull: how many Skeleton horsemen to spawn upon impact
+  apocalypse_spawn_amount:
+    formula: "level"
+
+  # Apocalypse Skull: how long before Skeleton horsemen disappear, in ticks
+  apocalypse_horseman_lifespan:
+    formula: "1000"
+
+  # Probability of a fired skull being a custom blue skull
+  dangerous_skull_chance_boost:
+    formula: "0.05 * level"
+
+  # Ominous Wither's resistance to general explosion damage on a [0.0,1.0] scale; excludes end crystals
+  # 0.0 indicates no extra resistance ; 1.0 indicates full damage immunity
+  general_explosion_resistance:
+    formula: "0.5"
+
+  # Ominous Wither's resistance to end crystal damage on a [0.0,1.0] scale
+  # 0.0 indicates no extra resistance ; 1.0 indicates full damage immunity
+  end_crystal_resistance:
+    formula: "0.8"
+
+  # Minimum distance from target before Ominous Wither activates flight acceleration mechanic
+  # Setting this value too small may affect the Wither's AI
+  flight_acceleration_distance_threshold:
+    formula: "15"
+
+  # Speed of Ominous Wither during flight acceleration
+  # Non-positive numbers (i.e. any negative number or 0) deactivate the flight acceleration system
+  # Please note that with small enough positive values, the Wither can end up slower than vanilla speeds
+  flight_speed:
+    formula: "level"
+    level-mapping: [0.0, 0.0, 0.75, 1.5, 10]
+
+  # When the Ominous Wither suffocates inside a block, it evades this by teleporting away
+  # This mechanic is similar to how Endermen teleport away from arrows
+  # This defines the maximum radius that the Wither can search for a viable location in
+  suffocate_teleport_range:
+    formula: "10"
+
+  # Armor stat of Ominous Wither during the first phase
+  first_phase_armor:
+    formula: "4.0"
+
+  # Armor stat of Ominous Wither during the second phase
+  second_phase_armor:
+    formula: "7.0 + (level * 3.0)"
+
+  # Armor toughness stat of Ominous Wither during the first phase
+  first_phase_armor_toughness:
+    formula: "level * 2"
+
+  # Armor toughness stat of Ominous Wither during the second phase
+  second_phase_armor_toughness:
+    formula: "level * 4"
+
+  # Amount of normal skulls the Ominous Wither will fire in one volley
+  skull_barrage_amount:
+    formula: "level"
+    level-mapping: [3, 3, 3, 5, 5]
+
+  # Max Health of Ominous Wither
+  boss_max_health:
+    formula: "150 * (difficulty + 1)"
+
+  # How many Wither Skeleton minions will spawn along with the Ominous Wither
+  minion_amount:
+    formula: "10"
+
+  # Maximum radius to search for viable Wither Skeleton minion locations during spawn
+  minion_spawn_range:
+    formula: "10"
+
+  # Armor stat of spawned Wither Skeleton minions
+  minion_armor:
+    formula: "level * 2.0"
+
+  # Armor toughness stat of spawned Wither Skeleton minions
+  minion_armor_toughness:
+    formula: "level"
+
+  # Movement speed stat of spawned Wither Skeleton minions
+  minion_movement_speed:
+    formula: "0.375"
+
+  # Sharpness enchantment level of spawned Wither Skeleton minions
+  minion_sword_sharpness:
+    formula: "level"

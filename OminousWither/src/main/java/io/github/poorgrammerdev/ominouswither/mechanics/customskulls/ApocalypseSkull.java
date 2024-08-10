@@ -1,6 +1,5 @@
 package io.github.poorgrammerdev.ominouswither.mechanics.customskulls;
 
-import java.util.UUID;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -11,11 +10,9 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Wither;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
-import org.bukkit.util.Vector;
 
 import io.github.poorgrammerdev.ominouswither.OminousWither;
-import io.github.poorgrammerdev.ominouswither.coroutines.PassableLocationFinder;
-import io.github.poorgrammerdev.ominouswither.internal.CoroutineManager;
+import io.github.poorgrammerdev.ominouswither.internal.config.BossStat;
 import io.github.poorgrammerdev.ominouswither.mechanics.ApocalypseHorsemen;
 import io.github.poorgrammerdev.ominouswither.utils.ParticleInfo;
 
@@ -27,7 +24,7 @@ public class ApocalypseSkull extends AbstractHomingSkull {
     private final ApocalypseHorsemen apocalypseHorsemen;
 
     public ApocalypseSkull(final OminousWither plugin, final ApocalypseHorsemen apocalypseHorsemen) {
-        super(plugin, 3.0D, new ParticleInfo(Particle.CLOUD, 1, 0, 0, 0, 0, null), (SKULL_LIFESPAN / 5), 5, 10, false);
+        super(plugin, BossStat.APOCALYPSE_SKULL_SPEED, new ParticleInfo(Particle.CLOUD, 1, 0, 0, 0, 0, null), BossStat.APOCALYPSE_HOMING_LIFESPAN, 5, 10, false);
 
         this.apocalypseHorsemen = apocalypseHorsemen;
     }
@@ -53,7 +50,6 @@ public class ApocalypseSkull extends AbstractHomingSkull {
             lastDamageCause.getFinalDamage() <= 0.0D
         ) return;
 
-        final int level = this.plugin.getLevel(wither, 1);
         final Location center = event.getEntity().getLocation();
 
         //VFX + SFX
@@ -62,19 +58,9 @@ public class ApocalypseSkull extends AbstractHomingSkull {
             centerWorld.strikeLightningEffect(center);
             centerWorld.playSound(center, Sound.ITEM_TRIDENT_THUNDER, SoundCategory.HOSTILE, 5, 0.875f);
         }
-        
-        //Find viable locations and summon skeleton horsemen
-        final UUID groupID = UUID.randomUUID();
-        CoroutineManager.getInstance().enqueue(new PassableLocationFinder(
-            center,
-            new Vector(5, 5, 5),
-            4,
-            true,
-            true,
-            level,
-            (location) -> {this.apocalypseHorsemen.spawnHorseman(location, groupID);},
-            (amount) -> {this.apocalypseHorsemen.activateTimer(amount, groupID);}
-        ));
+
+        //Start the apocalypse! o_O
+        this.apocalypseHorsemen.startApocalypse(wither, hitEntity);
     }
 
     @Override

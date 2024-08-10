@@ -12,8 +12,10 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.SkeletonHorse;
+import org.bukkit.entity.Wither;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -26,15 +28,18 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 import io.github.poorgrammerdev.ominouswither.OminousWither;
+import io.github.poorgrammerdev.ominouswither.coroutines.PassableLocationFinder;
+import io.github.poorgrammerdev.ominouswither.internal.CoroutineManager;
+import io.github.poorgrammerdev.ominouswither.internal.config.BossStat;
 
 /**
  * Handles the Skeletons and Skeleton Horses spawned by the Apocalpyse Skull
  * @author Thomas Tran
  */
 public class ApocalypseHorsemen implements Listener {
-    private static final int HORSEMAN_LIFESPAN_TICKS = 1000;
     private final OminousWither plugin;
 
     /**
@@ -45,6 +50,29 @@ public class ApocalypseHorsemen implements Listener {
     public ApocalypseHorsemen(OminousWither plugin) {
         this.plugin = plugin;
         this.groupMap = new HashMap<>();
+    }
+
+    /**
+     * <p>Handles everything that happens after an Apocalypse Skull hits its target</p>
+     * <p>Summons time-restricted skeleton horsemen that target the entity</p>
+     * @param wither Wither that fired the Apocalypse Skull
+     * @param target Entity that was hit by the skull
+     */
+    public void startApocalypse(final Wither wither, final LivingEntity target) {
+        final Location center = wither.getLocation();
+
+        //Find viable locations and summon skeleton horsemen
+        final UUID groupID = UUID.randomUUID();
+        CoroutineManager.getInstance().enqueue(new PassableLocationFinder(
+            center,
+            new Vector(5, 5, 5),
+            4,
+            true,
+            true,
+            (int) this.plugin.getBossStatsManager().getStat(BossStat.APOCALYPSE_SPAWN_AMOUNT, wither),
+            (location) -> {this.spawnHorseman(groupID, location, target);},
+            (amount) -> {this.activateTimer(groupID, amount, (int) this.plugin.getBossStatsManager().getStat(BossStat.APOCALYPSE_HORSEMAN_LIFESPAN, wither));}
+        ));
     }
 
     /**
@@ -103,10 +131,11 @@ public class ApocalypseHorsemen implements Listener {
 
     /**
      * Spawns a skeleton horseman at this location
-     * @param location location to spawn at
      * @param groupID UUID denoting the group that this horseman belongs to. all members spawning from the same skull should have the same group id
+     * @param location location to spawn at
+     * @param target entity to target
      */
-    public void spawnHorseman(final Location location, final UUID groupID) {
+    private void spawnHorseman(final UUID groupID, final Location location, final LivingEntity target) {
         final World world = location.getWorld();
         if (world == null) return;
 
@@ -124,6 +153,7 @@ public class ApocalypseHorsemen implements Listener {
 
         final Skeleton skeleton = (Skeleton) entity2;
         this.applySkeletonEffects(skeleton);
+        skeleton.setTarget(target);
 
         final SkeletonHorse horse = (SkeletonHorse) entity1;
         this.applyHorseEffects(horse);
@@ -140,10 +170,11 @@ public class ApocalypseHorsemen implements Listener {
 
     /**
      * Activates the timer that ticks down until the horsemen are despawned
-     * @param amount the amount of horsemen that were successfully spawned
      * @param groupID group of horsemen to begin tracking
+     * @param amount the amount of horsemen that were successfully spawned
+     * @param lifespan how long until the horsemen are removed
      */
-    public void activateTimer(final int amount, final UUID groupID) {
+    private void activateTimer(final UUID groupID, final int amount, final int lifespan) {
         //Must have spawned some amount
         if (amount <= 0) return;
 
@@ -181,7 +212,7 @@ public class ApocalypseHorsemen implements Listener {
                 groupMap.remove(groupID);
             }
             
-        }.runTaskLater(this.plugin, HORSEMAN_LIFESPAN_TICKS);
+        }.runTaskLater(this.plugin, lifespan);
     }
 
     /**

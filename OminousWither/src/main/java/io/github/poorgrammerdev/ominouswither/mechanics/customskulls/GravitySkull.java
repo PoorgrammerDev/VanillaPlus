@@ -14,6 +14,7 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.util.Vector;
 
 import io.github.poorgrammerdev.ominouswither.OminousWither;
+import io.github.poorgrammerdev.ominouswither.internal.config.BossStat;
 import io.github.poorgrammerdev.ominouswither.utils.ParticleInfo;
 import io.github.poorgrammerdev.ominouswither.utils.ParticleShapes;
 import io.github.poorgrammerdev.ominouswither.utils.Utils;
@@ -22,11 +23,9 @@ import io.github.poorgrammerdev.ominouswither.utils.Utils;
  * Skull that pulls in enemies 
  */
 public class GravitySkull extends AbstractSkullHandler {
-    private static final double RADIUS = 6.25;
-    private static final double FORCE_INTENSITY = 2.0D;
 
     public GravitySkull(OminousWither plugin) {
-        super(plugin, 5.0D, new ParticleInfo(Particle.DUST, 1, 0, 0, 0, 0, new Particle.DustOptions(Color.FUCHSIA, 1.5f)));
+        super(plugin, BossStat.GRAVITY_SKULL_SPEED, new ParticleInfo(Particle.DUST, 1, 0, 0, 0, 0, new Particle.DustOptions(Color.FUCHSIA, 1.5f)));
     }
 
     @Override
@@ -35,11 +34,14 @@ public class GravitySkull extends AbstractSkullHandler {
         final World world = location.getWorld();
         if (world == null) return;
 
+        final double radius = this.plugin.getBossStatsManager().getStat(BossStat.GRAVITY_RADIUS, wither);
+        final double forceIntensity = this.plugin.getBossStatsManager().getStat(BossStat.GRAVITY_FORCE_INTENSITY, wither);
+
         //Particle circle
-        ParticleShapes.circle(this.trackingParticle, RADIUS, 20, location);
+        ParticleShapes.circle(this.trackingParticle, radius, 20, location);
 
         //Gravity mechanic
-        world.getNearbyEntities(location, RADIUS, RADIUS, RADIUS, (entity) -> (!Tag.ENTITY_TYPES_WITHER_FRIENDS.isTagged(entity.getType())))
+        world.getNearbyEntities(location, radius, radius, radius, (entity) -> (!Tag.ENTITY_TYPES_WITHER_FRIENDS.isTagged(entity.getType())))
             .stream()
             
             .filter((entity) -> (
@@ -57,7 +59,7 @@ public class GravitySkull extends AbstractSkullHandler {
                 (!(entity instanceof Player) || (Utils.isTargetable((Player) entity))) &&
 
                 //Must be in radius
-                location.distanceSquared(entity.getLocation()) <= (RADIUS * RADIUS)
+                location.distanceSquared(entity.getLocation()) <= (radius * radius)
             ))
 
             //NOTE: currently does not do a visibility check, meaning this can hit through walls | TODO: should this behaviour be changed?
@@ -76,7 +78,7 @@ public class GravitySkull extends AbstractSkullHandler {
 
                 //Gravity effect
                 final double forceLimit = Math.pow(entity.getLocation().distanceSquared(location), 0.125);
-                final Vector velocity = entity.getLocation().subtract(location).toVector().normalize().multiply(-1 * Math.min(FORCE_INTENSITY, forceLimit));
+                final Vector velocity = entity.getLocation().subtract(location).toVector().normalize().multiply(-1 * Math.min(forceIntensity, forceLimit));
                 entity.setVelocity(velocity);
             })
         ;

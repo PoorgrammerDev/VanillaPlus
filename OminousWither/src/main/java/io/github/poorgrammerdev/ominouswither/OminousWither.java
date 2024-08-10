@@ -27,6 +27,7 @@ import io.github.poorgrammerdev.ominouswither.mechanics.customskulls.ApocalypseS
 import io.github.poorgrammerdev.ominouswither.mechanics.customskulls.ExplosiveSkull;
 import io.github.poorgrammerdev.ominouswither.mechanics.customskulls.GravitySkull;
 import io.github.poorgrammerdev.ominouswither.internal.CoroutineManager;
+import io.github.poorgrammerdev.ominouswither.internal.config.BossStatsManager;
 
 public final class OminousWither extends JavaPlugin {
     private final NamespacedKey ominousWitherKey = new NamespacedKey(this, "is_ominous");
@@ -37,9 +38,18 @@ public final class OminousWither extends JavaPlugin {
     private final NamespacedKey skullTypeKey = new NamespacedKey(this, "skull_type");
     private final NamespacedKey secondPhaseKey = new NamespacedKey(this, "is_in_second_phase");
 
+    private final BossStatsManager bossStatsManager;
+
+    public OminousWither() {
+        this.bossStatsManager = new BossStatsManager(this);
+    }
 
     @Override
     public void onEnable() {
+        //Config
+        this.saveDefaultConfig();
+        this.bossStatsManager.load();
+
         //Construct required objects
         //These objects have some sort of dependency aside from just registering, so must be made first and tracked
         final LoadDetector loadDetector = new LoadDetector(this);
@@ -78,6 +88,12 @@ public final class OminousWither extends JavaPlugin {
         loadDetector.onPluginEnable();
     }
 
+    /**
+     * Gets the shared boss stats manager instance
+     */
+    public BossStatsManager getBossStatsManager() {
+        return this.bossStatsManager;
+    }
 
     /**
      * Checks if a Wither is Ominous or not
