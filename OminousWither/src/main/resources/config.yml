@@ -166,3 +166,17 @@ boss_stats:
   # Sharpness enchantment level of spawned Wither Skeleton minions
   minion_sword_sharpness:
     formula: "level"
+
+  # In the second phase, the Wither gains an enchanced version of its block breaking move
+  # This is its horizontal range in each direction
+  enhanced_break_range:
+    formula: "2"
+  
+  # Enhanced block breaking move vertical range in both top/down directions (this many blocks up and this many blocks down)
+  enhanced_break_height:
+    formula: "3"
+  
+  # How often, in ticks, the enhanced block break move can be used during the Second Phase
+  # Setting the interval to a non-positive number will deactivate the system, but the vanilla block break move will remain
+  enhanced_break_interval:
+    formula: "(-2 * level) + 20"

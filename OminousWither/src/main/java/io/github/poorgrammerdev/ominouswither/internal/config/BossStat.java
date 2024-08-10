@@ -30,6 +30,9 @@ public enum BossStat {
     MINION_ARMOR_TOUGHNESS("boss_stats.minion_armor_toughness"),
     MINION_MOVEMENT_SPEED("boss_stats.minion_movement_speed"),
     MINION_SWORD_SHARPNESS("boss_stats.minion_sword_sharpness"), 
+    ENHANCED_BREAK_RANGE("boss_stats.enhanced_break_range"),
+    ENHANCED_BREAK_HEIGHT("boss_stats.enhanced_break_height"),
+    ENHANCED_BREAK_INTERVAL("boss_stats.enhanced_break_interval"),
     ;
 
     private final String configPath;

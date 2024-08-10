@@ -2,6 +2,7 @@ package io.github.poorgrammerdev.ominouswither.internal.events.detectors;
 
 import java.util.Random;
 
+import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
@@ -109,6 +110,7 @@ public class PhaseChangeDetector implements Listener {
      */
     private class PhaseChangeAnimationTracker extends BukkitRunnable {
         private final Wither wither;
+        private final Location frozenLocation;
 
         private final Random random = new Random();
         private final Vector[] anchorDirections = {
@@ -120,6 +122,7 @@ public class PhaseChangeDetector implements Listener {
 
         public PhaseChangeAnimationTracker(final Wither wither) {
             this.wither = wither;
+            this.frozenLocation = wither.getLocation();
         }
 
         @Override
@@ -129,6 +132,10 @@ public class PhaseChangeDetector implements Listener {
                     this.cancel();
                     return;
                 }
+
+                //Bind Wither to its current location or else it will continue following its target
+                //(This is vanilla behavior, not the Flight mechanism. Withers were never meant to re-enter invulnerability)
+                wither.teleport(this.frozenLocation);
 
                 final World world = wither.getWorld();
                 final int ticks = wither.getInvulnerabilityTicks();

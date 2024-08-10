@@ -14,7 +14,7 @@ import io.github.poorgrammerdev.ominouswither.internal.events.detectors.SpawnDet
 import io.github.poorgrammerdev.ominouswither.mechanics.ApocalypseHorsemen;
 import io.github.poorgrammerdev.ominouswither.mechanics.DangerousSkullManager;
 import io.github.poorgrammerdev.ominouswither.mechanics.ExplosionResistance;
-import io.github.poorgrammerdev.ominouswither.mechanics.FlightSpeed;
+import io.github.poorgrammerdev.ominouswither.mechanics.FlightAcceleration;
 import io.github.poorgrammerdev.ominouswither.mechanics.OminousAura;
 import io.github.poorgrammerdev.ominouswither.mechanics.PreventExploits;
 import io.github.poorgrammerdev.ominouswither.mechanics.PreventFriendlyFire;
@@ -71,7 +71,7 @@ public final class OminousWither extends JavaPlugin {
             new PreventFriendlyFire(this),
             new PreventExploits(this),
             new ExplosionResistance(this),
-            new FlightSpeed(this),
+            new FlightAcceleration(this),
             new OminousAura(this),
             new SpawnMechanics(this),
             new SkullBarrage(this),

@@ -3,10 +3,12 @@ package io.github.poorgrammerdev.ominouswither.utils;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Tag;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
+import org.bukkit.util.BlockIterator;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
@@ -52,6 +54,36 @@ public final class Utils {
 
         final Block block = result.getHitBlock();
         return (block == null || block.isPassable());
+    }
+
+    /**
+     * <p>Checks if a target location can be directly reached from the origin location, ignoring any breakable blocks</p>
+     * <p>For example, if these two locations only have stone between them this will return true. If there is bedrock in the way, it will return false</p>
+     * <p>It is only a simple raycast, there is no pathfinding</p>
+     */
+    public static boolean hasBreakableLineOfSight(Location origin, final Location target) {
+        //World must exist and match
+        final World world = origin.getWorld();
+        final World targetWorld = target.getWorld();
+        if (world == null || targetWorld == null || !world.equals(targetWorld)) return false;
+
+        //Perform a raycast from origin facing target and check if any impassable blocks are in the way
+        origin = origin.clone();
+        final double distance = origin.distance(target);
+        final Vector direction = target.clone().subtract(origin).toVector();
+        origin.setDirection(direction);
+
+        final BlockIterator blockIterator = new BlockIterator(origin, 0.0D, (int) distance); //TODO: is casting the right behaviour here?
+        while (blockIterator.hasNext()) {
+            final Block block = blockIterator.next();
+            if (block == null) return true;
+
+            //Cannot have passed through a Wither immune block
+            if (Tag.WITHER_IMMUNE.isTagged(block.getType())) return false;
+        }
+
+        //Reached end -> no impassable blocks are in the way
+        return true;
     }
 
     /**
