@@ -13,7 +13,7 @@ import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.persistence.PersistentDataType;
 
 import io.github.poorgrammerdev.ominouswither.OminousWither;
-import io.github.poorgrammerdev.ominouswither.internal.config.BossStats;
+import io.github.poorgrammerdev.ominouswither.internal.config.BossStat;
 import io.github.poorgrammerdev.ominouswither.mechanics.customskulls.AbstractSkullHandler;
 
 /**
@@ -49,7 +49,7 @@ public class DangerousSkullManager implements Listener {
         if (!this.plugin.isOminous(wither)) return;
 
         //Apply random chance
-        if (random.nextDouble() > this.plugin.getBossSettingsManager().getSetting(BossStats.DANGEROUS_SKULL_CHANCE_BOOST, wither)) return;
+        if (random.nextDouble() > this.plugin.getBossStatsManager().getStat(BossStat.DANGEROUS_SKULL_CHANCE_BOOST, wither)) return;
 
         //Skull is set to charged and custom blue skull effects are handled after
         skull.setCharged(true);

@@ -12,7 +12,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 
 import io.github.poorgrammerdev.ominouswither.OminousWither;
-import io.github.poorgrammerdev.ominouswither.internal.config.BossStats;
+import io.github.poorgrammerdev.ominouswither.internal.config.BossStat;
 import io.github.poorgrammerdev.ominouswither.mechanics.ApocalypseHorsemen;
 import io.github.poorgrammerdev.ominouswither.utils.ParticleInfo;
 
@@ -24,7 +24,7 @@ public class ApocalypseSkull extends AbstractHomingSkull {
     private final ApocalypseHorsemen apocalypseHorsemen;
 
     public ApocalypseSkull(final OminousWither plugin, final ApocalypseHorsemen apocalypseHorsemen) {
-        super(plugin, BossStats.APOCALYPSE_SKULL_SPEED, new ParticleInfo(Particle.CLOUD, 1, 0, 0, 0, 0, null), BossStats.APOCALYPSE_HOMING_LIFESPAN, 5, 10, false);
+        super(plugin, BossStat.APOCALYPSE_SKULL_SPEED, new ParticleInfo(Particle.CLOUD, 1, 0, 0, 0, 0, null), BossStat.APOCALYPSE_HOMING_LIFESPAN, 5, 10, false);
 
         this.apocalypseHorsemen = apocalypseHorsemen;
     }

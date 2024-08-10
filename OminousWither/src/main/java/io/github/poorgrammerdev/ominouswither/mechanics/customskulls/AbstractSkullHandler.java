@@ -9,7 +9,7 @@ import org.bukkit.util.Vector;
 import io.github.poorgrammerdev.ominouswither.OminousWither;
 import io.github.poorgrammerdev.ominouswither.coroutines.PersistentTrackingParticle;
 import io.github.poorgrammerdev.ominouswither.internal.CoroutineManager;
-import io.github.poorgrammerdev.ominouswither.internal.config.BossStats;
+import io.github.poorgrammerdev.ominouswither.internal.config.BossStat;
 import io.github.poorgrammerdev.ominouswither.utils.ParticleInfo;
 
 /**
@@ -17,7 +17,7 @@ import io.github.poorgrammerdev.ominouswither.utils.ParticleInfo;
  * @author Thomas Tran
  */
 public abstract class AbstractSkullHandler {
-    protected final BossStats initialSpeedSetting;
+    protected final BossStat initialSpeedSetting;
     protected final ParticleInfo trackingParticle;
     protected final OminousWither plugin;
 
@@ -27,7 +27,7 @@ public abstract class AbstractSkullHandler {
      * @param initialSpeedSetting setting to look up for speed multiplier on launch
      * @param trackingParticle particle trail of skull
      */
-    public AbstractSkullHandler(final OminousWither plugin, final BossStats initialSpeedSetting, final ParticleInfo trackingParticle) {
+    public AbstractSkullHandler(final OminousWither plugin, final BossStat initialSpeedSetting, final ParticleInfo trackingParticle) {
         this.plugin = plugin;
         this.initialSpeedSetting = initialSpeedSetting;
         this.trackingParticle = trackingParticle;
@@ -43,10 +43,10 @@ public abstract class AbstractSkullHandler {
      * @param shooter Ominous Wither that fired the skull
      */
     public void onSpawn(final WitherSkull skull, final Wither shooter) {
-        final double lifespan = this.plugin.getBossSettingsManager().getSetting(BossStats.DANGEROUS_SKULL_LIFESPAN, shooter);
+        final double lifespan = this.plugin.getBossStatsManager().getStat(BossStat.DANGEROUS_SKULL_LIFESPAN, shooter);
 
         //Velocity
-        final double initialSpeed = this.plugin.getBossSettingsManager().getSetting(this.initialSpeedSetting, shooter);
+        final double initialSpeed = this.plugin.getBossStatsManager().getStat(this.initialSpeedSetting, shooter);
         skull.setVelocity(skull.getVelocity().multiply(initialSpeed));
 
         //Tracking particle

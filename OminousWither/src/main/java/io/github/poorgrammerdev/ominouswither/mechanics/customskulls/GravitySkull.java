@@ -14,7 +14,7 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.util.Vector;
 
 import io.github.poorgrammerdev.ominouswither.OminousWither;
-import io.github.poorgrammerdev.ominouswither.internal.config.BossStats;
+import io.github.poorgrammerdev.ominouswither.internal.config.BossStat;
 import io.github.poorgrammerdev.ominouswither.utils.ParticleInfo;
 import io.github.poorgrammerdev.ominouswither.utils.ParticleShapes;
 import io.github.poorgrammerdev.ominouswither.utils.Utils;
@@ -25,7 +25,7 @@ import io.github.poorgrammerdev.ominouswither.utils.Utils;
 public class GravitySkull extends AbstractSkullHandler {
 
     public GravitySkull(OminousWither plugin) {
-        super(plugin, BossStats.GRAVITY_SKULL_SPEED, new ParticleInfo(Particle.DUST, 1, 0, 0, 0, 0, new Particle.DustOptions(Color.FUCHSIA, 1.5f)));
+        super(plugin, BossStat.GRAVITY_SKULL_SPEED, new ParticleInfo(Particle.DUST, 1, 0, 0, 0, 0, new Particle.DustOptions(Color.FUCHSIA, 1.5f)));
     }
 
     @Override
@@ -34,8 +34,8 @@ public class GravitySkull extends AbstractSkullHandler {
         final World world = location.getWorld();
         if (world == null) return;
 
-        final double radius = this.plugin.getBossSettingsManager().getSetting(BossStats.GRAVITY_RADIUS, wither);
-        final double forceIntensity = this.plugin.getBossSettingsManager().getSetting(BossStats.GRAVITY_FORCE_INTENSITY, wither);
+        final double radius = this.plugin.getBossStatsManager().getStat(BossStat.GRAVITY_RADIUS, wither);
+        final double forceIntensity = this.plugin.getBossStatsManager().getStat(BossStat.GRAVITY_FORCE_INTENSITY, wither);
 
         //Particle circle
         ParticleShapes.circle(this.trackingParticle, radius, 20, location);

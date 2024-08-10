@@ -1,6 +1,6 @@
 package io.github.poorgrammerdev.ominouswither.internal.config;
 
-public enum BossStats {
+public enum BossStat {
     NORMAL_SKULL_SPEED("boss_stats.normal_skull_speed"),
     EXPLOSIVE_SKULL_SPEED("boss_stats.explosive_skull_speed"),
     APOCALYPSE_SKULL_SPEED("boss_stats.apocalypse_skull_speed"),
@@ -34,7 +34,7 @@ public enum BossStats {
 
     private final String configPath;
 
-    private BossStats(final String configPath) {
+    private BossStat(final String configPath) {
         this.configPath = configPath;
     }
 

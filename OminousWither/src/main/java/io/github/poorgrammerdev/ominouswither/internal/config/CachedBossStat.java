@@ -7,17 +7,17 @@ import redempt.crunch.Crunch;
 import redempt.crunch.functional.EvaluationEnvironment;
 
 /**
- * Holds the values for a single configurable Boss setting
+ * Holds the values for a single configurable Boss stat
  * @author Thomas Tran
  */
-public class CachedBossSetting {
+public class CachedBossStat {
     private static final int TABLE_WIDTH = 5;
 
     private boolean isLevelDependent;
     private boolean isDifficultyDependent;
     private final double[] data;
 
-    public CachedBossSetting(final BossStatEntry entry, final EvaluationEnvironment evalEnv) {
+    public CachedBossStat(final BossStatEntry entry, final EvaluationEnvironment evalEnv) {
         //Determine if the formula depends on the level or difficulty variables
         this.isLevelDependent = entry.getFormula().contains("level");
         this.isDifficultyDependent = entry.getFormula().contains("difficulty");

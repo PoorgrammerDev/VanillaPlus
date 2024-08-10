@@ -37,6 +37,7 @@ import io.github.poorgrammerdev.ominouswither.coroutines.EntityStare;
 import io.github.poorgrammerdev.ominouswither.coroutines.PassableLocationFinder;
 import io.github.poorgrammerdev.ominouswither.coroutines.PersistentParticle;
 import io.github.poorgrammerdev.ominouswither.internal.CoroutineManager;
+import io.github.poorgrammerdev.ominouswither.internal.config.BossStat;
 import net.md_5.bungee.api.ChatColor;
 
 /**
@@ -63,14 +64,16 @@ public class SpawnMechanics implements Listener {
         final Player player = event.getSpawner();
         final World world = wither.getWorld();
         final int level = event.getLevel();
+        final Difficulty difficulty = world.getDifficulty();
 
         //Remove the Bad Omen effect from the Player
         player.removePotionEffect(PotionEffectType.BAD_OMEN);
 
         //Modify the Wither's stats
         wither.setCustomName(ChatColor.DARK_PURPLE + "Ominous Wither");
-        wither.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(calculateMaxHealth(world.getDifficulty()));
-        wither.getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS).setBaseValue(level * 2);
+        wither.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(this.plugin.getBossStatsManager().getStat(BossStat.BOSS_MAX_HEALTH, level, difficulty));
+        wither.getAttribute(Attribute.GENERIC_ARMOR).setBaseValue(this.plugin.getBossStatsManager().getStat(BossStat.FIRST_PHASE_ARMOR, level, difficulty));
+        wither.getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS).setBaseValue(this.plugin.getBossStatsManager().getStat(BossStat.FIRST_PHASE_ARMOR_TOUGHNESS, level, difficulty));
         wither.getAttribute(Attribute.GENERIC_FOLLOW_RANGE).setBaseValue(1024);
 
         //Wither looks at its spawner while spawning
@@ -142,14 +145,16 @@ public class SpawnMechanics implements Listener {
         final UUID witherUUID = wither.getUniqueId();
         this.spawnMinionMap.put(witherUUID, new ArrayList<>());
 
+
+        final double spawnRange = this.plugin.getBossStatsManager().getStat(BossStat.MINION_SPAWN_RANGE, wither);
         //Find locations to summon minions
         CoroutineManager.getInstance().enqueue(new PassableLocationFinder(
             wither.getEyeLocation(),
-            new Vector(10, 10, 10),
+            new Vector(spawnRange, spawnRange, spawnRange),
             3,
             true,
             true,
-            10,
+            (int) this.plugin.getBossStatsManager().getStat(BossStat.MINION_AMOUNT, wither),
             (location) -> {
                 //Adds them to a list under the Wither's ID so they can be summoned once the wither is fully spawned
                 final List<Location> list = this.spawnMinionMap.getOrDefault(wither.getUniqueId(), null);
@@ -214,6 +219,7 @@ public class SpawnMechanics implements Listener {
 
         if (spawner == null) return;
 
+        final Difficulty difficulty = world.getDifficulty();
         for (Location location : minionLocations) {
             //Make spawn location face the player who spawned the Wither
             location = location.setDirection(spawner.getLocation().subtract(location).toVector());
@@ -228,10 +234,10 @@ public class SpawnMechanics implements Listener {
             minion.getPersistentDataContainer().set(this.plugin.getMinionKey(), PersistentDataType.BOOLEAN, true);
             minion.setLootTable(LootTables.EMPTY.getLootTable());
             minion.setCanPickupItems(false);
-            minion.getAttribute(Attribute.GENERIC_ARMOR).setBaseValue(level * 2.0);
-            minion.getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS).setBaseValue(level);
-            minion.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.375);
-            minion.getAttribute(Attribute.GENERIC_FOLLOW_RANGE).setBaseValue(128);
+            minion.getAttribute(Attribute.GENERIC_ARMOR).setBaseValue(this.plugin.getBossStatsManager().getStat(BossStat.MINION_ARMOR, level, difficulty));
+            minion.getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS).setBaseValue(this.plugin.getBossStatsManager().getStat(BossStat.MINION_ARMOR_TOUGHNESS, level, difficulty));
+            minion.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(this.plugin.getBossStatsManager().getStat(BossStat.MINION_MOVEMENT_SPEED, level, difficulty));
+            minion.getAttribute(Attribute.GENERIC_FOLLOW_RANGE).setBaseValue(1024);
 
             //Targets the spawner if possible
             if (Utils.isTargetable(spawner)) {
@@ -243,7 +249,7 @@ public class SpawnMechanics implements Listener {
 
             equipment.setItemInMainHandDropChance(-32768);
             final ItemStack weapon = new ItemStack(Material.NETHERITE_SWORD);
-            weapon.addEnchantment(Enchantment.SHARPNESS, level);
+            weapon.addEnchantment(Enchantment.SHARPNESS, (int) this.plugin.getBossStatsManager().getStat(BossStat.MINION_SWORD_SHARPNESS, level, difficulty));
             weapon.addEnchantment(Enchantment.FIRE_ASPECT, 2);
             equipment.setItemInMainHand(weapon);
 
@@ -253,23 +259,4 @@ public class SpawnMechanics implements Listener {
             }
         }
     }
-
-    /**
-     * Scaling HP with difficulty for Bedrock Parity (as of 1.21 or 2024)
-     * @param difficulty world difficulty
-     * @return Max HP to use for Wither
-     */
-    private double calculateMaxHealth(final Difficulty difficulty) {
-        switch (difficulty) {
-            case EASY:
-                return 300.0;
-            case NORMAL:
-                return 450.0;
-            case HARD:
-                return 600.0;
-            default:
-                return 300.0;
-        }
-    }
-    
 }

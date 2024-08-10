@@ -11,16 +11,16 @@ import redempt.crunch.functional.EvaluationEnvironment;
 
 /**
  * <p>Handles retrieval of configurable Ominouswither-related stats/settings from the plugin config</p>
- * <p>To allow for easy modification, each setting in the config is defined as a list of modifiers or rules</p>
- * <p>To minimize performance impact at query-time, these rules are applied for all possible values of each metric (Wither level and difficulty) at load-time and their values are cached</p>
+ * <p>To allow for easy modification, each stat in the config is defined as a mathematical expression</p>
+ * <p>To minimize performance impact at query-time, this expression is evaluated for all possible assignments of each variable at load-time and their values are cached</p>
  * <p>The cached value is simply retrieved at query-time</p>
  * @author Thomas Tran
  */
-public class BossSettingsManager {
+public class BossStatsManager {
     private final OminousWither plugin;
-    private final HashMap<BossStats, CachedBossSetting> settingsMap;
+    private final HashMap<BossStat, CachedBossStat> settingsMap;
 
-    public BossSettingsManager(final OminousWither plugin) {
+    public BossStatsManager(final OminousWither plugin) {
         this.plugin = plugin;
         this.settingsMap = new HashMap<>();
     }
@@ -38,11 +38,13 @@ public class BossSettingsManager {
         final EvaluationEnvironment evalEnv = new EvaluationEnvironment();
         evalEnv.setVariableNames("level", "difficulty");
 
-        for (final BossStats stat : BossStats.values()) {
+        for (final BossStat stat : BossStat.values()) {
             final ConfigurationSection entrySection = this.plugin.getConfig().getConfigurationSection(stat.getConfigPath());
+            if (entrySection == null) throw new IllegalStateException("Config is missing boss stat " + stat + " expected at location " + stat.getConfigPath());
+
             final BossStatEntry entry = new BossStatEntry(entrySection.getValues(true));
 
-            this.settingsMap.put(stat, new CachedBossSetting(entry, evalEnv));
+            this.settingsMap.put(stat, new CachedBossStat(entry, evalEnv));
         }
     }
 
@@ -57,24 +59,24 @@ public class BossSettingsManager {
      * @throws IllegalArgumentException if requested stat is not in the map
      * @throws ArrayIndexOutOfBoundsException if level is invalid
      */
-    public double getSetting(final BossStats bossStat, int level, Difficulty difficulty) throws IllegalArgumentException {
-        final CachedBossSetting setting = this.settingsMap.getOrDefault(bossStat, null);
-        if (setting == null) throw new IllegalArgumentException("Setting does not exist in the map");
+    public double getStat(final BossStat bossStat, int level, Difficulty difficulty) throws IllegalArgumentException {
+        final CachedBossStat setting = this.settingsMap.getOrDefault(bossStat, null);
+        if (setting == null) throw new IllegalArgumentException("Stat " + setting +  " does not exist in the map");
 
         return setting.getValue(level, difficulty);
     }
 
     /**
-     * Convenience method to get a cached setting in the map without having to manually retrieve level and difficulty
+     * Convenience method to get a cached stat in the map without having to manually retrieve level and difficulty
      * @param bossStat the stat to retrieve
      * @param wither Ominous Wither entity
      * 
-     * @return setting value
+     * @return stat value
      * 
-     * @throws IllegalArgumentException if requested setting is not in the map
+     * @throws IllegalArgumentException if requested stat is not in the map
      * @throws ArrayIndexOutOfBoundsException if stored level is invalid
      */
-    public double getSetting(final BossStats bossStat, final Wither wither) throws IllegalArgumentException {
+    public double getStat(final BossStat bossStat, final Wither wither) throws IllegalArgumentException {
         final World world = wither.getWorld();
 
         //If world is not available for some reason, assume easy difficulty
@@ -83,7 +85,7 @@ public class BossSettingsManager {
         //If level is not availablef or some reason, assume lowest level
         final int level = this.plugin.getLevel(wither, 1);
 
-        return this.getSetting(bossStat, level, difficulty);
+        return this.getStat(bossStat, level, difficulty);
     }
 
 }

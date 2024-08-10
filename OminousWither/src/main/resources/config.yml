@@ -105,53 +105,55 @@ boss_stats:
     formula: "level"
     level-mapping: [0.0, 0.0, 0.75, 1.5, 10]
 
+  #
   suffocate_teleport_range:
-    formula: "1.0"
+    formula: "10"
 
-
+  # 
   first_phase_armor:
-    formula: "1.0"
+    formula: "4.0"
 
-
+  #
   second_phase_armor:
-    formula: "1.0"
+    formula: "7.0 + (level * 3.0)"
 
-
+  # 
   first_phase_armor_toughness:
-    formula: "1.0"
+    formula: "level * 2"
 
-
+  #
   second_phase_armor_toughness:
-    formula: "1.0"
+    formula: "level * 4"
 
   #
   skull_barrage_amount:
     formula: "level"
     level-mapping: [3, 3, 3, 5, 5]
 
+  #
   boss_max_health:
-    formula: "1.0"
+    formula: "150 * (difficulty + 1)"
 
-
+  #
   minion_amount:
-    formula: "1.0"
+    formula: "10"
 
-
+  #
   minion_spawn_range:
-    formula: "1.0"
+    formula: "10"
 
-
+  #
   minion_armor:
-    formula: "1.0"
+    formula: "level * 2.0"
 
-
+  #
   minion_armor_toughness:
-    formula: "1.0"
+    formula: "level"
 
-
+  #
   minion_movement_speed:
-    formula: "1.0"
+    formula: "0.375"
 
-
+  #
   minion_sword_sharpness:
-    formula: "1.0"
+    formula: "level"

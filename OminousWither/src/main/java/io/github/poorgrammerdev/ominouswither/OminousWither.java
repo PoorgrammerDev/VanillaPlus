@@ -27,7 +27,7 @@ import io.github.poorgrammerdev.ominouswither.mechanics.customskulls.ApocalypseS
 import io.github.poorgrammerdev.ominouswither.mechanics.customskulls.ExplosiveSkull;
 import io.github.poorgrammerdev.ominouswither.mechanics.customskulls.GravitySkull;
 import io.github.poorgrammerdev.ominouswither.internal.CoroutineManager;
-import io.github.poorgrammerdev.ominouswither.internal.config.BossSettingsManager;
+import io.github.poorgrammerdev.ominouswither.internal.config.BossStatsManager;
 
 public final class OminousWither extends JavaPlugin {
     private final NamespacedKey ominousWitherKey = new NamespacedKey(this, "is_ominous");
@@ -38,17 +38,17 @@ public final class OminousWither extends JavaPlugin {
     private final NamespacedKey skullTypeKey = new NamespacedKey(this, "skull_type");
     private final NamespacedKey secondPhaseKey = new NamespacedKey(this, "is_in_second_phase");
 
-    private final BossSettingsManager bossSettingsManager;
+    private final BossStatsManager bossStatsManager;
 
     public OminousWither() {
-        this.bossSettingsManager = new BossSettingsManager(this);
+        this.bossStatsManager = new BossStatsManager(this);
     }
 
     @Override
     public void onEnable() {
         //Config
         this.saveDefaultConfig();
-        this.bossSettingsManager.load();
+        this.bossStatsManager.load();
 
         //Construct required objects
         //These objects have some sort of dependency aside from just registering, so must be made first and tracked
@@ -89,10 +89,10 @@ public final class OminousWither extends JavaPlugin {
     }
 
     /**
-     * Gets the shared boss settings manager instance
+     * Gets the shared boss stats manager instance
      */
-    public BossSettingsManager getBossSettingsManager() {
-        return this.bossSettingsManager;
+    public BossStatsManager getBossStatsManager() {
+        return this.bossStatsManager;
     }
 
     /**
