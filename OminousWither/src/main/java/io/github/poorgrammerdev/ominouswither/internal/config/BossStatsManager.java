@@ -26,7 +26,7 @@ public class BossStatsManager {
     }
 
     /**
-     * Load or reload settings from disk and recalculate all values
+     * Load or reload settings from config and recalculate all values
      * This will clear any values in the map if present
      * @param plugin instance of plugin class
      */
@@ -42,7 +42,7 @@ public class BossStatsManager {
             final ConfigurationSection entrySection = this.plugin.getConfig().getConfigurationSection(stat.getConfigPath());
             if (entrySection == null) throw new IllegalStateException("Config is missing boss stat " + stat + " expected at location " + stat.getConfigPath());
 
-            final BossStatEntry entry = new BossStatEntry(entrySection.getValues(true));
+            final BossStatEntry entry = new BossStatEntry(entrySection.getValues(true), stat.toString());
 
             this.settingsMap.put(stat, new CachedBossStat(entry, evalEnv));
         }
@@ -82,7 +82,7 @@ public class BossStatsManager {
         //If world is not available for some reason, assume easy difficulty
         final Difficulty difficulty = ((world != null) ? world.getDifficulty() : Difficulty.EASY);
 
-        //If level is not availablef or some reason, assume lowest level
+        //If level is not available for some reason, assume lowest level
         final int level = this.plugin.getLevel(wither, 1);
 
         return this.getStat(bossStat, level, difficulty);

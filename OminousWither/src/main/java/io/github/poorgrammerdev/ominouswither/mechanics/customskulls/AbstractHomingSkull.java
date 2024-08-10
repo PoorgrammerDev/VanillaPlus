@@ -37,7 +37,7 @@ public abstract class AbstractHomingSkull extends AbstractSkullHandler {
      * @param plugin instance of main plugin class
      * @param initialSpeedSetting setting to look up for speed multiplier on launch
      * @param trackingParticle skull particle trail
-     * @param homingLifespan how long the projectile can continue homing for. set to SKULL_LIFESPAN to have the effect active for the entire lifespan of the skull
+     * @param homingLifespanSetting setting to look up for how long the projectile can continue homing for
      * @param searchRange how far to search for a target
      * @param searchInterval how often to search for a target
      * @param canChangeTarget if the skull can search for a new target after one has already been found
