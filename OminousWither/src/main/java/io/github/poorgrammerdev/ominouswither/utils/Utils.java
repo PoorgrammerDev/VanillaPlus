@@ -69,17 +69,29 @@ public final class Utils {
 
         //Perform a raycast from origin facing target and check if any impassable blocks are in the way
         origin = origin.clone();
-        final double distance = origin.distance(target);
         final Vector direction = target.clone().subtract(origin).toVector();
         origin.setDirection(direction);
 
-        final BlockIterator blockIterator = new BlockIterator(origin, 0.0D, (int) distance); //TODO: is casting the right behaviour here?
+        //Bounds check to prevent infinite looping
+        final int distance = (int) origin.distance(target);
+        if (distance <= 0) return true; //In the same block, must be visible
+        if (distance >= 128) return false; //Too far away
+
+        final int MAX_ITERS = 256;
+        int i = 0;
+        final BlockIterator blockIterator = new BlockIterator(origin, 0.0D, distance);
         while (blockIterator.hasNext()) {
+            // Safety condition to prevent infinite loop server crash
+            // Shouldn't be required due to bounds check on distance, but keeping as a backup
+            if (i >= MAX_ITERS) return false;
+            
             final Block block = blockIterator.next();
             if (block == null) return true;
 
             //Cannot have passed through a Wither immune block
             if (Tag.WITHER_IMMUNE.isTagged(block.getType())) return false;
+
+            ++i;
         }
 
         //Reached end -> no impassable blocks are in the way
