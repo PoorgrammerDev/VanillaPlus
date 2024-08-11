@@ -19,6 +19,7 @@ import org.bukkit.entity.Wither;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.world.EntitiesUnloadEvent;
 import org.bukkit.inventory.EntityEquipment;
@@ -63,6 +64,7 @@ public class ApocalypseHorsemen implements Listener {
 
         //Find viable locations and summon skeleton horsemen
         final UUID groupID = UUID.randomUUID();
+        final UUID targetID = target.getUniqueId();
         CoroutineManager.getInstance().enqueue(new PassableLocationFinder(
             center,
             new Vector(5, 5, 5),
@@ -70,7 +72,7 @@ public class ApocalypseHorsemen implements Listener {
             true,
             true,
             (int) this.plugin.getBossStatsManager().getStat(BossStat.APOCALYPSE_SPAWN_AMOUNT, wither),
-            (location) -> {this.spawnHorseman(groupID, location, target);},
+            (location) -> {this.spawnHorseman(groupID, location, targetID);},
             (amount) -> {this.activateTimer(groupID, amount, (int) this.plugin.getBossStatsManager().getStat(BossStat.APOCALYPSE_HORSEMAN_LIFESPAN, wither));}
         ));
     }
@@ -130,12 +132,28 @@ public class ApocalypseHorsemen implements Listener {
     }
 
     /**
+     * <p>Prevents players from interacting with Skeleton Horse minions</p>
+     * <p>This prevents feeding, equipping a saddle, and opening inventory</p>
+     */
+    @EventHandler(ignoreCancelled = true)
+    private void onInteract(final PlayerInteractEntityEvent event) {
+        if (!(event.getRightClicked() instanceof SkeletonHorse)) return;
+
+        //Non-minion player trying to interact with a minion horse -> cancel
+        //(Not that minion players can even exist)
+        final SkeletonHorse horse = (SkeletonHorse) event.getRightClicked();
+        if (this.plugin.isMinion(horse) && !this.plugin.isMinion(event.getPlayer())) {
+            event.setCancelled(true);
+        }
+    }
+
+    /**
      * Spawns a skeleton horseman at this location
      * @param groupID UUID denoting the group that this horseman belongs to. all members spawning from the same skull should have the same group id
      * @param location location to spawn at
      * @param target entity to target
      */
-    private void spawnHorseman(final UUID groupID, final Location location, final LivingEntity target) {
+    private void spawnHorseman(final UUID groupID, final Location location, final UUID targetID) {
         final World world = location.getWorld();
         if (world == null) return;
 
@@ -153,7 +171,11 @@ public class ApocalypseHorsemen implements Listener {
 
         final Skeleton skeleton = (Skeleton) entity2;
         this.applySkeletonEffects(skeleton);
-        skeleton.setTarget(target);
+
+        final Entity target = this.plugin.getServer().getEntity(targetID);
+        if (target instanceof LivingEntity && !target.isDead() && target.isInWorld()) {
+            skeleton.setTarget((LivingEntity) target);
+        }
 
         final SkeletonHorse horse = (SkeletonHorse) entity1;
         this.applyHorseEffects(horse);
