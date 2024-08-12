@@ -33,6 +33,19 @@ public enum BossStat {
     ENHANCED_BREAK_RANGE("boss_stats.enhanced_break_range"),
     ENHANCED_BREAK_HEIGHT("boss_stats.enhanced_break_height"),
     ENHANCED_BREAK_INTERVAL("boss_stats.enhanced_break_interval"),
+    LIFE_DRAIN_COOLDOWN("boss_stats.life_drain_cooldown"),
+    LIFE_DRAIN_RANGE("boss_stats.life_drain_range"),
+    LIFE_DRAIN_SPEED_THRESHOLD("boss_stats.life_drain_speed_threshold"),
+    LIFE_DRAIN_STARTUP_TIME("boss_stats.life_drain_startup_time"),
+    LIFE_DRAIN_LIFESPAN("boss_stats.life_drain_lifespan"),
+    LIFE_DRAIN_ATTACK_INTERVAL("boss_stats.life_drain_attack_interval"),
+    LIFE_DRAIN_HORIZONTAL_RADIUS("boss_stats.life_drain_horizontal_radius"),
+    LIFE_DRAIN_VERTICAL_RADIUS("boss_stats.life_drain_vertical_radius"),
+
+
+
+
+    
     ;
 
     private final String configPath;

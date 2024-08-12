@@ -57,6 +57,7 @@ public class FlightAcceleration implements Listener {
             return;
         }
 
+        //TODO: does this erroneously create a duplicate coroutine, since one will be created once activated/phasechangeend anyway?
         //Otherwise, wait until the Wither activates and then do it
         final UUID witherID = wither.getUniqueId();
         CoroutineManager.getInstance().enqueue(new ICoroutine() {

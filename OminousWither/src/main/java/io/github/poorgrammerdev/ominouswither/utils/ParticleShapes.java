@@ -40,6 +40,36 @@ public final class ParticleShapes {
     }
 
     /**
+     * Displays a partial particle circle on the Y axis at the given location
+     * @param particle information of particle to display
+     * @param radius radius of circle
+     * @param density how thick to make the line
+     * @param location where to display it
+     * @param limit what angle to draw the circle up until, in interval [0, 2pi]
+     */
+    public static void partialCircle(final ParticleInfo particle, final double radius, final double density, Location location, final double limit) {
+        final World world = location.getWorld();
+        if (world == null) return;
+
+        //Even though this method shouldn't have any effect on the location object,
+        //make a clone just to be extra safe
+        location = location.clone();
+
+        //Iterates through angles in radians up to 2pi
+        for (double theta = 0; theta <= limit; theta += Math.PI / density) {
+
+            //Calculates offsets from the center 
+            double x = radius * Math.cos(theta);
+            double z = radius * Math.sin(theta);
+
+            //Add offset, spawn particle, and subtract offset to reset for the next iter
+            location.add(x, 0, z);
+            particle.spawnParticle(world, location);
+            location.subtract(x, 0, z);
+        }
+    }
+
+    /**
      * Displays a particle line from the origin to the target
      * @param particle information of particle to display
      * @param origin one end of the line

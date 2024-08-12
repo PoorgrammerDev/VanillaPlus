@@ -17,7 +17,7 @@ import io.github.poorgrammerdev.ominouswither.utils.ParticleInfo;
 public class ExplosiveSkull extends AbstractSkullHandler {
 
     public ExplosiveSkull(OminousWither plugin) {
-        super(plugin, BossStat.EXPLOSIVE_SKULL_SPEED, new ParticleInfo(Particle.FLAME, 1, 0, 0, 0, 0, null));
+        super(plugin, BossStat.EXPLOSIVE_SKULL_SPEED, new ParticleInfo(Particle.FLAME, 1));
     }
 
     @Override

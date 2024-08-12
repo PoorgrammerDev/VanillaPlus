@@ -74,7 +74,7 @@ public class OminousAura implements Listener {
             }),
             witherID,
             new Vector(0, 1.5, 0),
-            new ParticleInfo(Particle.RAID_OMEN, 3, 0.75, 1, 0.75, 0, null)
+            new ParticleInfo(Particle.RAID_OMEN, 3, 0.75, 1, 0.75)
         ));
     }
 
@@ -94,7 +94,7 @@ public class OminousAura implements Listener {
             }),
             witherID,
             new Vector(0, 1.5, 0),
-            new ParticleInfo(Particle.TRIAL_OMEN, 3, 0.75, 1, 0.75, 0, null)
+            new ParticleInfo(Particle.TRIAL_OMEN, 3, 0.75, 1, 0.75)
         ));
     }
 }

@@ -38,6 +38,7 @@ public class PreventPhaseRevert implements Listener {
 
         //Cannot heal any -> simply cancel
         if (maxHealAmount <= 0.0D) {
+            event.setAmount(0.0D);
             event.setCancelled(true);
             return;
         }

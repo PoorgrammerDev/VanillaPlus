@@ -15,6 +15,7 @@ import io.github.poorgrammerdev.ominouswither.mechanics.ApocalypseHorsemen;
 import io.github.poorgrammerdev.ominouswither.mechanics.DangerousSkullManager;
 import io.github.poorgrammerdev.ominouswither.mechanics.ExplosionResistance;
 import io.github.poorgrammerdev.ominouswither.mechanics.FlightAcceleration;
+import io.github.poorgrammerdev.ominouswither.mechanics.LifeDrain;
 import io.github.poorgrammerdev.ominouswither.mechanics.OminousAura;
 import io.github.poorgrammerdev.ominouswither.mechanics.PreventExploits;
 import io.github.poorgrammerdev.ominouswither.mechanics.PreventFriendlyFire;
@@ -78,7 +79,8 @@ public final class OminousWither extends JavaPlugin {
             apocalypseHorsemen,
             new DangerousSkullManager(this, skullHandlers),
             new SecondPhaseBuffs(this),
-            new PreventPhaseRevert(this)
+            new PreventPhaseRevert(this),
+            new LifeDrain(this)
         );
 
         //Begin Coroutine Manager

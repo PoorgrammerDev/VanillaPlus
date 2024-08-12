@@ -119,6 +119,20 @@ public final class Utils {
     }
 
     /**
+     * Linearly interpolates between two scalar numbers
+     * @param a first number
+     * @param b second number
+     * @param t value in range [0,1] that controls interpolation. 0 will give A, 1 will give B
+     * @return linearly interpolated scalar
+     */
+    public static double lerp(final double a, final double b, double t) {
+        //Clamp t to [0,1] range
+        t = clamp(t, 0.0D, 1.0D);
+
+        return ((1.0D - t) * a) + (t * b);
+    }
+
+    /**
      * Linearly interpolates between two vectors
      * @param vecA first vector
      * @param vecB second vector

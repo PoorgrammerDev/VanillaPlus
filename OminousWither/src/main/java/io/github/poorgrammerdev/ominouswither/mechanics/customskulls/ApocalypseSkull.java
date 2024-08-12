@@ -24,7 +24,7 @@ public class ApocalypseSkull extends AbstractHomingSkull {
     private final ApocalypseHorsemen apocalypseHorsemen;
 
     public ApocalypseSkull(final OminousWither plugin, final ApocalypseHorsemen apocalypseHorsemen) {
-        super(plugin, BossStat.APOCALYPSE_SKULL_SPEED, new ParticleInfo(Particle.CLOUD, 1, 0, 0, 0, 0, null), BossStat.APOCALYPSE_HOMING_LIFESPAN, 5, 10, false);
+        super(plugin, BossStat.APOCALYPSE_SKULL_SPEED, new ParticleInfo(Particle.CLOUD, 1), BossStat.APOCALYPSE_HOMING_LIFESPAN, 5, 10, false);
 
         this.apocalypseHorsemen = apocalypseHorsemen;
     }

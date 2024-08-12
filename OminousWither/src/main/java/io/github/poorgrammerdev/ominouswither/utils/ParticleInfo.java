@@ -16,8 +16,9 @@ public class ParticleInfo {
     public final double offsetZ;
     public final double extra;
     public final Object data;
+    public final boolean force;
 
-    public ParticleInfo(Particle particle, int count, double offsetX, double offsetY, double offsetZ, double extra, Object data) {
+    public ParticleInfo(Particle particle, int count, double offsetX, double offsetY, double offsetZ, double extra, Object data, boolean force) {
         this.particle = particle;
         this.count = count;
         this.offsetX = offsetX;
@@ -29,6 +30,24 @@ public class ParticleInfo {
             this.data = data;
         }
         else throw new IllegalArgumentException("Unexpected type for particle data");
+
+        this.force = force;
+    }
+
+    public ParticleInfo(Particle particle, int count, double offsetX, double offsetY, double offsetZ, double extra, Object data) {
+        this(particle, count, offsetX, offsetY, offsetZ, extra, data, false);
+    }
+
+    public ParticleInfo(Particle particle, int count, double offsetX, double offsetY, double offsetZ, double extra) {
+        this(particle, count, offsetX, offsetY, offsetZ, extra, null, false);
+    }
+
+    public ParticleInfo(Particle particle, int count, double offsetX, double offsetY, double offsetZ) {
+        this(particle, count, offsetX, offsetY, offsetZ, 0, null, false);
+    }
+
+    public ParticleInfo(Particle particle, int count) {
+        this(particle, count, 0, 0, 0, 0, null, false);
     }
 
     /**
@@ -45,7 +64,8 @@ public class ParticleInfo {
             this.offsetY,
             this.offsetZ,
             this.extra,
-            this.data
+            this.data,
+            this.force
         );
     }
 }
