@@ -38,7 +38,7 @@ public class GravitySkull extends AbstractSkullHandler {
         final double forceIntensity = this.plugin.getBossStatsManager().getStat(BossStat.GRAVITY_FORCE_INTENSITY, wither);
 
         //Particle circle
-        ParticleShapes.circle(this.trackingParticle, radius, 20, location);
+        ParticleShapes.circle(this.trackingParticle, radius, 4, location);
 
         //Gravity mechanic
         world.getNearbyEntities(location, radius, radius, radius, (entity) -> (!Tag.ENTITY_TYPES_WITHER_FRIENDS.isTagged(entity.getType())))
@@ -74,7 +74,7 @@ public class GravitySkull extends AbstractSkullHandler {
                 }
 
                 //Draw a particle line to the pulled entity
-                ParticleShapes.line(this.trackingParticle, location, entity.getLocation().add(0, 0.5, 0), 10);
+                ParticleShapes.line(this.trackingParticle, location, entity.getLocation().add(0, 0.5, 0), 2);
 
                 //Gravity effect
                 final double forceLimit = Math.pow(entity.getLocation().distanceSquared(location), 0.125);

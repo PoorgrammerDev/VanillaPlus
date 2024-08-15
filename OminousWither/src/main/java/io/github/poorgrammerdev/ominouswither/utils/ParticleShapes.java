@@ -26,7 +26,7 @@ public final class ParticleShapes {
         location = location.clone();
 
         //Iterates through angles in radians up to 2pi
-        for (double theta = 0; theta <= 2*Math.PI; theta += Math.PI / density) {
+        for (double theta = 0; theta <= 2*Math.PI; theta += Math.PI / (density * radius)) {
 
             //Calculates offsets from the center 
             double x = radius * Math.cos(theta);
@@ -56,7 +56,7 @@ public final class ParticleShapes {
         location = location.clone();
 
         //Iterates through angles in radians up to 2pi
-        for (double theta = 0; theta <= limit; theta += Math.PI / density) {
+        for (double theta = 0; theta <= limit; theta += Math.PI / (density * radius)) {
 
             //Calculates offsets from the center 
             double x = radius * Math.cos(theta);
@@ -81,9 +81,11 @@ public final class ParticleShapes {
         final World targetWorld = target.getWorld();
         if (world == null || targetWorld == null || !world.equals(targetWorld)) return;
 
+        final double distance = origin.distance(target);
+
         final Vector begin = origin.toVector();
         final Vector end = target.toVector();
-        for (double t = 0.0; t <= 1.0D; t += (1.0D / density)) {
+        for (double t = 0.0; t <= 1.0D; t += (1.0D / (density * distance))) {
             particle.spawnParticle(
                 world,
                 Utils.lerp(begin, end, t).toLocation(world, origin.getYaw(), origin.getPitch())

@@ -31,9 +31,17 @@ import io.github.poorgrammerdev.ominouswither.utils.ParticleInfo;
 import io.github.poorgrammerdev.ominouswither.utils.ParticleShapes;
 import io.github.poorgrammerdev.ominouswither.utils.Utils;
 
+/**
+ * Second Phase attack to directly drain HP from targets, bypassing armor
+ * @author Thomas Tran
+ */
 public class LifeDrain implements Listener {
     private final OminousWither plugin;
 
+    /**
+     * Holds when a Wither last used the Life Drain attack, measured using Spigot's ticks lived metric
+     */
+    //TODO: should this use Instant/Duration instead?
     private final HashMap<UUID, Integer> lastUsed;
 
     public LifeDrain(OminousWither plugin) {
@@ -56,6 +64,9 @@ public class LifeDrain implements Listener {
         //TODO: do we need to wait until phase change ends otherwise? see similar issue in FlightAcceleration
     }
 
+    /**
+     * Allows this wither to use the Life Drain attacks when appropriate
+     */
     private void enableAttackMechanism(final Wither wither) {
         final UUID witherID = wither.getUniqueId();
 
@@ -97,6 +108,12 @@ public class LifeDrain implements Listener {
         });
     }
     
+    /**
+     * Summons a Life Drain particle construct at the desired location
+     * @param location location to spawn the construct
+     * @param wither wither that summoned it (drained HP will heal this wither)
+     * @return if the construct was created properly
+     */
     private boolean createLifeDrainCircle(final Location location, final Wither wither) {
         final World world = wither.getWorld();
         if (world == null) return false;
@@ -107,43 +124,58 @@ public class LifeDrain implements Listener {
         final double radiusH = this.plugin.getBossStatsManager().getStat(BossStat.LIFE_DRAIN_HORIZONTAL_RADIUS, wither);
         final double radiusV = this.plugin.getBossStatsManager().getStat(BossStat.LIFE_DRAIN_VERTICAL_RADIUS, wither);
 
-        final int totalDuration = activationTime + activeTime;
-
         final ParticleInfo circleParticle = new ParticleInfo(Particle.SOUL_FIRE_FLAME, 1, 0, 0, 0, 0, null, true);
         final ParticleInfo centerParticle = new ParticleInfo(Particle.TRIAL_SPAWNER_DETECTION_OMINOUS, 2, 0.125, 0.125, 0.125, 0.1);
         final ParticleInfo hitParticle = new ParticleInfo(Particle.RAID_OMEN, 3, 0.125, 0.125, 0.125, 1.5);
 
+        final int totalDuration = activationTime + activeTime;
         final Location bottomLoc = location.clone().subtract(0, radiusV, 0);
         final Location topLoc = location.clone().add(0, radiusV, 0);
 
         //Must be tick-accurate now, using runnable instead of Coroutine system
         new BukkitRunnable() {
+            //TODO: is this too memory intensive?
             private final HashSet<UUID> players = new HashSet<>();
+            private boolean hasPlayedActivationSound = false;
             private int i = 0;
+            
 
             @Override
             public void run() {
                 if (i >= totalDuration) {
+                    //Play despawn sound
+                    world.playSound(location, Sound.BLOCK_SHULKER_BOX_CLOSE, SoundCategory.HOSTILE, 3.0f, 1.0f);
+
                     this.cancel();
                     return;
                 }
                 
                 //Display particle circle
-                ParticleShapes.partialCircle(circleParticle, radiusH, 10, location, Utils.lerp(0, 2*Math.PI, ((double) i / activationTime)));
+                ParticleShapes.partialCircle(circleParticle, radiusH, 8, location, Utils.lerp(0, 2*Math.PI, ((double) i / activationTime)));
                 
                 //If fully activated...
                 if (i >= activationTime) {
-                    //Display activation indicator
-                    ParticleShapes.line(centerParticle, bottomLoc, topLoc, 10);
+                    //Display active indicator
+                    ParticleShapes.line(centerParticle, bottomLoc, topLoc, 8);
+
+                    //One-time activation sound
+                    if (!this.hasPlayedActivationSound) {
+                        world.playSound(location, Sound.BLOCK_SHULKER_BOX_OPEN, SoundCategory.HOSTILE, 3.0f, 1.0f);
+
+                        this.hasPlayedActivationSound = true;
+                    }
 
                     //Drain HP periodically
                     if (i % drainInterval == 0) {
                         //Get target entities
                         final Collection<Entity> entities = world.getNearbyEntities(location, radiusH, radiusV, radiusH,
                             (entity -> (
+                                //Must be a LivingEntity that's alive
                                 entity instanceof LivingEntity &&
                                 !entity.isDead() &&
                                 entity.isInWorld() &&
+
+                                //Cannot be a friendly
                                 !Tag.ENTITY_TYPES_WITHER_FRIENDS.isTagged(entity.getType()) &&
                                 !plugin.isMinion(entity) &&
                                 !(entity instanceof Wither)
@@ -152,8 +184,10 @@ public class LifeDrain implements Listener {
 
                         double hpDrained = 0.0D;
                         for (final Entity e : entities) {
+                            //Already checked that e instanceof LivingEntity above, can cast safely here without check
                             final LivingEntity entity = (LivingEntity) e;
 
+                            //Cannot kill entities
                             final double currentHealth = entity.getHealth();
                             if (currentHealth <= 1.0D) continue;
 
@@ -177,7 +211,7 @@ public class LifeDrain implements Listener {
 
                             //Display hit particle and play regular drain sound
                             hitParticle.spawnParticle(world, entity.getLocation().add(0, entity.getHeight() / 2.0, 0));
-                            world.playSound(entity, Sound.ENTITY_ITEM_BREAK, SoundCategory.HOSTILE, 3.0f, 1.0f);
+                            world.playSound(entity, Sound.ENTITY_ITEM_BREAK, SoundCategory.HOSTILE, 1.0f, 1.0f);
                         }
 
                         //Heal the Wither with drained HP
