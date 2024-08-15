@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.UUID;
 
+import org.bukkit.Difficulty;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -35,6 +36,7 @@ import io.github.poorgrammerdev.ominouswither.OminousWither;
 import io.github.poorgrammerdev.ominouswither.coroutines.PassableLocationFinder;
 import io.github.poorgrammerdev.ominouswither.internal.CoroutineManager;
 import io.github.poorgrammerdev.ominouswither.internal.config.BossStat;
+import io.github.poorgrammerdev.ominouswither.utils.ItemBuilder;
 
 /**
  * Handles the Skeletons and Skeleton Horses spawned by the Apocalpyse Skull
@@ -60,7 +62,12 @@ public class ApocalypseHorsemen implements Listener {
      * @param target Entity that was hit by the skull
      */
     public void startApocalypse(final Wither wither, final LivingEntity target) {
+        final World world = wither.getWorld();
+        if (world == null) return;
+
         final Location center = wither.getLocation();
+        final int level = this.plugin.getLevel(wither, 1);
+        final Difficulty difficulty = world.getDifficulty();
 
         //Find viable locations and summon skeleton horsemen
         final UUID groupID = UUID.randomUUID();
@@ -72,8 +79,8 @@ public class ApocalypseHorsemen implements Listener {
             true,
             true,
             (int) this.plugin.getBossStatsManager().getStat(BossStat.APOCALYPSE_SPAWN_AMOUNT, wither),
-            (location) -> {this.spawnHorseman(groupID, location, targetID);},
-            (amount) -> {this.activateTimer(groupID, amount, (int) this.plugin.getBossStatsManager().getStat(BossStat.APOCALYPSE_HORSEMAN_LIFESPAN, wither));}
+            (location) -> {this.spawnHorseman(groupID, location, targetID, level, difficulty);},
+            (amount) -> {this.activateTimer(groupID, amount, (int) this.plugin.getBossStatsManager().getStat(BossStat.APOCALYPSE_HORSEMAN_LIFESPAN, level, difficulty));}
         ));
     }
 
@@ -152,8 +159,10 @@ public class ApocalypseHorsemen implements Listener {
      * @param groupID UUID denoting the group that this horseman belongs to. all members spawning from the same skull should have the same group id
      * @param location location to spawn at
      * @param target entity to target
+     * @param level level of Ominous Wither
+     * @param difficulty difficulty of world
      */
-    private void spawnHorseman(final UUID groupID, final Location location, final UUID targetID) {
+    private void spawnHorseman(final UUID groupID, final Location location, final UUID targetID, final int level, final Difficulty difficulty) {
         final World world = location.getWorld();
         if (world == null) return;
 
@@ -170,7 +179,7 @@ public class ApocalypseHorsemen implements Listener {
         }
 
         final Skeleton skeleton = (Skeleton) entity2;
-        this.applySkeletonEffects(skeleton);
+        this.applySkeletonEffects(skeleton, level, difficulty);
 
         final Entity target = this.plugin.getServer().getEntity(targetID);
         if (target instanceof LivingEntity && !target.isDead() && target.isInWorld()) {
@@ -178,7 +187,7 @@ public class ApocalypseHorsemen implements Listener {
         }
 
         final SkeletonHorse horse = (SkeletonHorse) entity1;
-        this.applyHorseEffects(horse);
+        this.applyHorseEffects(horse, level, difficulty);
 
         horse.addPassenger(skeleton);
 
@@ -239,8 +248,11 @@ public class ApocalypseHorsemen implements Listener {
 
     /**
      * Turns a skeleton into a Skeleton Horseman
+     * @param skeleton skeleton to apply buffs and items to
+     * @param level level of Ominous Wither that summoned this horseman
+     * @param difficulty difficulty of world
      */
-    private void applySkeletonEffects(final Skeleton skeleton) {
+    private void applySkeletonEffects(final Skeleton skeleton, final int level, final Difficulty difficulty) {
         //Handle base stats, etc.
         skeleton.getPersistentDataContainer().set(this.plugin.getMinionKey(), PersistentDataType.BOOLEAN, true);
         skeleton.setLootTable(LootTables.EMPTY.getLootTable());
@@ -259,31 +271,38 @@ public class ApocalypseHorsemen implements Listener {
         skeletonEquipment.setItemInMainHandDropChance(-32767);
 
         //Armor
+        final int protectionLevel = (int) this.plugin.getBossStatsManager().getStat(BossStat.APOCALYPSE_HORSEMAN_ARMOR_PROTECTION, level, difficulty);
         skeletonEquipment.setArmorContents(new ItemStack[]{
-            new ItemStack(Material.IRON_BOOTS),
-            new ItemStack(Material.IRON_LEGGINGS),
-            new ItemStack(Material.IRON_CHESTPLATE),
-            new ItemStack(Material.IRON_HELMET),
+            new ItemBuilder(Material.IRON_BOOTS).addEnchant(Enchantment.PROTECTION, protectionLevel, true).build(),
+            new ItemBuilder(Material.IRON_LEGGINGS).addEnchant(Enchantment.PROTECTION, protectionLevel, true).build(),
+            new ItemBuilder(Material.IRON_CHESTPLATE).addEnchant(Enchantment.PROTECTION, protectionLevel, true).build(),
+            new ItemBuilder(Material.IRON_HELMET).addEnchant(Enchantment.PROTECTION, protectionLevel, true).build(),
         });
 
         //Weapon
-        final ItemStack bow = new ItemStack(Material.BOW);
-        bow.addEnchantment(Enchantment.POWER, 3);
-        bow.addEnchantment(Enchantment.FLAME, 1);
+        final ItemStack bow =
+            new ItemBuilder(Material.BOW)
+                .addEnchant(Enchantment.POWER, (int) this.plugin.getBossStatsManager().getStat(BossStat.APOCALYPSE_HORSEMAN_BOW_POWER, level, difficulty), true)
+                .addEnchant(Enchantment.FLAME, 1, false)
+            .build()
+        ;
         skeletonEquipment.setItemInMainHand(bow);
     }
 
     /**
      * Turns a skeleton horse into the Skeleton Horseman's Horse
+     * @param horse skeleton horse to apply buffs/stats to
+     * @param level level of Ominous Wither that summoned this horse
+     * @param difficulty difficulty of world
      */
-    private void applyHorseEffects(final SkeletonHorse horse) {
+    private void applyHorseEffects(final SkeletonHorse horse, final int level, final Difficulty difficulty) {
         horse.getPersistentDataContainer().set(this.plugin.getMinionKey(), PersistentDataType.BOOLEAN, true);
         horse.setLootTable(LootTables.EMPTY.getLootTable());
         horse.setTamed(true);
         horse.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, PotionEffect.INFINITE_DURATION, 0));
         horse.getAttribute(Attribute.GENERIC_FOLLOW_RANGE).setBaseValue(128);
-        horse.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.5);
-        horse.getAttribute(Attribute.GENERIC_MOVEMENT_EFFICIENCY).setBaseValue(2.0);
+        horse.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue((int) this.plugin.getBossStatsManager().getStat(BossStat.APOCALYPSE_HORSE_SPEED, level, difficulty));
+        horse.getAttribute(Attribute.GENERIC_MOVEMENT_EFFICIENCY).setBaseValue((int) this.plugin.getBossStatsManager().getStat(BossStat.APOCALYPSE_HORSE_MOVEMENT_EFFICIENCY, level, difficulty));
     }
     
 

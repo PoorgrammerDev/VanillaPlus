@@ -30,6 +30,7 @@ import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherActiv
 import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherLoadEvent;
 import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherSpawnEvent;
 import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherUnloadEvent;
+import io.github.poorgrammerdev.ominouswither.utils.ItemBuilder;
 import io.github.poorgrammerdev.ominouswither.utils.ParticleInfo;
 import io.github.poorgrammerdev.ominouswither.utils.Utils;
 import io.github.poorgrammerdev.ominouswither.OminousWither;
@@ -70,7 +71,10 @@ public class SpawnMechanics implements Listener {
         player.removePotionEffect(PotionEffectType.BAD_OMEN);
 
         //Modify the Wither's stats
-        wither.setCustomName(ChatColor.DARK_PURPLE + "Ominous Wither");
+        final String levelRoman = this.getLevelRomanNumeral(level);
+        final String witherName = ChatColor.of("#8400FF") + "Ominous Wither" + (levelRoman != null ? (" " + levelRoman) : "");
+
+        wither.setCustomName(witherName);
         wither.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(this.plugin.getBossStatsManager().getStat(BossStat.BOSS_MAX_HEALTH, level, difficulty));
         wither.getAttribute(Attribute.GENERIC_ARMOR).setBaseValue(this.plugin.getBossStatsManager().getStat(BossStat.FIRST_PHASE_ARMOR, level, difficulty));
         wither.getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS).setBaseValue(this.plugin.getBossStatsManager().getStat(BossStat.FIRST_PHASE_ARMOR_TOUGHNESS, level, difficulty));
@@ -248,15 +252,43 @@ public class SpawnMechanics implements Listener {
             if (equipment == null) continue;
 
             equipment.setItemInMainHandDropChance(-32768);
-            final ItemStack weapon = new ItemStack(Material.NETHERITE_SWORD);
-            weapon.addEnchantment(Enchantment.SHARPNESS, (int) this.plugin.getBossStatsManager().getStat(BossStat.MINION_SWORD_SHARPNESS, level, difficulty));
-            weapon.addEnchantment(Enchantment.FIRE_ASPECT, 2);
+            final ItemStack weapon =
+                new ItemBuilder(Material.NETHERITE_SWORD)
+                    .addEnchant(Enchantment.SHARPNESS, (int) this.plugin.getBossStatsManager().getStat(BossStat.MINION_SWORD_SHARPNESS, level, difficulty), true)
+                    .addEnchant(Enchantment.FIRE_ASPECT, 3, false)
+                .build()
+            ;
+
             equipment.setItemInMainHand(weapon);
 
             if (level == 5) {
                 equipment.setItemInOffHandDropChance(-32768);
                 equipment.setItemInOffHand(new ItemStack(Material.TOTEM_OF_UNDYING));
             }
+        }
+    }
+
+
+    /**
+     * Get Roman Numeral for Wither level
+     */
+    private String getLevelRomanNumeral(final int level) {
+        //NOTE: I am aware there is an algorithm to perform this without manually hardcoding every case
+        //However, there are only 5 possible levels so this is a much simpler solution
+        //If the number of levels is ever expanded I will use that algorithm instead
+        switch (level) {
+            case 1:
+                return "I";
+            case 2:
+                return "II";
+            case 3:
+                return "III";
+            case 4:
+                return "IV";
+            case 5:
+                return "V";
+            default:
+                return null;
         }
     }
 }

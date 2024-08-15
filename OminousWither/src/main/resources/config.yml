@@ -86,6 +86,22 @@ boss_stats:
   apocalypse_horseman_lifespan:
     formula: "1000"
 
+  # Apocalypse Skull: Protection enchantment level of Skeleton Horseman's armor
+  apocalypse_horseman_armor_protection:
+    formula: "0"
+
+  # Apocalypse Skull: Power enchantment level of Skeleton Horsemen's bows
+  apocalypse_horseman_bow_power: 
+    formula: "3"
+
+  # Apocalypse Skull: Movement Speed attribute of Skeleton Horses
+  apocalypse_horse_speed:
+    formula: "0.5"
+
+  # Apocalypse Skull: Movement Efficiency attribute of Skeleton Horses
+  apocalypse_horse_movement_efficiency:
+    formula: "2.0"
+
   # Probability of a fired skull being a custom blue skull
   dangerous_skull_chance_boost:
     formula: "0.05 * level"

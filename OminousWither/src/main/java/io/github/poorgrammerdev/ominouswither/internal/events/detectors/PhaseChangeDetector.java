@@ -8,11 +8,15 @@ import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.boss.BarFlag;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Wither;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -76,6 +80,18 @@ public class PhaseChangeDetector implements Listener {
 
         //Wither grows in size
         wither.getAttribute(Attribute.GENERIC_SCALE).setBaseValue(1.5);
+        
+        //Begin fog effect
+        wither.getBossBar().addFlag(BarFlag.CREATE_FOG);
+
+        wither.getNearbyEntities(20, 20, 20)
+            .stream()
+            .filter(Player.class::isInstance)
+            .map(Player.class::cast)
+            .forEach((player) -> {
+                player.addPotionEffect(new PotionEffect(PotionEffectType.DARKNESS, 40, 0, true, false, false));
+            })
+        ;
 
         //Play starting sound
         final World world = wither.getWorld();
