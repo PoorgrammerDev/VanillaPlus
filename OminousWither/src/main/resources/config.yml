@@ -241,3 +241,34 @@ boss_stats:
   # This value is half of the total height
   life_drain_vertical_radius:
     formula: "1.5"
+
+  # The next few settings pertain to Echoes, an extra move the Wither gains in its Second Phase where it plummets Players into the ground
+  # This move is intended as a counterattack to the Mace. It activates when airborne Player targets enter a certain range of the Wither while falling down
+  # The move causes the player to fall at a heightened speed until they reach the ground or until the duration is up
+
+  # Echoes goes on cooldown once used and cannot be used by this Wither again until this many ticks passes
+  # Please note this counter starts directly when it is used by the Wither, not once the Player reaches the ground or after its effect duration runs out
+  # This means if this value is less than max_effect_duration, it is possible, though unlikely, that the effect can be applied multiple times concurrently to the same player
+  # In this instance the effect would not compound however, since the effect simply sets the vertical component of their velocity to the downward_force value
+  echoes_cooldown:
+    formula: "(-75 * level) + 675"
+
+  # How close the Wither's target must be in order to use Echoes on them
+  # The distance is measured at a point slightly above the Wither's base to give some vertical bias
+  echoes_range:
+    formula: "5.0"
+
+  # How fast the Player must be falling downward in order to trigger Echoes
+  # The Y (vertical) component of their velocity must be lesser (more negative) than this value to trigger
+  echoes_max_y_velocity:
+    formula: "-0.75"
+
+  # How long a single application of the Echoes effect can last at maximum
+  # The effect also terminates once the Player reaches the ground
+  echoes_max_effect_duration:
+    formula: "20"
+
+  # How strongly the player is sent plummeting into the ground
+  # The effect sets the Y (vertical) component of their velocity to this value
+  echoes_vertical_force:
+    formula: "-1.0 * level"

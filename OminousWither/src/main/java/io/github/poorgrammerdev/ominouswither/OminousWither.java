@@ -13,6 +13,7 @@ import io.github.poorgrammerdev.ominouswither.internal.events.detectors.PhaseCha
 import io.github.poorgrammerdev.ominouswither.internal.events.detectors.SpawnDetector;
 import io.github.poorgrammerdev.ominouswither.mechanics.ApocalypseHorsemen;
 import io.github.poorgrammerdev.ominouswither.mechanics.DangerousSkullManager;
+import io.github.poorgrammerdev.ominouswither.mechanics.Echoes;
 import io.github.poorgrammerdev.ominouswither.mechanics.ExplosionResistance;
 import io.github.poorgrammerdev.ominouswither.mechanics.FlightAcceleration;
 import io.github.poorgrammerdev.ominouswither.mechanics.LifeDrain;
@@ -80,7 +81,8 @@ public final class OminousWither extends JavaPlugin {
             new DangerousSkullManager(this, skullHandlers),
             new SecondPhaseBuffs(this),
             new PreventPhaseRevert(this),
-            new LifeDrain(this)
+            new LifeDrain(this),
+            new Echoes(this)
         );
 
         //Begin Coroutine Manager

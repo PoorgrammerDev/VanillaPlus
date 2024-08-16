@@ -99,6 +99,22 @@ public final class Utils {
     }
 
     /**
+     * Checks if a location is on the ground
+     */
+    public static boolean isOnGround(final Location location) {
+        final World world = location.getWorld();
+        if (world == null) return false;
+
+        final RayTraceResult result = world.rayTraceBlocks(location, new Vector(0, -1, 0), 0.25D, FluidCollisionMode.NEVER, true);
+        
+        //From the docs: the method above returns "the ray trace hit result, or null if there is no hit"
+        if (result == null) return false;
+
+        final Block block = result.getHitBlock();
+        return (block != null && !block.isPassable());
+    }
+
+    /**
      * Restrict an integer value to a bound
      * @return clamped value
      */
