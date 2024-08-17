@@ -50,6 +50,8 @@ public enum BossStat {
     ECHOES_MAX_Y_VELOCITY("boss_stats.echoes_max_y_velocity"),
     ECHOES_MAX_EFFECT_DURATION("boss_stats.echoes_max_effect_duration"),
     ECHOES_VERTICAL_FORCE("boss_stats.echoes_vertical_force"),
+    LOOT_EXP_MULTIPLIER("boss_stats.loot_exp_multiplier"),
+    LOOT_ITEM_MULTIPLIER("boss_stats.loot_item_multiplier"),
 
 
 

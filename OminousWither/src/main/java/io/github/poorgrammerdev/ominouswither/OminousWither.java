@@ -17,6 +17,7 @@ import io.github.poorgrammerdev.ominouswither.mechanics.Echoes;
 import io.github.poorgrammerdev.ominouswither.mechanics.ExplosionResistance;
 import io.github.poorgrammerdev.ominouswither.mechanics.FlightAcceleration;
 import io.github.poorgrammerdev.ominouswither.mechanics.LifeDrain;
+import io.github.poorgrammerdev.ominouswither.mechanics.Loot;
 import io.github.poorgrammerdev.ominouswither.mechanics.OminousAura;
 import io.github.poorgrammerdev.ominouswither.mechanics.PreventExploits;
 import io.github.poorgrammerdev.ominouswither.mechanics.PreventFriendlyFire;
@@ -82,7 +83,8 @@ public final class OminousWither extends JavaPlugin {
             new SecondPhaseBuffs(this),
             new PreventPhaseRevert(this),
             new LifeDrain(this),
-            new Echoes(this)
+            new Echoes(this),
+            new Loot(this)
         );
 
         //Begin Coroutine Manager
@@ -90,6 +92,9 @@ public final class OminousWither extends JavaPlugin {
 
         //Call load event for all existing loaded OminousWithers
         loadDetector.onPluginEnable();
+
+        //Clear all existing Apocalypse Horsemen
+        apocalypseHorsemen.onPluginEnable();
     }
 
     /**

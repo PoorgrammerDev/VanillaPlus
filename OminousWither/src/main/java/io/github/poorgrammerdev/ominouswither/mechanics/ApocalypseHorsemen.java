@@ -1,5 +1,6 @@
 package io.github.poorgrammerdev.ominouswither.mechanics;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.UUID;
@@ -22,6 +23,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
+import org.bukkit.event.world.EntitiesLoadEvent;
 import org.bukkit.event.world.EntitiesUnloadEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
@@ -84,75 +86,6 @@ public class ApocalypseHorsemen implements Listener {
         ));
     }
 
-    /**
-     * If the skeleton dies, then the horse flashes out of existence
-     */
-    @EventHandler(ignoreCancelled = true)
-    private void onSkeletonDeath(final EntityDeathEvent event) {
-        //Must be a skeleton horseman
-        if (event.getEntityType() != EntityType.SKELETON) return;
-
-        final Entity entity = event.getEntity();
-        if (!this.plugin.isMinion(entity)) return;
-
-        //Get horse if exists
-        final Entity horse = entity.getVehicle();
-        if (horse == null || horse.getType() != EntityType.SKELETON_HORSE || !this.plugin.isMinion(horse)) return;
-
-        //Play flash particle
-        final World world = horse.getWorld();
-        if (world != null) {
-            world.spawnParticle(Particle.FLASH, horse.getLocation().add(0, 0.5, 0), 1);
-        }
-
-        horse.remove();        
-    }
-
-    /**
-     * Horsemen get removed when unloaded
-     */
-    @EventHandler(ignoreCancelled = true)
-    private void onUnload(final EntitiesUnloadEvent event) {
-        event.getEntities()
-            .stream()
-            .filter((entity) -> (this.plugin.isMinion(entity) && (entity.getType() == EntityType.SKELETON || entity.getType() == EntityType.SKELETON_HORSE)))
-            .forEach((entity) -> {
-                entity.remove();
-            })
-        ;
-    }
-
-    /**
-     * Prevents a non-minion entity from riding a Skeleton Horse minion and vice versa
-     * This should already be impossible in regular gameplay since the Skeleton Horse will disappear if the Skeleton dies
-     * The only known edge case is if the difficulty is set to Peaceful after the skull is launched
-     */
-    @EventHandler(ignoreCancelled = true)
-    private void onRide(final VehicleEnterEvent event) {
-        //Both entities must exist; vehicle must be a skeleton horse
-        if (event.getEntered() == null || !(event.getVehicle() instanceof SkeletonHorse)) return;
-
-        //If not matching type then cancel
-        if (this.plugin.isMinion(event.getEntered()) ^ this.plugin.isMinion(event.getVehicle())) {
-            event.setCancelled(true);
-        }
-    }
-
-    /**
-     * <p>Prevents players from interacting with Skeleton Horse minions</p>
-     * <p>This prevents feeding, equipping a saddle, and opening inventory</p>
-     */
-    @EventHandler(ignoreCancelled = true)
-    private void onInteract(final PlayerInteractEntityEvent event) {
-        if (!(event.getRightClicked() instanceof SkeletonHorse)) return;
-
-        //Non-minion player trying to interact with a minion horse -> cancel
-        //(Not that minion players can even exist)
-        final SkeletonHorse horse = (SkeletonHorse) event.getRightClicked();
-        if (this.plugin.isMinion(horse) && !this.plugin.isMinion(event.getPlayer())) {
-            event.setCancelled(true);
-        }
-    }
 
     /**
      * Spawns a skeleton horseman at this location
@@ -305,6 +238,102 @@ public class ApocalypseHorsemen implements Listener {
         horse.getAttribute(Attribute.GENERIC_MOVEMENT_EFFICIENCY).setBaseValue((int) this.plugin.getBossStatsManager().getStat(BossStat.APOCALYPSE_HORSE_MOVEMENT_EFFICIENCY, level, difficulty));
     }
     
+    //#region BehaviorControl
+    // Region of code prevents unintended behaviors with Apocalypse Horses by removing them after Horseman death and disabling certain mechanics with them
 
+    /**
+     * If the skeleton dies, then the horse flashes out of existence
+     */
+    @EventHandler(ignoreCancelled = true)
+    private void onSkeletonDeath(final EntityDeathEvent event) {
+        //Must be a skeleton horseman
+        if (event.getEntityType() != EntityType.SKELETON) return;
 
+        final Entity entity = event.getEntity();
+        if (!this.plugin.isMinion(entity)) return;
+
+        //Get horse if exists
+        final Entity horse = entity.getVehicle();
+        if (horse == null || horse.getType() != EntityType.SKELETON_HORSE || !this.plugin.isMinion(horse)) return;
+
+        //Play flash particle
+        final World world = horse.getWorld();
+        if (world != null) {
+            world.spawnParticle(Particle.FLASH, horse.getLocation().add(0, 0.5, 0), 1);
+        }
+
+        horse.remove();        
+    }
+
+    /**
+     * Prevents a non-minion entity from riding a Skeleton Horse minion and vice versa
+     * This should already be impossible in regular gameplay since the Skeleton Horse will disappear if the Skeleton dies
+     * The only known edge case is if the difficulty is set to Peaceful after the skull is launched
+     */
+    @EventHandler(ignoreCancelled = true)
+    private void onRide(final VehicleEnterEvent event) {
+        //Both entities must exist; vehicle must be a skeleton horse
+        if (event.getEntered() == null || !(event.getVehicle() instanceof SkeletonHorse)) return;
+
+        //If not matching type then cancel
+        if (this.plugin.isMinion(event.getEntered()) ^ this.plugin.isMinion(event.getVehicle())) {
+            event.setCancelled(true);
+        }
+    }
+
+    /**
+     * <p>Prevents players from interacting with Skeleton Horse minions</p>
+     * <p>This prevents feeding, equipping a saddle, and opening inventory</p>
+     */
+    @EventHandler(ignoreCancelled = true)
+    private void onInteract(final PlayerInteractEntityEvent event) {
+        if (!(event.getRightClicked() instanceof SkeletonHorse)) return;
+
+        //Non-minion player trying to interact with a minion horse -> cancel
+        //(Not that minion players can even exist)
+        final SkeletonHorse horse = (SkeletonHorse) event.getRightClicked();
+        if (this.plugin.isMinion(horse) && !this.plugin.isMinion(event.getPlayer())) {
+            event.setCancelled(true);
+        }
+    }
+
+    //#endregion
+
+    //#region RemoveOnLoad
+    /**
+     * Horsemen get removed on load
+     */
+    @EventHandler(ignoreCancelled = true)
+    private void onUnload(final EntitiesLoadEvent event) {
+        this.removeHorsemen(event.getEntities());
+    }
+    
+    /**
+     * Horsemen get removed when unloaded
+     */
+    @EventHandler(ignoreCancelled = true)
+    private void onUnload(final EntitiesUnloadEvent event) {
+        this.removeHorsemen(event.getEntities());
+    }
+
+    /**
+     * Any existing Horsemen are removed on plugin enable
+     */
+    public void onPluginEnable() {
+        for (final World world : this.plugin.getServer().getWorlds()) {
+            this.removeHorsemen(world.getEntitiesByClasses(Skeleton.class, SkeletonHorse.class));
+        }
+    }
+
+    /**
+     * Finds any horsemen in the list of entities and despawns them
+     */
+    private void removeHorsemen(final Collection<Entity> entities) {
+        for (final Entity entity : entities) {
+            if (this.plugin.isMinion(entity) && (entity.getType() == EntityType.SKELETON || entity.getType() == EntityType.SKELETON_HORSE)) {
+                entity.remove();
+            }
+        }
+    }
+    //#endregion
 }

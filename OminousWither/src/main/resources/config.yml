@@ -272,3 +272,17 @@ boss_stats:
   # The effect sets the Y (vertical) component of their velocity to this value
   echoes_vertical_force:
     formula: "-1.0 * level"
+
+  # Scales dropped experience points on death for Ominous Withers
+  # As of 16 August 2024, the vanilla Wither drops 50 experience points according to the Minecraft Wiki (https://minecraft.wiki/w/Wither)
+  # The Ominous Wither will drop the vanilla value multiplied by this scalar value. If the resulting number is a decimal, the decimal portion will be truncated.
+  # e.g. if multiplier = 1.75 ->  base * multiplier = 50 * 1.75 = 87.5  -> 87 experience points dropped
+  loot_exp_multiplier:
+    formula: "(2^level * ((5^difficulty)/10)) + ((2*(level^2) * 2*(difficulty^3))/15)"
+
+  # Scales amount of dropped items from the Ominous Wither
+  # This does not apply random chance, it simply scales the loot amount
+  # As of OminousWither version 1.0.0 the only possible loot is the vanilla Wither drop, the Nether Star
+  # If custom loot items are ever added, this value would likely serve as the amount of rolls in the loot generation
+  loot_item_multiplier:
+    formula: "level + difficulty"
