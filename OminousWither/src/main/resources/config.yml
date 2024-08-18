@@ -206,7 +206,7 @@ boss_stats:
   # Please note this counter starts directly when it is summoned by the Wither, not after the construct activates or deactivates
   # This means if this value is less than (startup time + lifespan), then there may be multiple Life Drain constructs active at once
   life_drain_cooldown:
-    formula: "(-50 * level) + 350"
+    formula: "300 - (60 * (level - 1))"
   
   # How close the Wither's target must be in order to summon the Life Drain construct on them
   life_drain_range:
@@ -220,7 +220,7 @@ boss_stats:
   
   # How long, in ticks, the construct must wait before it activates and begins draining HP
   life_drain_startup_time:
-    formula: "(-5 * level) + 45"
+    formula: "40 - (6 * (level - 1))"
   
   # How long the construct can stay active and drain HP for before it deactivates, in ticks
   # Please note that this does not encompass the startup time; it is separate
@@ -251,7 +251,7 @@ boss_stats:
   # This means if this value is less than max_effect_duration, it is possible, though unlikely, that the effect can be applied multiple times concurrently to the same player
   # In this instance the effect would not compound however, since the effect simply sets the vertical component of their velocity to the downward_force value
   echoes_cooldown:
-    formula: "(-75 * level) + 675"
+    formula: "700 - (75 * (level - 1))"
 
   # How close the Wither's target must be in order to use Echoes on them
   # The distance is measured at a point slightly above the Wither's base to give some vertical bias
@@ -266,12 +266,12 @@ boss_stats:
   # How long a single application of the Echoes effect can last at maximum
   # The effect also terminates once the Player reaches the ground
   echoes_max_effect_duration:
-    formula: "20"
+    formula: "10"
 
   # How strongly the player is sent plummeting into the ground
   # The effect sets the Y (vertical) component of their velocity to this value
   echoes_vertical_force:
-    formula: "-1.0 * level"
+    formula: "-0.75 * level"
 
   # Scales dropped experience points on death for Ominous Withers
   # As of 16 August 2024, the vanilla Wither drops 50 experience points according to the Minecraft Wiki (https://minecraft.wiki/w/Wither)
