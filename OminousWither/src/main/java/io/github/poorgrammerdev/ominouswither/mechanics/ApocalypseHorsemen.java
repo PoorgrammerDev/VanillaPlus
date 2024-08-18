@@ -234,8 +234,8 @@ public class ApocalypseHorsemen implements Listener {
         horse.setTamed(true);
         horse.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, PotionEffect.INFINITE_DURATION, 0));
         horse.getAttribute(Attribute.GENERIC_FOLLOW_RANGE).setBaseValue(128);
-        horse.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue((int) this.plugin.getBossStatsManager().getStat(BossStat.APOCALYPSE_HORSE_SPEED, level, difficulty));
-        horse.getAttribute(Attribute.GENERIC_MOVEMENT_EFFICIENCY).setBaseValue((int) this.plugin.getBossStatsManager().getStat(BossStat.APOCALYPSE_HORSE_MOVEMENT_EFFICIENCY, level, difficulty));
+        horse.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(this.plugin.getBossStatsManager().getStat(BossStat.APOCALYPSE_HORSE_SPEED, level, difficulty));
+        horse.getAttribute(Attribute.GENERIC_MOVEMENT_EFFICIENCY).setBaseValue(this.plugin.getBossStatsManager().getStat(BossStat.APOCALYPSE_HORSE_MOVEMENT_EFFICIENCY, level, difficulty));
     }
     
     //#region BehaviorControl

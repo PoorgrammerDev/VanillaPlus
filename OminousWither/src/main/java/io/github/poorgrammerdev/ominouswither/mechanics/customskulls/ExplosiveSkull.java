@@ -22,7 +22,7 @@ public class ExplosiveSkull extends AbstractSkullHandler {
 
     @Override
     public void onHit(final ProjectileHitEvent event, final Wither wither) {
-        final Location location = wither.getLocation();
+        final Location location = event.getEntity().getLocation();
         final World world = location.getWorld();
         if (world == null) return;
 

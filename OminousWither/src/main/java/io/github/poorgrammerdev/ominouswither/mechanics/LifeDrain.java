@@ -209,17 +209,23 @@ public class LifeDrain implements Listener {
                             entity.setHealth(currentHealth - 1.0D);
                             hpDrained += 1.0D;
 
-                            //Display hit particle and play regular drain sound
+                            //Display hit particle
                             hitParticle.spawnParticle(world, entity.getLocation().add(0, entity.getHeight() / 2.0, 0));
-                            world.playSound(entity, Sound.ENTITY_ITEM_BREAK, SoundCategory.HOSTILE, 1.0f, 1.0f);
                         }
 
-                        //Heal the Wither with drained HP
-                        if (wither != null && !wither.isDead() && wither.isInWorld()) {
-                            final double hpBound = wither.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() / 2.0;
+                        //If any entity was hit:
+                        if (hpDrained > 0.0D) {
+                            //Play regular drain sound
+                            world.playSound(location, Sound.ENTITY_ITEM_BREAK, SoundCategory.HOSTILE, 1.0f, 1.0f);
 
-                            wither.setHealth(Math.min(wither.getHealth() + hpDrained, hpBound));
+                            //Heal the Wither with drained HP
+                            if (wither != null && !wither.isDead() && wither.isInWorld()) {
+                                final double hpBound = wither.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() / 2.0;
+
+                                wither.setHealth(Math.min(wither.getHealth() + hpDrained, hpBound));
+                            }
                         }
+
                     }
                 }
 

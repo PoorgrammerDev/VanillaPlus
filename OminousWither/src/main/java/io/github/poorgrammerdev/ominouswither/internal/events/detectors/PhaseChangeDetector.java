@@ -8,7 +8,6 @@ import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.boss.BarFlag;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Wither;
 import org.bukkit.event.EventHandler;
@@ -80,9 +79,6 @@ public class PhaseChangeDetector implements Listener {
 
         //Wither grows in size
         wither.getAttribute(Attribute.GENERIC_SCALE).setBaseValue(1.5);
-        
-        //Begin fog effect
-        wither.getBossBar().addFlag(BarFlag.CREATE_FOG);
 
         wither.getNearbyEntities(20, 20, 20)
             .stream()
