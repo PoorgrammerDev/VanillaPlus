@@ -200,37 +200,44 @@ boss_stats:
   # The next few settings pertain to Life Drain, an extra move the Wither gains in its Second Phase where it summons a particle construct on its target
   # The construct takes some startup time before it activates, and then begins directly draining the health of any entity inside of it that the Wither doesn't consider friendly
   # The Life Drain bypasses all armor and Absorption hearts, but cannot kill its target, leaving them at half a heart at the lowest
-  # The drained health is used to heal the Wither at a direct 1:1 ratio # TODO: should this be configurable?
+  # The drained health is used to heal the Wither
 
   # Life Drain goes on cooldown once used and cannot be used by this Wither again until this many ticks passes
-  # Please note this counter starts directly when it is summoned by the Wither, not after the construct activates or deactivates
+  # Please note this counter starts directly when it is summoned by the Wither, not after the construct activates or despawns
   # This means if this value is less than (startup time + lifespan), then there may be multiple Life Drain constructs active at once
   life_drain_cooldown:
-    formula: "300 - (60 * (level - 1))"
+    formula: "300 - (55 * (level - 1))"
   
-  # How close the Wither's target must be in order to summon the Life Drain construct on them
+  # How close the Wither must be to its target in order to summon the Life Drain construct on them
+  # Please note this indicates neither the distance from the construct to the Wither nor the distance from the construct to the target
+  # It solely indicates the max distance of the Wither to the target to trigger the attack. The location of the construct itself is not bounded by a range.
   life_drain_range:
-    formula: "2.5"
-  
-  # How slow the Wither's target must be moving in order to summon the Life Drain construct on them
-  # Since the Life Drain construct is stationary and has start-up time, it is not effective against a fast-moving target
-  # Therefore, the Wither will only use it against targets that are moving slow enough
-  life_drain_speed_threshold:
-    formula: "5.0"
+    formula: "2.5 * level"
   
   # How long, in ticks, the construct must wait before it activates and begins draining HP
   life_drain_startup_time:
     formula: "40 - (6 * (level - 1))"
   
-  # How long the construct can stay active and drain HP for before it deactivates, in ticks
+  # How long the construct can stay active and drain HP for before it despawns, in ticks
   # Please note that this does not encompass the startup time; it is separate
-  # For example, if the startup time is 5 ticks and this is 20 ticks: the construct will load for 5 ticks, drain HP for 20 ticks, and deactivate 25 ticks after it was initially spawned
+  # For example, if the startup time is 5 ticks and this is 20 ticks: the construct will load for 5 ticks, drain HP for 20 ticks, and despawns 25 ticks after it was initially spawned
   life_drain_lifespan:
     formula: "(15 * level) + 45"
   
   # The construct will drain 1 health from its targets every # ticks
   life_drain_attack_interval:
     formula: "3"
+    
+  # For every 1 health drained from a target, its summoner (the Wither) will regain this many health points
+  life_drain_heal_multiplier:
+    formula: "1.0"
+
+  # For each construct, its first hit on a given entity has a probability of inflicting a curse that instantly removes all Absorption from the target
+  # Repeated hits on the same enity cannot activate this - only the first hit on a unique entity, per construct
+  # The removed Absorption hearts do not heal the Wither
+  life_drain_curse_probability:
+    formula: "level"
+    level-mapping: [0, 0, 0, 0.5, 1.0]
   
   # The horizontal radius of the construct
   # This value is half of the total width
@@ -266,7 +273,7 @@ boss_stats:
   # How long a single application of the Echoes effect can last at maximum
   # The effect also terminates once the Player reaches the ground
   echoes_max_effect_duration:
-    formula: "10"
+    formula: "20"
 
   # How strongly the player is sent plummeting into the ground
   # The effect sets the Y (vertical) component of their velocity to this value

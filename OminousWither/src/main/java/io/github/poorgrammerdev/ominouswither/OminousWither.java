@@ -6,7 +6,6 @@ import org.bukkit.entity.Wither;
 import org.bukkit.event.Listener;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
-
 import io.github.poorgrammerdev.ominouswither.internal.events.detectors.ActivationDetector;
 import io.github.poorgrammerdev.ominouswither.internal.events.detectors.LoadDetector;
 import io.github.poorgrammerdev.ominouswither.internal.events.detectors.PhaseChangeDetector;

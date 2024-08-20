@@ -60,7 +60,8 @@ public class Echoes implements Listener {
         if (wither.getInvulnerabilityTicks() <= 0 && wither.getPersistentDataContainer().getOrDefault(plugin.getSecondPhaseKey(), PersistentDataType.BOOLEAN, false)) {
             this.enableAttackMechanism(wither);
         }
-        //TODO: do we need to wait until phase change ends otherwise? see similar issue in FlightAcceleration
+        
+        //NOTE: Does not need to wait until invuln is over here: that will be handled in the PhaseChangeEndEvent handler.
     }
 
     /**
@@ -89,14 +90,18 @@ public class Echoes implements Listener {
 
                 //Checks all three possible targets
                 for (final Head head : Head.values()) {
-                    //Target must be a living player
-                    final LivingEntity target = wither.getTarget(head);
-                    if (!(target instanceof Player) || target.isDead() || !target.isInWorld() || Utils.isOnGround(target.getLocation())) continue;
+                    //Target must be a player
+                    final LivingEntity livingTarget = wither.getTarget(head);
+                    if (!(livingTarget instanceof Player)) continue;
+
+                    //Target must exist and be targetable
+                    final Player target = (Player) livingTarget;
+                    if (target.isDead() || !target.isInWorld() || Utils.isOnGround(target.getLocation()) || !Utils.isTargetable(target)) continue;
 
                     //Target must be in range and be falling at a high enough speed
                     if (target.getVelocity().getY() > maxYVelocity || wither.getLocation().add(0, range / 2.0, 0).distanceSquared(target.getLocation()) > rangeSq) continue;
 
-                    // Perform Echoes attack on the player
+                    // Perform Echoes attack on the target
                     final boolean success = performAttack((Player) target, wither);
 
                     //If activated properly, set on cooldown

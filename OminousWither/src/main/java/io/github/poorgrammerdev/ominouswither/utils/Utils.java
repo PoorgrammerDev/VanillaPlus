@@ -100,18 +100,30 @@ public final class Utils {
 
     /**
      * Checks if a location is on the ground
+     * @param location location to check
+     * @param range how far to look downward for ground
+     * @return if location is on the ground
      */
-    public static boolean isOnGround(final Location location) {
+    public static boolean isOnGround(final Location location, final double range) {
         final World world = location.getWorld();
         if (world == null) return false;
 
-        final RayTraceResult result = world.rayTraceBlocks(location, new Vector(0, -1, 0), 0.25D, FluidCollisionMode.NEVER, true);
+        final RayTraceResult result = world.rayTraceBlocks(location, new Vector(0, -1, 0), range, FluidCollisionMode.NEVER, true);
         
         //From the docs: the method above returns "the ray trace hit result, or null if there is no hit"
         if (result == null) return false;
 
         final Block block = result.getHitBlock();
         return (block != null && !block.isPassable());
+    }
+
+    /**
+     * Checks if a location is on the ground using a predefined constant range
+     * @param location location to check
+     * @return if location is on the ground
+     */
+    public static boolean isOnGround(final Location location) {
+        return isOnGround(location, 0.25D);
     }
 
     /**

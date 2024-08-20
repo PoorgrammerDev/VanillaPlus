@@ -50,36 +50,12 @@ public class FlightAcceleration implements Listener {
     private void onLoad(final OminousWitherLoadEvent event) {
         final Wither wither = event.getWither();
 
-        //Applies to both first and second phases
-        //If the Wither has already been activated, then just enable the flight behavior
+        //Apply flight mechanic to loaded wither
         if (wither.getInvulnerabilityTicks() <= 0) {
             this.flightBehavior(wither);
-            return;
         }
-
-        //TODO: does this erroneously create a duplicate coroutine, since one will be created once activated/phasechangeend anyway?
-        //Otherwise, wait until the Wither activates and then do it
-        final UUID witherID = wither.getUniqueId();
-        CoroutineManager.getInstance().enqueue(new ICoroutine() {
-            @Override
-            public boolean tick() {
-                final Entity entity = plugin.getServer().getEntity(witherID);
-                //Wither has despawned or unloaded again -> cancel
-                if (!(entity instanceof Wither)) return false;
-                final Wither wither = (Wither) entity;
-                if (wither.isDead() || !wither.isInWorld()) return false;
-
-                //Wither has activated -> turn on flight behavior and cancel
-                if (wither.getInvulnerabilityTicks() <= 0) {
-                    flightBehavior((Wither) entity);
-                    return false;
-                }
-
-                //Wither is here but hasn't activated yet
-                return true;
-            }
-        });
-
+        
+        //NOTE: Does not need to wait until invuln is over here: that will be handled in the two event handlers above
     }
 
     /**
