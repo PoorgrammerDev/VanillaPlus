@@ -38,7 +38,6 @@ public class SpawnCooldown extends CooldownManager implements Listener {
     private final String failedSpawnMessageText;
 
     private final ParticleInfo failedToSpawnParticle;
-    private final ParticleInfo cooldownResetParticle;
 
     public SpawnCooldown(final OminousWither plugin) {
         this.plugin = plugin;
@@ -50,7 +49,6 @@ public class SpawnCooldown extends CooldownManager implements Listener {
         this.failedSpawnMessageText = plugin.getConfig().getString("spawn_cooldown.send_message_on_failed_spawn.message_text", "You are on cooldown! Wait %d seconds or kill an Ominous Wither you've previously spawned to reset.");
 
         this.failedToSpawnParticle = new ParticleInfo(Particle.SMOKE,50,1.25,1,1.25);
-        this.cooldownResetParticle = new ParticleInfo(Particle.HAPPY_VILLAGER, 50, 0.75, 0.75, 0.75);
     }
     
     /**
@@ -126,7 +124,6 @@ public class SpawnCooldown extends CooldownManager implements Listener {
         if (player == null) return;
 
         player.playSound(player, Sound.BLOCK_BELL_RESONATE, SoundCategory.PLAYERS, 1.0f, 1.0f);
-        this.cooldownResetParticle.spawnParticle(player, player.getLocation().add(0, 1, 0));
     }
 
     /**

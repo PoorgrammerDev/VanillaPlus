@@ -37,6 +37,7 @@ import io.github.poorgrammerdev.ominouswither.OminousWither;
 import io.github.poorgrammerdev.ominouswither.coroutines.EntityStare;
 import io.github.poorgrammerdev.ominouswither.coroutines.PassableLocationFinder;
 import io.github.poorgrammerdev.ominouswither.coroutines.PersistentParticle;
+import io.github.poorgrammerdev.ominouswither.internal.ICoroutine;
 import io.github.poorgrammerdev.ominouswither.internal.config.BossStat;
 import net.md_5.bungee.api.ChatColor;
 
@@ -193,6 +194,31 @@ public class SpawnMechanics implements Listener {
             null
         ));
 
+        //Track the Wither to make sure it's still alive and loaded
+        //If not, remove it from the map (this will prevent a memory leak and also clear the smoke particles)
+        //The only known instance of this being an issue is when the difficulty is set to Peaceful during Wither spawn
+        this.plugin.getCoroutineManager().enqueue(new ICoroutine() {
+
+            @Override
+            public boolean tick() {
+                final Entity entity = plugin.getServer().getEntity(witherUUID);
+                
+                //Entity has been removed or unloaded
+                if (!(entity instanceof Wither) || entity.isDead() || !entity.isInWorld()) {
+                    spawnMinionMap.remove(witherUUID);
+                    return false;
+                }
+                
+                //Wither has fully spawned in, no longer need this task
+                final Wither wither = (Wither) entity;
+                if (wither.getPersistentDataContainer().getOrDefault(plugin.getIsFullySpawnedKey(), PersistentDataType.BOOLEAN, false)) return false;
+
+               
+                //Otherwise continue
+                return true;
+            }
+            
+        });
     }
 
     /**
