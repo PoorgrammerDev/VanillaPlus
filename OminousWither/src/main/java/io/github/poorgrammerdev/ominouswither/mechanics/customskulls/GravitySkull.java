@@ -35,6 +35,8 @@ public class GravitySkull extends AbstractSkullHandler {
         if (world == null) return;
 
         final double radius = this.plugin.getBossStatsManager().getStat(BossStat.GRAVITY_RADIUS, wither);
+        if (radius <= 0.0D) return;
+
         final double forceIntensity = this.plugin.getBossStatsManager().getStat(BossStat.GRAVITY_FORCE_INTENSITY, wither);
 
         //Particle circle

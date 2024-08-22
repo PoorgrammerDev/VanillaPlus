@@ -36,6 +36,30 @@ public final class Utils {
     }
 
     /**
+     * Iterates downwards in attempt to find solid ground within range
+     * @param location source location to begin at
+     * @return a location on the ground within range if found, or null if not found
+     */
+    public static Location tryGetGround(final Location location, final int minY) {
+        //Get world to access the minimum height
+        final World world = location.getWorld();
+        if (world == null) return null;
+
+        //Calculate how many times we can iterate based on the minimum Y bound
+        final int limit = location.getBlockY() - minY;
+        
+        Block block = location.getBlock();
+        for (int i = 0; i < limit; i++) {
+            final Block blockUnder = block.getRelative(BlockFace.DOWN);
+            if (!blockUnder.isPassable()) return block.getLocation();
+
+            block = blockUnder;
+        }
+
+        return null;
+    }
+
+    /**
      * Checks if two locations are visible from each other
      */
     public static boolean hasLineOfSight(final Location origin, final Location target) {

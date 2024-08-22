@@ -20,7 +20,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import io.github.poorgrammerdev.ominouswither.OminousWither;
-import io.github.poorgrammerdev.ominouswither.internal.CoroutineManager;
 import io.github.poorgrammerdev.ominouswither.internal.ICoroutine;
 import io.github.poorgrammerdev.ominouswither.internal.config.BossStat;
 import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherLoadEvent;
@@ -76,7 +75,7 @@ public class Echoes implements Listener {
 
         final double rangeSq = range * range;
 
-        CoroutineManager.getInstance().enqueue(new ICoroutine() {
+        this.plugin.getCoroutineManager().enqueue(new ICoroutine() {
             @Override
             public boolean tick() {
                 //If wither no longer exists -> cancel

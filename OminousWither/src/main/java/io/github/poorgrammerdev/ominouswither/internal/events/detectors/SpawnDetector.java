@@ -22,6 +22,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import io.github.poorgrammerdev.ominouswither.OminousWither;
 import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherSpawnEvent;
+import io.github.poorgrammerdev.ominouswither.mechanics.SpawnCooldown;
 import io.github.poorgrammerdev.ominouswither.utils.Utils;
 
 /**
@@ -31,6 +32,7 @@ import io.github.poorgrammerdev.ominouswither.utils.Utils;
  */
 public class SpawnDetector implements Listener {
     private static final int MAX_LEVEL = 5;
+
     /*
      * IMPLEMENTATION:
      * Since there's no trivial way to get who/what spawned a Wither, the system will work as follows:
@@ -39,16 +41,26 @@ public class SpawnDetector implements Listener {
      * - Regardless of if a Wither is even spawned, the Player will be removed from C the following game tick.
      */
     
-    
+    /**
+     * Instance of main plugin class
+     */
     private final OminousWither plugin;
+    private final SpawnCooldown cooldownManager;
     
+    private final double spawnerSearchRadius;
+    private final boolean produceRegularWitherOnFailedSpawn;
+
     /**
      * List of players that may have spawned a Wither in the last game tick
      */
     private final HashSet<UUID> candidateSpawners;
 
-    public SpawnDetector(final OminousWither plugin) {
+    public SpawnDetector(final OminousWither plugin, final SpawnCooldown cooldownManager) {
         this.plugin = plugin;
+        this.cooldownManager = cooldownManager;
+
+        this.spawnerSearchRadius = Math.max(plugin.getConfig().getDouble("spawner_search_radius", 10), 1);
+        this.produceRegularWitherOnFailedSpawn = plugin.getConfig().getBoolean("spawn_cooldown.produce_regular_wither_on_failed_spawn", false);
         this.candidateSpawners = new HashSet<UUID>();
     }
 
@@ -96,6 +108,12 @@ public class SpawnDetector implements Listener {
         final PotionEffect badOmen = spawner.getPotionEffect(PotionEffectType.BAD_OMEN);
         if (badOmen == null) return;
 
+        //Check cooldown
+        if (!this.cooldownManager.handleCooldownOnSpawn(spawner, wither.getLocation())) {
+            if (!this.produceRegularWitherOnFailedSpawn) event.setCancelled(true);
+            return;
+        }
+
         final int level = Utils.clamp(badOmen.getAmplifier() + 1, 0, MAX_LEVEL);
 
         //Tag Wither entity as Ominous and other important info
@@ -114,9 +132,8 @@ public class SpawnDetector implements Listener {
      */
     private Player getCandidateSpawner(final Wither wither) {
         final Location witherLocation = wither.getLocation();
-        final int SEARCH_RANGE = 10; //TODO: move to config
 
-        return wither.getNearbyEntities(SEARCH_RANGE, SEARCH_RANGE, SEARCH_RANGE).stream()
+        return wither.getNearbyEntities(this.spawnerSearchRadius, this.spawnerSearchRadius, this.spawnerSearchRadius).stream()
             //Only consider players
             .filter(entity -> (entity instanceof Player))
             .map(entity -> (Player) entity)

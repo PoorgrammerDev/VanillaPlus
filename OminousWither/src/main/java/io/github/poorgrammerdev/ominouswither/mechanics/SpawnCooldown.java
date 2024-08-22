@@ -1,0 +1,140 @@
+package io.github.poorgrammerdev.ominouswither.mechanics;
+
+import java.time.Duration;
+import java.util.UUID;
+
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Wither;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.persistence.PersistentDataType;
+
+import io.github.poorgrammerdev.ominouswither.OminousWither;
+import io.github.poorgrammerdev.ominouswither.internal.CooldownManager;
+import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherSpawnEvent;
+import io.github.poorgrammerdev.ominouswither.utils.ParticleInfo;
+import io.github.poorgrammerdev.ominouswither.utils.Utils;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
+
+/**
+ * Handles cooldown for spawning Ominous Withers
+ * @author Thomas Tran
+ */
+public class SpawnCooldown extends CooldownManager implements Listener {
+    private final OminousWither plugin;
+
+    private final int cooldownDuration;
+    private final boolean globalCreativeBypass;
+    private final boolean sendChatMessageOnFailedSpawn;
+    private final boolean sendActionBarMessageOnFailedSpawn;
+    private final String failedSpawnMessageText;
+
+    private final ParticleInfo failedToSpawnParticle;
+    private final ParticleInfo cooldownResetParticle;
+
+    public SpawnCooldown(final OminousWither plugin) {
+        this.plugin = plugin;
+
+        this.cooldownDuration = plugin.getConfig().getInt("spawn_cooldown.cooldown_duration", 0);
+        this.globalCreativeBypass = plugin.getConfig().getBoolean("spawn_cooldown.global_creative_bypass", true);
+        this.sendChatMessageOnFailedSpawn = plugin.getConfig().getBoolean("spawn_cooldown.send_message_on_failed_spawn.chat_message", false);
+        this.sendActionBarMessageOnFailedSpawn = plugin.getConfig().getBoolean("spawn_cooldown.send_message_on_failed_spawn.actionbar", false);
+        this.failedSpawnMessageText = plugin.getConfig().getString("spawn_cooldown.send_message_on_failed_spawn.message_text", "You are on cooldown! Wait %d seconds or kill an Ominous Wither you've previously spawned to reset.");
+
+        this.failedToSpawnParticle = new ParticleInfo(Particle.SMOKE,50,1.25,1,1.25);
+        this.cooldownResetParticle = new ParticleInfo(Particle.HAPPY_VILLAGER, 50, 0.75, 0.75, 0.75);
+    }
+    
+    /**
+     * Handles checking the cooldown state of a player attempting to spawn an Ominous Wither
+     * @param player player spawning the Wither
+     * @param spawnLocation location of Wither to be spawned
+     * @return if the player should be allowed to spawn the Ominous Wither
+     */
+    public boolean handleCooldownOnSpawn(final Player player, final Location spawnLocation) {
+        if (this.isAffectedByCooldowns(player) && this.isOnCooldown(player)) {
+            final World world = player.getWorld();
+
+            //Play effects
+            this.failedToSpawnParticle.spawnParticle(world, spawnLocation.add(0,1,0));
+            world.playSound(spawnLocation, Sound.BLOCK_FIRE_EXTINGUISH, SoundCategory.PLAYERS, 1.0f, 1.0f);
+
+            //Send messages if enabled
+            if (this.sendChatMessageOnFailedSpawn || this.sendActionBarMessageOnFailedSpawn) {
+                final String message = ChatColor.translateAlternateColorCodes('&', String.format(this.failedSpawnMessageText, this.getRemainingCooldown(player).toSeconds()));
+
+                if (this.sendChatMessageOnFailedSpawn) player.sendMessage(message);
+                if (this.sendActionBarMessageOnFailedSpawn) player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacy(message));
+            }
+
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Applies cooldown to players that have successfully spawned an Ominous Wither
+     */
+    @EventHandler(ignoreCancelled = true)
+    private void onOminousSpawn(final OminousWitherSpawnEvent event) {
+        final Player player = event.getSpawner();
+        
+        //Apply cooldown
+        if (this.cooldownDuration > 0 && this.isAffectedByCooldowns(player)) {
+            this.setCooldown(player, Duration.ofSeconds(this.cooldownDuration));
+        }
+    }
+
+    /**
+     * Resets the spawner's cooldown on Ominous Wither death
+     */
+    @EventHandler(ignoreCancelled = true)
+    private void onDeath(final EntityDeathEvent event) {
+        if (!(event.getEntity() instanceof Wither)) return;
+
+        final Wither wither = (Wither) event.getEntity();
+        if (!this.plugin.isOminous(wither)) return;
+    
+        final String idStr = wither.getPersistentDataContainer().getOrDefault(this.plugin.getSpawnerKey(), PersistentDataType.STRING, null);
+        if (idStr == null) return;
+
+        UUID id;
+        try {
+            id = UUID.fromString(idStr);
+        }
+        catch (final IllegalArgumentException exception) {
+            this.plugin.getLogger().warning("Malformed player UUID stored in spawner field of Ominous Wither");
+            return;
+        }
+
+        // No longer on cooldown -> don't need to do anything
+        if (!this.isOnCooldown(id)) return;
+
+        //Clear cooldown regardless of if player is online or not
+        this.removeCooldown(id);
+
+        //If player is online, play an effect
+        final Player player = this.plugin.getServer().getPlayer(id);
+        if (player == null) return;
+
+        player.playSound(player, Sound.BLOCK_BELL_RESONATE, SoundCategory.PLAYERS, 1.0f, 1.0f);
+        this.cooldownResetParticle.spawnParticle(player, player.getLocation().add(0, 1, 0));
+    }
+
+    /**
+     * <p>Checks if a player should be affected by cooldowns</p>
+     * <p>If they are in Survival or Adventure mode, they're always affected</p>
+     * <p>Otherwise, if they are in Creative mode, check if global bypass setting is enabled or if they have permission to bypass</p>
+     */
+    private boolean isAffectedByCooldowns(final Player player) {
+        return Utils.isTargetable(player) || (!this.globalCreativeBypass && !player.hasPermission("ominouswither.creative_bypass_spawn_cooldown"));
+    }
+}

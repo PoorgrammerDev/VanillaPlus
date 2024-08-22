@@ -78,7 +78,7 @@ public class SkullBarrage implements Listener {
             @Override
             public void run() {
                 //Stop runnable once done
-                if (i > amount) {
+                if (i >= amount) {
                     this.cancel();
                     return;
                 }
@@ -102,7 +102,7 @@ public class SkullBarrage implements Listener {
                 //Increment ticker
                 ++i;
             }
-        }.runTaskTimer(this.plugin, 0L, 1L);
+        }.runTaskTimer(this.plugin, 2L, 1L);
     }
 
     /**

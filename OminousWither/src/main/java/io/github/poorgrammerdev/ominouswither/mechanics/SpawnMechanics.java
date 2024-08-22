@@ -37,7 +37,6 @@ import io.github.poorgrammerdev.ominouswither.OminousWither;
 import io.github.poorgrammerdev.ominouswither.coroutines.EntityStare;
 import io.github.poorgrammerdev.ominouswither.coroutines.PassableLocationFinder;
 import io.github.poorgrammerdev.ominouswither.coroutines.PersistentParticle;
-import io.github.poorgrammerdev.ominouswither.internal.CoroutineManager;
 import io.github.poorgrammerdev.ominouswither.internal.config.BossStat;
 import net.md_5.bungee.api.ChatColor;
 
@@ -50,12 +49,19 @@ public class SpawnMechanics implements Listener {
     private final OminousWither plugin;
 
     /**
+     * Config setting for if spawning an Ominous Wither should remove the Bad Omen effect from players in Creative Mode
+     */
+    private final boolean creativeRemoveOmen;
+
+    /**
      * Holds the locations of minions to be summoned once the Wither is fully spawned.
      */
     private final HashMap<UUID, List<Location>> spawnMinionMap;
 
     public SpawnMechanics(final OminousWither plugin) {
         this.plugin = plugin;
+        this.creativeRemoveOmen = plugin.getConfig().getBoolean("creative_remove_omen", true);
+
         this.spawnMinionMap = new HashMap<>();
     }
 
@@ -68,7 +74,7 @@ public class SpawnMechanics implements Listener {
         final Difficulty difficulty = world.getDifficulty();
 
         //Remove the Bad Omen effect from the Player
-        player.removePotionEffect(PotionEffectType.BAD_OMEN);
+        if (this.creativeRemoveOmen || Utils.isTargetable(player)) player.removePotionEffect(PotionEffectType.BAD_OMEN);
 
         //Modify the Wither's stats
         final String levelRoman = this.getLevelRomanNumeral(level);
@@ -130,7 +136,7 @@ public class SpawnMechanics implements Listener {
      * @param playerID UUID of the player that spawned the wither
      */
     private void performOminousStare(final UUID witherID, final UUID playerID) {
-        CoroutineManager.getInstance().enqueue(new EntityStare(
+        this.plugin.getCoroutineManager().enqueue(new EntityStare(
             this.plugin,
             witherID,
             playerID,
@@ -149,10 +155,10 @@ public class SpawnMechanics implements Listener {
         final UUID witherUUID = wither.getUniqueId();
         this.spawnMinionMap.put(witherUUID, new ArrayList<>());
 
-
         final double spawnRange = this.plugin.getBossStatsManager().getStat(BossStat.MINION_SPAWN_RANGE, wither);
+
         //Find locations to summon minions
-        CoroutineManager.getInstance().enqueue(new PassableLocationFinder(
+        this.plugin.getCoroutineManager().enqueue(new PassableLocationFinder(
             wither.getEyeLocation(),
             new Vector(spawnRange, spawnRange, spawnRange),
             3,
@@ -170,7 +176,7 @@ public class SpawnMechanics implements Listener {
                 list.add(location);
 
                 //Play visual effect at future spawn place
-                CoroutineManager.getInstance().enqueue(new PersistentParticle(
+                this.plugin.getCoroutineManager().enqueue(new PersistentParticle(
                     () -> (!this.spawnMinionMap.containsKey(witherUUID)),
                     location.clone().add(0, 1, 0),
                     new ParticleInfo(
@@ -235,6 +241,7 @@ public class SpawnMechanics implements Listener {
             if (!(entity instanceof WitherSkeleton)) continue;
 
             final WitherSkeleton minion = (WitherSkeleton) entity;
+            minion.setPersistent(true);
             minion.getPersistentDataContainer().set(this.plugin.getMinionKey(), PersistentDataType.BOOLEAN, true);
             minion.setLootTable(LootTables.EMPTY.getLootTable());
             minion.setCanPickupItems(false);

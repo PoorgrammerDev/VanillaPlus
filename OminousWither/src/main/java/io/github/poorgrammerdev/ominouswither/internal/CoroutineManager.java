@@ -2,11 +2,9 @@ package io.github.poorgrammerdev.ominouswither.internal;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
+import io.github.poorgrammerdev.ominouswither.OminousWither;
 
 /**
  * Manages running operations of tasks that have been split across multiple ticks with a CPU time limitation
@@ -14,12 +12,16 @@ import net.md_5.bungee.api.chat.TextComponent;
  * Referencing code from this thread: https://www.spigotmc.org/threads/guide-on-workload-distribution-or-how-to-handle-heavy-splittable-tasks.409003/
  */
 public class CoroutineManager extends BukkitRunnable {
-    //Singleton pattern
-    private static final CoroutineManager instance = new CoroutineManager();
-    public static CoroutineManager getInstance() { return instance; }
+    private int maxNanosPerTick;
 
-    private static double MAX_MILLIS_PER_TICK = 2.5;
-    private static final int MAX_NANOS_PER_TICK = (int) (MAX_MILLIS_PER_TICK * 1E6);
+    public CoroutineManager() {
+        //Set to a placeholder default value before the config is loaded in
+        this.maxNanosPerTick = (int) (2.5D * 1E6);
+    }
+
+    public void load(final OminousWither plugin) {
+        this.maxNanosPerTick = (int) (plugin.getConfig().getDouble("max_task_millis_per_tick", 2.5D) * 1E6);
+    }
 
     /**
      * Queue of scheduled tasks' operations to run
@@ -28,10 +30,7 @@ public class CoroutineManager extends BukkitRunnable {
 
     @Override
     public void run() {
-        //TODO: FIXME: remove
-        Bukkit.getServer().getOnlinePlayers().forEach((p) -> {p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacy(scheduledTasks.size() + ""));});
-
-        long stopTime = System.nanoTime() + MAX_NANOS_PER_TICK;
+        final long stopTime = System.nanoTime() + this.maxNanosPerTick;
         
         // Maximum tasks that can be run in one tick is one entire run through of the queue
         final int maxLength = this.scheduledTasks.size();

@@ -2,35 +2,22 @@ package io.github.poorgrammerdev.ominouswither.internal.events;
 
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Wither;
-import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 
 /**
  * Event for when a player spawns an Ominous Wither
  * @author Thomas Tran
  */
-public class OminousWitherSpawnEvent extends AbstractOminousWitherEvent implements Cancellable {
+public class OminousWitherSpawnEvent extends AbstractOminousWitherEvent {
 
-    private boolean cancelled;
     private final Player spawner;
     private final int level;
 
     public OminousWitherSpawnEvent(final Wither wither, final Player spawner, final int level) {
         super(wither);
 
-        this.cancelled = false;
         this.spawner = spawner;
         this.level = level;
-    }
-
-    @Override
-    public boolean isCancelled() {
-        return this.cancelled;
-    }
-
-    @Override
-    public void setCancelled(boolean cancel) {
-        this.cancelled = cancel;
     }
 
     /**

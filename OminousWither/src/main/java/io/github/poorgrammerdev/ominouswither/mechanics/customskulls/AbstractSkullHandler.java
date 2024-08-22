@@ -8,7 +8,6 @@ import org.bukkit.util.Vector;
 
 import io.github.poorgrammerdev.ominouswither.OminousWither;
 import io.github.poorgrammerdev.ominouswither.coroutines.PersistentTrackingParticle;
-import io.github.poorgrammerdev.ominouswither.internal.CoroutineManager;
 import io.github.poorgrammerdev.ominouswither.internal.config.BossStat;
 import io.github.poorgrammerdev.ominouswither.utils.ParticleInfo;
 
@@ -50,7 +49,7 @@ public abstract class AbstractSkullHandler {
         skull.setVelocity(skull.getVelocity().multiply(initialSpeed));
 
         //Tracking particle
-        CoroutineManager.getInstance().enqueue(new PersistentTrackingParticle(
+        this.plugin.getCoroutineManager().enqueue(new PersistentTrackingParticle(
             this.plugin,
             (uuid) -> {
                 //Entity must still exist

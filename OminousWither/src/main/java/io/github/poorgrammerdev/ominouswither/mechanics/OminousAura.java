@@ -16,7 +16,6 @@ import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherSpawn
 import io.github.poorgrammerdev.ominouswither.utils.ParticleInfo;
 import io.github.poorgrammerdev.ominouswither.OminousWither;
 import io.github.poorgrammerdev.ominouswither.coroutines.PersistentTrackingParticle;
-import io.github.poorgrammerdev.ominouswither.internal.CoroutineManager;
 
 /**
  * Displays the particle aura around the Ominous Wither
@@ -60,7 +59,7 @@ public class OminousAura implements Listener {
 
     private void runPhaseOneParticle(final UUID witherID) {
         //Constant ominous particle
-        CoroutineManager.getInstance().enqueue(new PersistentTrackingParticle(
+        this.plugin.getCoroutineManager().enqueue(new PersistentTrackingParticle(
             this.plugin,
             ((entityID) -> {
                 //If cannot find entity -> cancel
@@ -80,7 +79,7 @@ public class OminousAura implements Listener {
 
     private void runPhaseTwoParticle(final UUID witherID) {
         //Constant ominous particle
-        CoroutineManager.getInstance().enqueue(new PersistentTrackingParticle(
+        this.plugin.getCoroutineManager().enqueue(new PersistentTrackingParticle(
             this.plugin,
             ((entityID) -> {
                 //If cannot find entity -> cancel

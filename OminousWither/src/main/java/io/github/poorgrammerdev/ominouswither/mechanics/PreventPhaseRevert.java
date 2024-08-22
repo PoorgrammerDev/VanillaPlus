@@ -11,7 +11,6 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.persistence.PersistentDataType;
 
 import io.github.poorgrammerdev.ominouswither.OminousWither;
-import io.github.poorgrammerdev.ominouswither.internal.CoroutineManager;
 import io.github.poorgrammerdev.ominouswither.internal.ICoroutine;
 import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherLoadEvent;
 import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherPhaseChangeEndEvent;
@@ -77,7 +76,7 @@ public class PreventPhaseRevert implements Listener {
         final UUID witherID = witherParam.getUniqueId();
         final double healthBoundary = witherParam.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() / 2.0D;
 
-        CoroutineManager.getInstance().enqueue(new ICoroutine() {
+        this.plugin.getCoroutineManager().enqueue(new ICoroutine() {
             @Override
             public boolean tick() {
                 final Entity entity = plugin.getServer().getEntity(witherID);

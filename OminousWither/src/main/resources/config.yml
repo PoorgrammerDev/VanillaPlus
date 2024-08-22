@@ -2,6 +2,48 @@
 #    OMINOUS WITHER CONFIG    #
 ###############################
 
+# If a player builds an Ominous Wither in Creative Mode, should their Bad Omen effect be removed?
+creative_remove_omen: true
+
+# ***This system is disabled by default***
+# This prevents Ominous Withers from being rapidly spawned by placing a cooldown on the player who spawned it
+# The spawner of an Ominous Wither is unable to spawn another one until the cooldown expires or until the Ominous Wither that they previously spawned is killed
+# In other words, killing an Ominous Wither will reset its spawner's cooldown
+spawn_cooldown:
+  # To enable this system, set this to a positive integer value
+  # This value is the duration of the cooldown, measured in real-life seconds
+  cooldown_duration: 0
+
+  # Handles interaction between the cooldown system and Creative Mode
+  # If this is true:
+  #   - All players in Creative Mode spawning Ominous Withers are not put in cooldown regardless of permission
+  #   - Additionally, if they were already in cooldown from spawning it in Survival Mode, they'd be allow to spawn it regardless
+  #   - This would not reset their existing cooldown, however
+  # If this is false:
+  #   - They will still be put in cooldown unless they have the permission node `ominouswither.creative_bypass_spawn_cooldown`
+  #   - If they have an existing cooldown, they will be blocked from spawning unless they have the aformentioned permission node
+  # Please note that players in Survival Mode will still be put in cooldown, even if they have this permission node
+  global_creative_bypass: true
+
+  # If a player is blocked from spawning an Ominous Wither due to cooldown,
+  # with this option set to true they will spawn a regular Wither instead.
+  # If this is set to false, the Wither Skull will be placed down and nothing will happen
+  produce_regular_wither_on_failed_spawn: false
+
+  # If a player is blocked from spawning an Ominous Wither due to cooldown,
+  # send them a message with a short explanation and their remaining cooldown time
+  send_message_on_failed_spawn:
+    # Text content of message
+    # There can be a single placeholder `%d` for the number of seconds left in the cooldown
+    # There can be Minecraft color codes using the symbol `&`
+    message_text: "You are on cooldown! Wait %d seconds or kill an Ominous Wither you've previously spawned to reset."
+
+    # Send this message through the regular chat system
+    chat_message: false
+
+    # Send this message through the actionbar title slot
+    actionbar: false
+
 
 ############################
 #    BOSS STATS SECTION    #
@@ -14,7 +56,7 @@
 #   This is a mathematical expression to determine the value of the stat. 
 #   This expression can use the variables `level` and `difficulty`, but doesn't have to.
 #   - `level` refers to the level of an Ominous Wither, or equivalently: the level of Bad Omen used when spawning the Ominous Wither. This value is in the interval [1,5]
-#   - `difficulty` refers to the Difficulty of the world that the Wither is in. The mapping is {Easy: 1, Normal: 2, Hard: 3}. Peaceful is disregarded since Withers can't exist in that mode.
+#   - `difficulty` refers to the Difficulty of the world that the Wither is in. This value is in the interval [1,3] with the mapping {Easy: 1, Normal: 2, Hard: 3}. Peaceful is disregarded since Withers can't exist in that mode.
 #   Not using a variable will simply make the stat constant across all different assignments of that variable.
 #   The system uses boxbeam's Crunch package, found here: https://github.com/boxbeam/Crunch
 # 
@@ -23,13 +65,13 @@
 #       formula: "(level * 2) - 1"
 #   The resulting "wither_power" values for Ominous Withers level 1 through 5 would be 1, 3, 5, 7, and 9 respectively
 #   Since difficulty is not included in this formula, it will not affect the stat values at all.
-#   i.e. A level 3 Ominous Wither in Easy difficulty will have the same "wither power" as a level 3 Ominous Wither in Hard difficulty.
+#   i.e. A level 3 Ominous Wither in Easy difficulty will have the same "wither_power" as a level 3 Ominous Wither in Hard difficulty.
 #
 # There are two additional optional components: `level-mapping` and `difficulty-mapping`, both arrays of numbers
 #   If `level-mapping` is present, it must be an array of 5 numeric values.
 #   If `difficulty-mapping` is present, it must be an array of 3 numeric values.
 #   
-#   These mappings replace their respective variable in the formula calculation above.
+#   These mappings replace their respective variable in the `formula` calculation above.
 #   The variable's assignment will be used as an index (assuming a 1-based indexing system) to this mapping / lookup table
 #   This allows for more custom calculations that can't be easily represented by an expression.
 # 
@@ -39,7 +81,7 @@
 #       level-mapping: [0, 0, 3, 7, 20]
 #   The resulting "wither_reach" values for Ominous Withers level 1 through 5 would be 0.5, 0.5, 3.5, 7.5, and 20.5 respectively
 
-# [!] WARNING: Adjusting any of these values to extreme amounts may cause server instability or crashes!
+# [!] WARNING: Adjusting any of these settings to invalid or extreme values may cause server errors, instability, or crashes!
 boss_stats:
   # Speed of normal (black) skulls at launch
   normal_skull_speed:
@@ -71,6 +113,7 @@ boss_stats:
     formula: "3.75"
 
   # Gravity Skull: Radius of circle to search for entities to apply gravity effect to
+  # A non-positive radius will disable the Gravity effect of the Gravity skull
   gravity_radius:
     formula: "6.25"
 
@@ -131,6 +174,7 @@ boss_stats:
   # When the Ominous Wither suffocates inside a block, it evades this by teleporting away
   # This mechanic is similar to how Endermen teleport away from arrows
   # This defines the maximum radius that the Wither can search for a viable location in
+  # A non-positive value will deactivate this teleportation ability
   suffocate_teleport_range:
     formula: "10"
 
@@ -293,3 +337,20 @@ boss_stats:
   # If custom loot items are ever added, this value would likely serve as the amount of rolls in the loot generation
   loot_item_multiplier:
     formula: "level + difficulty"
+
+
+####################################
+#    TECHNICAL SETTINGS SECTION    #
+####################################
+
+# When a Wither is spawned, the plugin checks in this radius for who most likely spawned it
+# This is used to determine if the Wither should be an Ominous Wither, what level of Bad Omen was used, etc.
+# This likely shouldn't be modified unless your server has a way for players to build well beyond their reach limit
+spawner_search_radius: 10.0
+
+# Many small repeating tasks in this plugin that aren't required to be tick-perfect use a system that limits computation per tick
+# This can cause these tasks to not fire in certain ticks, but prevents the entire server from lagging
+# For example, a task that uses this system is the constant particle "aura" surrounding the Ominous Wither
+# This value below is the max amount of time, in milliseconds, that this system can take to run all tasks in a single tick
+# Increasing this value may cause some server lag and decreasing this value may cause some functions of the plugin to not work as well
+max_task_millis_per_tick: 2.5

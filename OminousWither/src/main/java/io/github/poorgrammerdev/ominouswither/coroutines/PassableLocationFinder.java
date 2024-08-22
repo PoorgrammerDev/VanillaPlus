@@ -5,8 +5,6 @@ import java.util.function.Consumer;
 
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.util.Vector;
 
 import io.github.poorgrammerdev.ominouswither.internal.ICoroutine;
@@ -60,14 +58,16 @@ public class PassableLocationFinder implements ICoroutine {
 
     @Override
     public boolean tick() {
+        if (!this.shouldBeRescheduled()) return false;
+
         final World world = this.center.getWorld();
         if (world == null) return this.shouldBeRescheduled();
 
         //Get a random location within range
         Location location = this.center.clone().add(
-            random.nextDouble(this.maxSpread.getX() * 2) - this.maxSpread.getX(),
-            random.nextDouble(this.maxSpread.getY() * 2) - this.maxSpread.getY(),
-            random.nextDouble(this.maxSpread.getZ() * 2) - this.maxSpread.getZ()
+            this.maxSpread.getX() > 0.0D ? random.nextDouble(this.maxSpread.getX() * 2) - this.maxSpread.getX() : 0.0D,
+            this.maxSpread.getY() > 0.0D ? random.nextDouble(this.maxSpread.getY() * 2) - this.maxSpread.getY() : 0.0D,
+            this.maxSpread.getZ() > 0.0D ? random.nextDouble(this.maxSpread.getZ() * 2) - this.maxSpread.getZ() : 0.0D
         );
 
         //Make sure Y coordinate is not out of the world
@@ -84,7 +84,7 @@ public class PassableLocationFinder implements ICoroutine {
         if (this.requireImmediateGround) {
             //Get the lowest Y coordinate we can search at
             final int minY = Math.max(this.center.getBlockY() - this.maxSpread.getBlockY(), world.getMinHeight());
-            final Location ground = this.tryGetGround(location, minY);
+            final Location ground = Utils.tryGetGround(location, minY);
 
             if (ground == null) {
                 //Failed
@@ -97,7 +97,7 @@ public class PassableLocationFinder implements ICoroutine {
         }
         //Otherwise, at least check if there is *some* ground between here and the void
         else {
-            if (this.tryGetGround(location, world.getMinHeight()) == null) {
+            if (Utils.tryGetGround(location, world.getMinHeight()) == null) {
                 //Failed
                 this.consecutiveFails++;
                 return this.shouldBeRescheduled();
@@ -128,31 +128,5 @@ public class PassableLocationFinder implements ICoroutine {
         // Otherwise continue running
         return true;
     }
-
-    /**
-     * Iterates downwards in attempt to find solid ground within range
-     * @param location source location to begin at
-     * @return a location on the ground within range if found, or null if not found
-     */
-    private Location tryGetGround(Location location, final int minY) {
-        //Get world to access the minimum height
-        final World world = location.getWorld();
-        if (world == null) return null;
-
-        //Calculate how many times we can iterate based on the minimum Y bound
-        final int limit = location.getBlockY() - minY;
-        
-        Block block = location.getBlock();
-        for (int i = 0; i < limit; i++) {
-            final Block blockUnder = block.getRelative(BlockFace.DOWN);
-            if (!blockUnder.isPassable()) return block.getLocation();
-
-            block = blockUnder;
-        }
-
-        return null;
-    }
-    
-
 
 }

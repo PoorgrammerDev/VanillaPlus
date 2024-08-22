@@ -1,5 +1,7 @@
 package io.github.poorgrammerdev.ominouswither.mechanics;
 
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -37,10 +39,13 @@ public class ExplosionResistance implements Listener {
         final Wither wither = (Wither) event.getEntity();
         if (!this.plugin.isOminous(wither)) return;
 
-        //Apply damage reduction
         final double reduction = this.plugin.getBossStatsManager().getStat((this.isCrystal(event.getDamageSource()) ? BossStat.END_CRYSTAL_RESISTANCE : BossStat.GENERAL_EXPLOSION_RESISTANCE), wither);
+        if (reduction < 0.0D) return;
+        
+        //Apply damage reduction and play indication sound
         final double remainingDamage = event.getDamage() * (1.0D - reduction);
         event.setDamage(Math.max(remainingDamage, 0.0D));
+        wither.getWorld().playSound(wither, Sound.ITEM_SHIELD_BLOCK, SoundCategory.HOSTILE, 2.0f, 1.0f);
     }
 
     private boolean isCrystal(final DamageSource source) {

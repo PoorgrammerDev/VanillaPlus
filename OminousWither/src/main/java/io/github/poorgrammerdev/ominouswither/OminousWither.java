@@ -17,12 +17,14 @@ import io.github.poorgrammerdev.ominouswither.mechanics.ExplosionResistance;
 import io.github.poorgrammerdev.ominouswither.mechanics.FlightAcceleration;
 import io.github.poorgrammerdev.ominouswither.mechanics.LifeDrain;
 import io.github.poorgrammerdev.ominouswither.mechanics.Loot;
+import io.github.poorgrammerdev.ominouswither.mechanics.ShootingStars;
 import io.github.poorgrammerdev.ominouswither.mechanics.OminousAura;
 import io.github.poorgrammerdev.ominouswither.mechanics.PreventExploits;
 import io.github.poorgrammerdev.ominouswither.mechanics.PreventFriendlyFire;
 import io.github.poorgrammerdev.ominouswither.mechanics.PreventPhaseRevert;
 import io.github.poorgrammerdev.ominouswither.mechanics.SecondPhaseBuffs;
 import io.github.poorgrammerdev.ominouswither.mechanics.SkullBarrage;
+import io.github.poorgrammerdev.ominouswither.mechanics.SpawnCooldown;
 import io.github.poorgrammerdev.ominouswither.mechanics.SpawnMechanics;
 import io.github.poorgrammerdev.ominouswither.mechanics.customskulls.AbstractSkullHandler;
 import io.github.poorgrammerdev.ominouswither.mechanics.customskulls.ApocalypseSkull;
@@ -40,9 +42,11 @@ public final class OminousWither extends JavaPlugin {
     private final NamespacedKey skullTypeKey = new NamespacedKey(this, "skull_type");
     private final NamespacedKey secondPhaseKey = new NamespacedKey(this, "is_in_second_phase");
 
+    private final CoroutineManager coroutineManager;
     private final BossStatsManager bossStatsManager;
 
     public OminousWither() {
+        this.coroutineManager = new CoroutineManager();
         this.bossStatsManager = new BossStatsManager(this);
     }
 
@@ -50,12 +54,14 @@ public final class OminousWither extends JavaPlugin {
     public void onEnable() {
         //Config
         this.saveDefaultConfig();
+        this.coroutineManager.load(this);
         this.bossStatsManager.load();
 
         //Construct required objects
         //These objects have some sort of dependency aside from just registering, so must be made first and tracked
         final LoadDetector loadDetector = new LoadDetector(this);
         final ApocalypseHorsemen apocalypseHorsemen = new ApocalypseHorsemen(this);
+        final SpawnCooldown spawnCooldownManager = new SpawnCooldown(this);
 
         //This isn't necessarily required to be up here, just moved for readability
         final AbstractSkullHandler[] skullHandlers = {
@@ -66,7 +72,7 @@ public final class OminousWither extends JavaPlugin {
 
         //Register all events
         this.registerEvents(
-            new SpawnDetector(this),
+            new SpawnDetector(this, spawnCooldownManager),
             new ActivationDetector(this),
             new PhaseChangeDetector(this),
             loadDetector,
@@ -83,17 +89,26 @@ public final class OminousWither extends JavaPlugin {
             new PreventPhaseRevert(this),
             new LifeDrain(this),
             new Echoes(this),
-            new Loot(this)
+            new Loot(this),
+            new ShootingStars(this),
+            spawnCooldownManager
         );
 
         //Begin Coroutine Manager
-        CoroutineManager.getInstance().runTaskTimer(this, 0L, 1L);
+        this.coroutineManager.runTaskTimer(this, 0L, 1L);
 
         //Call load event for all existing loaded OminousWithers
         loadDetector.onPluginEnable();
 
         //Clear all existing Apocalypse Horsemen
         apocalypseHorsemen.onPluginEnable();
+    }
+
+    /**
+     * Gets the shared coroutine manager instance
+     */
+    public CoroutineManager getCoroutineManager() {
+       return this.coroutineManager; 
     }
 
     /**

@@ -36,7 +36,6 @@ import org.bukkit.util.Vector;
 
 import io.github.poorgrammerdev.ominouswither.OminousWither;
 import io.github.poorgrammerdev.ominouswither.coroutines.PassableLocationFinder;
-import io.github.poorgrammerdev.ominouswither.internal.CoroutineManager;
 import io.github.poorgrammerdev.ominouswither.internal.config.BossStat;
 import io.github.poorgrammerdev.ominouswither.utils.ItemBuilder;
 
@@ -67,14 +66,14 @@ public class ApocalypseHorsemen implements Listener {
         final World world = wither.getWorld();
         if (world == null) return;
 
-        final Location center = wither.getLocation();
+        final Location center = target.getLocation();
         final int level = this.plugin.getLevel(wither, 1);
         final Difficulty difficulty = world.getDifficulty();
 
         //Find viable locations and summon skeleton horsemen
         final UUID groupID = UUID.randomUUID();
         final UUID targetID = target.getUniqueId();
-        CoroutineManager.getInstance().enqueue(new PassableLocationFinder(
+        this.plugin.getCoroutineManager().enqueue(new PassableLocationFinder(
             center,
             new Vector(5, 5, 5),
             4,

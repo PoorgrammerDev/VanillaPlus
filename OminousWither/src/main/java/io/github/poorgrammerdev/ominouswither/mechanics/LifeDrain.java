@@ -27,7 +27,6 @@ import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
 import io.github.poorgrammerdev.ominouswither.OminousWither;
-import io.github.poorgrammerdev.ominouswither.internal.CoroutineManager;
 import io.github.poorgrammerdev.ominouswither.internal.ICoroutine;
 import io.github.poorgrammerdev.ominouswither.internal.config.BossStat;
 import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherLoadEvent;
@@ -88,7 +87,7 @@ public class LifeDrain implements Listener {
         final int cooldown = (int) this.plugin.getBossStatsManager().getStat(BossStat.LIFE_DRAIN_COOLDOWN, wither);
         final double rangeSq = Math.pow(this.plugin.getBossStatsManager().getStat(BossStat.LIFE_DRAIN_RANGE, wither), 2);
 
-        CoroutineManager.getInstance().enqueue(new ICoroutine() {
+        this.plugin.getCoroutineManager().enqueue(new ICoroutine() {
             @Override
             public boolean tick() {
                 //If wither no longer exists -> cancel
@@ -114,7 +113,13 @@ public class LifeDrain implements Listener {
                         public void run() {
                             if (i >= VELOCITY_INFERENCE_DURATION) {
                                 //Infer velocity from recorded movement and use to get target location
-                                final Location targetLocation = getTargetLocation(target, calculateVelocity(locations), activationTime);
+                                Location targetLocation = getTargetLocation(target, calculateVelocity(locations), activationTime);
+
+                                //Attempt to get a spot on the ground within reasonable range
+                                final Location groundLocation = Utils.tryGetGround(targetLocation, Math.max(targetLocation.getBlockY() - 10, target.getWorld().getMinHeight()));
+                                if (groundLocation != null) {
+                                    targetLocation = groundLocation.add(0, 0.5, 0);
+                                }
 
                                 //Summon life drain circle
                                 new LifeDrainConstruct(plugin, targetLocation, wither).runTaskTimer(plugin, 0L, 0L);

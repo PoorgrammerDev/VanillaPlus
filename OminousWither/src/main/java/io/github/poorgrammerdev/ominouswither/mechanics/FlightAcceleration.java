@@ -21,7 +21,6 @@ import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherLoadE
 import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherPhaseChangeEndEvent;
 import io.github.poorgrammerdev.ominouswither.utils.Utils;
 import io.github.poorgrammerdev.ominouswither.OminousWither;
-import io.github.poorgrammerdev.ominouswither.internal.CoroutineManager;
 import io.github.poorgrammerdev.ominouswither.internal.ICoroutine;
 import io.github.poorgrammerdev.ominouswither.internal.config.BossStat;
 
@@ -85,7 +84,7 @@ public class FlightAcceleration implements Listener {
     private void phaseOneFlight(final Wither wither, final double distanceThresholdSq, final double flightSpeed) {
         final UUID witherID = wither.getUniqueId();
 
-        CoroutineManager.getInstance().enqueue(new ICoroutine() {
+        this.plugin.getCoroutineManager().enqueue(new ICoroutine() {
             @Override
             public boolean tick() {
                 final Entity entity = plugin.getServer().getEntity(witherID);
@@ -129,7 +128,7 @@ public class FlightAcceleration implements Listener {
         final int interval = (int) this.plugin.getBossStatsManager().getStat(BossStat.ENHANCED_BREAK_INTERVAL, wither);
 
         final UUID witherID = wither.getUniqueId();
-        CoroutineManager.getInstance().enqueue(new ICoroutine() {
+        this.plugin.getCoroutineManager().enqueue(new ICoroutine() {
             @Override
             public boolean tick() {
                 final Entity entity = plugin.getServer().getEntity(witherID);
