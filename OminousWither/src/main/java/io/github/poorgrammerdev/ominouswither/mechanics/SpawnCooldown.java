@@ -45,7 +45,7 @@ public class SpawnCooldown extends CooldownManager implements Listener {
 
         this.cooldownDuration = plugin.getConfig().getInt("spawn_cooldown.cooldown_duration", 0);
         this.globalCreativeBypass = plugin.getConfig().getBoolean("spawn_cooldown.global_creative_bypass", true);
-        this.sendChatMessageOnFailedSpawn = plugin.getConfig().getBoolean("spawn_cooldown.send_message_on_failed_spawn.chat_message", false);
+        this.sendChatMessageOnFailedSpawn = plugin.getConfig().getBoolean("spawn_cooldown.send_message_on_failed_spawn.chat_message", true);
         this.sendActionBarMessageOnFailedSpawn = plugin.getConfig().getBoolean("spawn_cooldown.send_message_on_failed_spawn.actionbar", false);
         this.failedSpawnMessageText = plugin.getConfig().getString("spawn_cooldown.send_message_on_failed_spawn.message_text", "You are on cooldown! Wait %d seconds or kill an Ominous Wither you've previously spawned to reset.");
 

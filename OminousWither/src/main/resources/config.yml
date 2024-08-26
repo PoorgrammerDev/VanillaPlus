@@ -43,10 +43,15 @@ spawn_cooldown:
     message_text: "You are on cooldown! Wait %d seconds or kill an Ominous Wither you've previously spawned to reset."
 
     # Send this message through the regular chat system
-    chat_message: false
+    chat_message: true
 
     # Send this message through the actionbar title slot
     actionbar: false
+
+  # Allows all players to do `/cooldown get` to view their own cooldown without needing any permissions
+  # This does not allow them to view others' cooldowns or set or remove anyone's cooldowns
+  # If this is disabled, players can still view their own cooldowns if they have the permission node `ominouswither.cooldown_get_self`
+  global_allow_view_own_cooldown: true
 
 ############################
 #    BOSS STATS SECTION    #

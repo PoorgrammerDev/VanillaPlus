@@ -30,6 +30,7 @@ import io.github.poorgrammerdev.ominouswither.mechanics.customskulls.AbstractSku
 import io.github.poorgrammerdev.ominouswither.mechanics.customskulls.ApocalypseSkull;
 import io.github.poorgrammerdev.ominouswither.mechanics.customskulls.ExplosiveSkull;
 import io.github.poorgrammerdev.ominouswither.mechanics.customskulls.GravitySkull;
+import io.github.poorgrammerdev.ominouswither.commands.CooldownCommand;
 import io.github.poorgrammerdev.ominouswither.commands.SummonCommand;
 import io.github.poorgrammerdev.ominouswither.internal.CoroutineManager;
 import io.github.poorgrammerdev.ominouswither.internal.WitherPDCTagger;
@@ -102,6 +103,9 @@ public final class OminousWither extends JavaPlugin {
         this.getCommand("summonominouswither").setExecutor(summonCommand);
         this.getCommand("summonominouswither").setTabCompleter(summonCommand);
 
+        final CooldownCommand cooldownCommand = new CooldownCommand(this, spawnCooldownManager);
+        this.getCommand("cooldown").setExecutor(cooldownCommand);
+        this.getCommand("cooldown").setTabCompleter(cooldownCommand);
 
         //Begin Coroutine Manager
         this.coroutineManager.runTaskTimer(this, 0L, 1L);
