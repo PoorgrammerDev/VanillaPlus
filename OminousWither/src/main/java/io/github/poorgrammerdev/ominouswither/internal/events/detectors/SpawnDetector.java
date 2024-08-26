@@ -116,7 +116,7 @@ public class SpawnDetector implements Listener {
         final int level = Utils.clamp(badOmen.getAmplifier() + 1, 0, MAX_LEVEL);
 
         // *** Fire Ominous Wither Spawn event ***
-        this.plugin.getServer().getPluginManager().callEvent(new OminousWitherSpawnEvent(wither, spawner, level));
+        this.plugin.getServer().getPluginManager().callEvent(new OminousWitherSpawnEvent(wither, spawner, level, OminousWitherSpawnEvent.SpawnReason.BUILD));
     }
 
     /**

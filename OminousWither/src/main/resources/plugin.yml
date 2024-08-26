@@ -4,3 +4,9 @@ description: Adds a stronger variant of the Wither Boss
 version: '${project.version}'
 main: io.github.poorgrammerdev.ominouswither.OminousWither
 api-version: '1.21.1'
+commands:
+  summonominouswither:
+    usage: /summonominouswither <x> <y> <z> <level>
+    description: Summons an Ominous Wither at a location. This is a player-only command as it sets the spawner to the player who executed it. Does not affect cooldowns.
+    permission: ominouswither.summonominouswither
+    permission-message: You do not have permission to use this command.

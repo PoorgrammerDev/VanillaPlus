@@ -12,11 +12,14 @@ import org.bukkit.util.BlockIterator;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
+import net.md_5.bungee.api.ChatColor;
+
 /**
  * A static class with utility functions.
  * @author Thomas Tran
  */
 public final class Utils {
+    public static final ChatColor WITHER_NAME_COLOR = ChatColor.of("#8400FF");
 
     /**
      * Checks if a location is viable for an entity to spawn at (i.e. it's not inside a wall)
@@ -206,6 +209,29 @@ public final class Utils {
      */
     public static boolean isTargetable(final Player player) {
         return (player.getGameMode() == GameMode.SURVIVAL || player.getGameMode() == GameMode.ADVENTURE);
+    }
+
+    /**
+     * Get Roman Numeral for Wither level
+     */
+    public static String getLevelRomanNumeral(final int level) {
+        //NOTE: I am aware there is an algorithm to perform this without manually hardcoding every case
+        //However, there are only 5 possible levels so this is a much simpler solution
+        //If the number of levels is ever expanded I will use that algorithm instead
+        switch (level) {
+            case 1:
+                return "I";
+            case 2:
+                return "II";
+            case 3:
+                return "III";
+            case 4:
+                return "IV";
+            case 5:
+                return "V";
+            default:
+                return null;
+        }
     }
 
 }

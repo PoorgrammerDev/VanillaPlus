@@ -39,7 +39,6 @@ import io.github.poorgrammerdev.ominouswither.coroutines.PassableLocationFinder;
 import io.github.poorgrammerdev.ominouswither.coroutines.PersistentParticle;
 import io.github.poorgrammerdev.ominouswither.internal.ICoroutine;
 import io.github.poorgrammerdev.ominouswither.internal.config.BossStat;
-import net.md_5.bungee.api.ChatColor;
 
 /**
  * This handles all of the mechanics that happen as the Ominous Wither is spawning.
@@ -78,8 +77,8 @@ public class SpawnMechanics implements Listener {
         if (this.creativeRemoveOmen || Utils.isTargetable(player)) player.removePotionEffect(PotionEffectType.BAD_OMEN);
 
         //Modify the Wither's stats
-        final String levelRoman = this.getLevelRomanNumeral(level);
-        final String witherName = ChatColor.of("#8400FF") + "Ominous Wither" + (levelRoman != null ? (" " + levelRoman) : "");
+        final String levelRoman = Utils.getLevelRomanNumeral(level);
+        final String witherName = Utils.WITHER_NAME_COLOR + "Ominous Wither" + (levelRoman != null ? (" " + levelRoman) : "");
 
         wither.setCustomName(witherName);
         wither.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(this.plugin.getBossStatsManager().getStat(BossStat.BOSS_MAX_HEALTH, level, difficulty));
@@ -302,26 +301,4 @@ public class SpawnMechanics implements Listener {
     }
 
 
-    /**
-     * Get Roman Numeral for Wither level
-     */
-    private String getLevelRomanNumeral(final int level) {
-        //NOTE: I am aware there is an algorithm to perform this without manually hardcoding every case
-        //However, there are only 5 possible levels so this is a much simpler solution
-        //If the number of levels is ever expanded I will use that algorithm instead
-        switch (level) {
-            case 1:
-                return "I";
-            case 2:
-                return "II";
-            case 3:
-                return "III";
-            case 4:
-                return "IV";
-            case 5:
-                return "V";
-            default:
-                return null;
-        }
-    }
 }

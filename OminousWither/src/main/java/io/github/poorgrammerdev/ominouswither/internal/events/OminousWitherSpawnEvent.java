@@ -10,14 +10,21 @@ import org.bukkit.event.HandlerList;
  */
 public class OminousWitherSpawnEvent extends AbstractOminousWitherEvent {
 
+    public enum SpawnReason {
+        BUILD,
+        COMMAND,
+    }
+
     private final Player spawner;
     private final int level;
+    private final SpawnReason spawnReason;
 
-    public OminousWitherSpawnEvent(final Wither wither, final Player spawner, final int level) {
+    public OminousWitherSpawnEvent(final Wither wither, final Player spawner, final int level, final SpawnReason spawnReason) {
         super(wither);
 
         this.spawner = spawner;
         this.level = level;
+        this.spawnReason = spawnReason;
     }
 
     /**
@@ -34,6 +41,12 @@ public class OminousWitherSpawnEvent extends AbstractOminousWitherEvent {
         return this.level;
     }
 
+    /**
+     * @return why/how this wither was spawned (was it built, or were commands used?)
+     */
+    public SpawnReason getSpawnReason() {
+        return this.spawnReason;
+    }
     
     /*
      * Required methods for Spigot Event system

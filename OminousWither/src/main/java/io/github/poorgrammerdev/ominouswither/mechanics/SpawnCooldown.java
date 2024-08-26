@@ -18,6 +18,7 @@ import org.bukkit.persistence.PersistentDataType;
 import io.github.poorgrammerdev.ominouswither.OminousWither;
 import io.github.poorgrammerdev.ominouswither.internal.CooldownManager;
 import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherSpawnEvent;
+import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherSpawnEvent.SpawnReason;
 import io.github.poorgrammerdev.ominouswither.utils.ParticleInfo;
 import io.github.poorgrammerdev.ominouswither.utils.Utils;
 import net.md_5.bungee.api.ChatColor;
@@ -83,6 +84,8 @@ public class SpawnCooldown extends CooldownManager implements Listener {
      */
     @EventHandler(ignoreCancelled = true)
     private void onOminousSpawn(final OminousWitherSpawnEvent event) {
+        if (event.getSpawnReason() == SpawnReason.COMMAND) return;
+
         final Player player = event.getSpawner();
         
         //Apply cooldown

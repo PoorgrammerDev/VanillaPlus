@@ -30,6 +30,7 @@ import io.github.poorgrammerdev.ominouswither.mechanics.customskulls.AbstractSku
 import io.github.poorgrammerdev.ominouswither.mechanics.customskulls.ApocalypseSkull;
 import io.github.poorgrammerdev.ominouswither.mechanics.customskulls.ExplosiveSkull;
 import io.github.poorgrammerdev.ominouswither.mechanics.customskulls.GravitySkull;
+import io.github.poorgrammerdev.ominouswither.commands.SummonCommand;
 import io.github.poorgrammerdev.ominouswither.internal.CoroutineManager;
 import io.github.poorgrammerdev.ominouswither.internal.WitherPDCTagger;
 import io.github.poorgrammerdev.ominouswither.internal.config.BossStatsManager;
@@ -95,6 +96,12 @@ public final class OminousWither extends JavaPlugin {
             new ShootingStars(this),
             spawnCooldownManager
         );
+
+        //Register commands
+        final SummonCommand summonCommand = new SummonCommand(this);
+        this.getCommand("summonominouswither").setExecutor(summonCommand);
+        this.getCommand("summonominouswither").setTabCompleter(summonCommand);
+
 
         //Begin Coroutine Manager
         this.coroutineManager.runTaskTimer(this, 0L, 1L);
