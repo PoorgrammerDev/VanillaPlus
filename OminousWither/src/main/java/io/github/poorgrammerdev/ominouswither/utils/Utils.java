@@ -234,4 +234,12 @@ public final class Utils {
         }
     }
 
+    public static String formatMessage(final String string) {
+        return ChatColor.translateAlternateColorCodes('&', string);
+    }
+
+    public static String formatMessage(final String string, final Object... args) {
+        return formatMessage(String.format(string, args));
+    }
+
 }

@@ -21,7 +21,6 @@ import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherSpawn
 import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherSpawnEvent.SpawnReason;
 import io.github.poorgrammerdev.ominouswither.utils.ParticleInfo;
 import io.github.poorgrammerdev.ominouswither.utils.Utils;
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 
@@ -36,7 +35,9 @@ public class SpawnCooldown extends CooldownManager implements Listener {
     private final boolean globalCreativeBypass;
     private final boolean sendChatMessageOnFailedSpawn;
     private final boolean sendActionBarMessageOnFailedSpawn;
-    private final String failedSpawnMessageText;
+
+    private final String failedSpawnChatText;
+    private final String failedSpawnActionbarText;
 
     private final ParticleInfo failedToSpawnParticle;
 
@@ -47,7 +48,9 @@ public class SpawnCooldown extends CooldownManager implements Listener {
         this.globalCreativeBypass = plugin.getConfig().getBoolean("spawn_cooldown.global_creative_bypass", true);
         this.sendChatMessageOnFailedSpawn = plugin.getConfig().getBoolean("spawn_cooldown.send_message_on_failed_spawn.chat_message", true);
         this.sendActionBarMessageOnFailedSpawn = plugin.getConfig().getBoolean("spawn_cooldown.send_message_on_failed_spawn.actionbar", false);
-        this.failedSpawnMessageText = plugin.getConfig().getString("spawn_cooldown.send_message_on_failed_spawn.message_text", "You are on cooldown! Wait %d seconds or kill an Ominous Wither you've previously spawned to reset.");
+
+        this.failedSpawnChatText = plugin.getConfig().getString("messages.attempted_build_on_cooldown_chat", "");
+        this.failedSpawnActionbarText = plugin.getConfig().getString("messages.attempted_build_on_cooldown_actionbar", "");
 
         this.failedToSpawnParticle = new ParticleInfo(Particle.SMOKE,50,1.25,1,1.25);
     }
@@ -67,11 +70,13 @@ public class SpawnCooldown extends CooldownManager implements Listener {
             world.playSound(spawnLocation, Sound.BLOCK_FIRE_EXTINGUISH, SoundCategory.PLAYERS, 1.0f, 1.0f);
 
             //Send messages if enabled
-            if (this.sendChatMessageOnFailedSpawn || this.sendActionBarMessageOnFailedSpawn) {
-                final String message = ChatColor.translateAlternateColorCodes('&', String.format(this.failedSpawnMessageText, this.getRemainingCooldown(player).toSeconds()));
-
-                if (this.sendChatMessageOnFailedSpawn) player.sendMessage(message);
-                if (this.sendActionBarMessageOnFailedSpawn) player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacy(message));
+            if (this.sendChatMessageOnFailedSpawn) {
+                final String message = Utils.formatMessage(this.failedSpawnChatText, this.getRemainingCooldown(player).toSeconds());
+                player.sendMessage(message);
+            }
+            if (this.sendActionBarMessageOnFailedSpawn) {
+                final String message = Utils.formatMessage(this.failedSpawnActionbarText, this.getRemainingCooldown(player).toSeconds());
+                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacy(message));
             }
 
             return false;

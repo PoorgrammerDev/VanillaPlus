@@ -37,15 +37,10 @@ spawn_cooldown:
   # If a player is blocked from spawning an Ominous Wither due to cooldown,
   # send them a message with a short explanation and their remaining cooldown time
   send_message_on_failed_spawn:
-    # Text content of message
-    # There can be a single placeholder `%d` for the number of seconds left in the cooldown
-    # There can be Minecraft color codes using the symbol `&`
-    message_text: "You are on cooldown! Wait %d seconds or kill an Ominous Wither you've previously spawned to reset."
-
-    # Send this message through the regular chat system
+    # Send a message through the regular chat system
     chat_message: true
 
-    # Send this message through the actionbar title slot
+    # Send a message through the actionbar title slot
     actionbar: false
 
   # Allows all players to do `/cooldown get` to view their own cooldown without needing any permissions
@@ -345,6 +340,67 @@ boss_stats:
   #   Please note: this means if you have multiple rolls defined in your loot table, you will end up with (rolls * multiplier) items, assuming each item quantity is 1
   loot_item_multiplier:
     formula: "level + difficulty"
+
+
+
+##############################
+#    LOCALIZATION SECTION    #
+##############################
+
+# Every message sent to players can be customized here
+# Parameterized messages (using Java's built-in placeholders) will have their parameters specfied in a comment above them
+# All messages can make use of the Minecraft built-in color codes (see here: https://minecraft.wiki/w/Formatting_codes) using the symbol &
+messages:
+  # [Parameter 1 : integer ('%d')]: seconds of cooldown
+  attempted_build_on_cooldown_chat: "You are on cooldown! Wait %d seconds or kill an Ominous Wither you've previously spawned to reset."
+
+  # [Parameter 1 : integer ('%d')]: seconds of cooldown
+  attempted_build_on_cooldown_actionbar: "Cooldown: %d seconds"
+
+  insufficient_permissions_command: "&cYou do not have permission to use this command."
+  insufficient_permissions_subcommand: "&cYou do not have permission to use this sub-command."
+  invalid_subcommand: "&cInvalid subcommand."
+  missing_subcommand: "&cToo few arguments, must specify subcommand"
+  missing_player: "&cToo few arguments, must specify player."
+  missing_player_or_duration: "&cToo few arguments, must specify player and duration in seconds."
+  missing_position_or_level: "&cToo few arguments, must specify position and level."
+  missing_or_empty_position: "&cPosition argument cannot be null or empty."
+  console_player_required: "&cMust specify player when using this command from console."
+  console_sender_blocked: "&cOnly players can use this command."
+  invalid_player: "&cCould not find specified player."
+  invalid_duration_type: "&cDuration must be a valid integer (in seconds)."
+  invalid_duration_val: "&cDuration must be a non-negative integer (in seconds)."
+  invalid_level_type: "&cLevel argument must be a valid integer."
+  invalid_level_val: "&cLevel argument must be an integer in the interval [1,5]."
+  invalid_position_type: "&cPosition argument must be a valid number."
+  internal_error: "&cAn internal error ocurred."
+
+  # [Parameter 1 : string ('%s')]: Ominous Wither name color code
+  # [Parameter 2 : string ('%s')]: Ominous Wither level roman numeral
+  summon_success: "Summoned new %sOminous Wither %s&r"
+
+  get_self_no_cooldown: "You do not have a cooldown active."
+
+  # [Parameter 1 : integer ('%d')]: seconds of cooldown
+  get_self_cooldown: "You have %d seconds remaining in cooldown."
+
+  # [Parameter 1: string ('%s')]: target player name
+  get_other_no_cooldown: "%s does not have a cooldown active."
+
+  # [Parameter 1: string ('%s')]: target player name
+  # [Parameter 2: int ('%d')]: seconds of cooldown
+  get_other_cooldown: "%s has %d seconds remaining in cooldown."
+
+  # [Parameter 1: string ('%s')]: target player name
+  # [Parameter 2: int ('%d')]: seconds of cooldown
+  set_cooldown: "Set %s's cooldown to %d seconds."
+
+  # [Parameter 1: string ('%s')]: target player name
+  remove_no_cooldown: "%s did not have an active cooldown to remove."
+
+  # [Parameter 1: int ('%d')]: seconds of cooldown
+  # [Parameter 2: string ('%s')]: target player name
+  remove_cooldown: "Removed cooldown of %d seconds from %s."
 
 
 ####################################

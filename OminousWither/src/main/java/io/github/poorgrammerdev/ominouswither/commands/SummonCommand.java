@@ -20,7 +20,6 @@ import io.github.poorgrammerdev.ominouswither.OminousWither;
 import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherSpawnEvent;
 import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherSpawnEvent.SpawnReason;
 import io.github.poorgrammerdev.ominouswither.utils.Utils;
-import net.md_5.bungee.api.ChatColor;
 
 /**
  * Command to summon Ominous Withers
@@ -31,8 +30,27 @@ public class SummonCommand implements CommandExecutor, TabCompleter {
 
     private final OminousWither plugin;
 
+    // Messages section
+    private final String consoleSenderBlocked;
+    private final String missingPositionOrLevel;
+    private final String missingOrEmptyPosition;
+    private final String invalidPositionType;
+    private final String invalidLevelType;
+    private final String invalidLevelValue;
+    private final String internalError;
+    private final String summonSuccess;
+
     public SummonCommand(OminousWither plugin) {
         this.plugin = plugin;
+
+        this.consoleSenderBlocked = plugin.getConfig().getString("messages.console_sender_blocked", "");
+        this.missingPositionOrLevel = plugin.getConfig().getString("messages.missing_position_or_level", "");
+        this.missingOrEmptyPosition = plugin.getConfig().getString("messages.missing_or_empty_position", "");
+        this.invalidPositionType = plugin.getConfig().getString("messages.invalid_position_type", "");
+        this.invalidLevelType = plugin.getConfig().getString("messages.invalid_level_type", "");
+        this.invalidLevelValue = plugin.getConfig().getString("messages.invalid_level_val", "");
+        this.internalError = plugin.getConfig().getString("messages.internal_error", "");
+        this.summonSuccess = plugin.getConfig().getString("messages.summon_success" , "");
     }
 
     @Override
@@ -43,13 +61,13 @@ public class SummonCommand implements CommandExecutor, TabCompleter {
         if (!sender.hasPermission(new Permission("ominouswither.summonominouswither"))) return false;
 
         if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "Only players can use this command.");
+            sender.sendMessage(Utils.formatMessage(this.consoleSenderBlocked));
             return false;
         }
 
         final Player player = (Player) sender;
         if (args.length < 4) {
-            sender.sendMessage(ChatColor.RED + "Too few arguments, must specify position and level.");
+            sender.sendMessage(Utils.formatMessage(this.missingPositionOrLevel));
             return false;
         }
 
@@ -62,7 +80,7 @@ public class SummonCommand implements CommandExecutor, TabCompleter {
             location.setZ(this.parseLocationArg(args[2], location.getZ()));
         }
         catch (IllegalArgumentException e) {
-            sender.sendMessage(ChatColor.RED + e.getMessage());
+            sender.sendMessage(Utils.formatMessage(e.getMessage()));
             return false;
         }
         
@@ -72,13 +90,13 @@ public class SummonCommand implements CommandExecutor, TabCompleter {
             level = Integer.parseInt(args[3]);
         }
         catch (NumberFormatException e) {
-            sender.sendMessage(ChatColor.RED + "Level argument must be a valid integer.");
+            sender.sendMessage(Utils.formatMessage(this.invalidLevelType));
             return false;
         }
 
         //Validate level
         if (level <= 0 || level >= 6) {
-            sender.sendMessage(ChatColor.RED + "Invalid level, must be in interval [1,5]");
+            sender.sendMessage(Utils.formatMessage(this.invalidLevelValue));
             return false;
         }
 
@@ -88,8 +106,8 @@ public class SummonCommand implements CommandExecutor, TabCompleter {
         final Entity entity = world.spawnEntity(location, EntityType.WITHER);
 
         if (!(entity instanceof Wither)) {
-            sender.sendMessage(ChatColor.RED + "An internal error occurred: could not cast summoned entity to Wither");
-            this.plugin.getLogger().severe("SummonCommand failure: could not cast summoned entity to Wither");
+            sender.sendMessage(Utils.formatMessage(this.internalError));
+            this.plugin.getLogger().severe("SummonCommand critical failure: Could not cast summoned entity to Wither");
 
             entity.remove();
             return true;
@@ -100,7 +118,7 @@ public class SummonCommand implements CommandExecutor, TabCompleter {
         wither.setInvulnerabilityTicks(DEFAULT_INVULN_TICKS);
         this.plugin.getServer().getPluginManager().callEvent(new OminousWitherSpawnEvent(wither, player, level, SpawnReason.COMMAND));
 
-        sender.sendMessage("Summoned new " + Utils.WITHER_NAME_COLOR + "Ominous Wither " + Utils.getLevelRomanNumeral(level) + ChatColor.RESET);
+        sender.sendMessage(Utils.formatMessage(this.summonSuccess, Utils.WITHER_NAME_COLOR.toString(), Utils.getLevelRomanNumeral(level)));
         return true;
     }
     
@@ -169,7 +187,7 @@ public class SummonCommand implements CommandExecutor, TabCompleter {
      * @throws IllegalArgumentException if user input is invalid
      */
     private double parseLocationArg(String arg, final double baseValue) throws IllegalArgumentException {
-        if (arg == null || arg.length() <= 0) throw new IllegalArgumentException("Position argument cannot be null or empty.");
+        if (arg == null || arg.length() <= 0) throw new IllegalArgumentException(this.missingOrEmptyPosition);
         
         final boolean isRelative = arg.charAt(0) == '~';
         
@@ -187,7 +205,7 @@ public class SummonCommand implements CommandExecutor, TabCompleter {
             val = Double.parseDouble(arg);
         }
         catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Position argument must be a valid number.");
+            throw new IllegalArgumentException(this.invalidPositionType);
         }
 
         return (isRelative ? (baseValue + val) : val);
