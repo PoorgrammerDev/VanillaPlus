@@ -5,6 +5,10 @@
 # If a player builds an Ominous Wither in Creative Mode, should their Bad Omen effect be removed?
 creative_remove_omen: true
 
+# Define a custom loot table for the Ominous Wither to drop on death
+# If the value is null, invalid, or the loot table cannot be found, it will default to the vanilla Wither drops
+custom_loot_table: null
+
 # ***This system is disabled by default***
 # This prevents Ominous Withers from being rapidly spawned by placing a cooldown on the player who spawned it
 # The spawner of an Ominous Wither is unable to spawn another one until the cooldown expires or until the Ominous Wither that they previously spawned is killed
@@ -43,7 +47,6 @@ spawn_cooldown:
 
     # Send this message through the actionbar title slot
     actionbar: false
-
 
 ############################
 #    BOSS STATS SECTION    #
@@ -332,9 +335,9 @@ boss_stats:
     formula: "(2^level * ((5^difficulty)/10)) + ((2*(level^2) * 2*(difficulty^3))/15)"
 
   # Scales amount of dropped items from the Ominous Wither
-  # This does not apply random chance, it simply scales the loot amount
-  # As of OminousWither version 1.0.0 the only possible loot is the vanilla Wither drop, the Nether Star
-  # If custom loot items are ever added, this value would likely serve as the amount of rolls in the loot generation
+  # If a custom loot table is not defined, this will simply take the original drops and multiply its quantities, respecting stack sizes
+  # If a custom loot table is defined, this will serve as the number of times the loot table is evaluated
+  #   Please note: this means if you have multiple rolls defined in your loot table, you will end up with (rolls * multiplier) items, assuming each item quantity is 1
   loot_item_multiplier:
     formula: "level + difficulty"
 
