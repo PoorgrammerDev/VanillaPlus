@@ -9,6 +9,15 @@ creative_remove_omen: true
 # If the value is null, invalid, or the loot table cannot be found, it will default to the vanilla Wither drops
 custom_loot_table: null
 
+# Makes dropped loot items and EXP invulnerable to any damage (e.g. explosions, fire, lava) except The Void
+invulnerable_loot: true
+
+# Makes dropped loot items never despawn
+immortal_loot: true
+
+# Makes dropped loot items and EXP glow
+glowing_loot: false
+
 # ***This system is disabled by default***
 # This prevents Ominous Withers from being rapidly spawned by placing a cooldown on the player who spawned it
 # The spawner of an Ominous Wither is unable to spawn another one until the cooldown expires or until the Ominous Wither that they previously spawned is killed

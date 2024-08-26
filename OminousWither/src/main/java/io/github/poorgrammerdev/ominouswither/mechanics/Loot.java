@@ -12,6 +12,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Wither;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -19,6 +20,8 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.loot.LootContext;
 import org.bukkit.loot.LootTable;
+import org.bukkit.scheduler.BukkitRunnable;
+
 import io.github.poorgrammerdev.ominouswither.OminousWither;
 import io.github.poorgrammerdev.ominouswither.internal.config.BossStat;
 
@@ -35,10 +38,18 @@ public class Loot implements Listener {
     private final Random random;
     private final LootTable lootTable;
 
+    private final boolean invulnerableLoot;
+    private final boolean immortalLoot;
+    private final boolean glowingLoot;
+
     public Loot(OminousWither plugin) {
         this.plugin = plugin;
         this.random = new Random();
         this.lootTable = this.getCustomLootTable();
+
+        this.invulnerableLoot = plugin.getConfig().getBoolean("invulnerable_loot", true);
+        this.immortalLoot = plugin.getConfig().getBoolean("immortal_loot", true);
+        this.glowingLoot = plugin.getConfig().getBoolean("glowing_loot", false);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -85,6 +96,26 @@ public class Loot implements Listener {
             for (int i = 0; i < lootMultiplier; ++i) {
                 event.getDrops().addAll(this.lootTable.populateLoot(this.random, contextBuilder.build()));
             }
+        }
+
+        //Loot entity modifiers
+        if (this.invulnerableLoot || this.immortalLoot || this.glowingLoot) {
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    for (final Entity entity : world.getNearbyEntities(location, 0.1, 0.1, 0.1)) {
+                        final boolean isItem = entity instanceof Item;
+                        if (!isItem && !(entity instanceof ExperienceOrb)) continue;
+
+                        if (Loot.this.invulnerableLoot) entity.setInvulnerable(true);
+                        if (Loot.this.glowingLoot) entity.setGlowing(true);
+
+                        if (isItem && Loot.this.immortalLoot) {
+                            ((Item) entity).setUnlimitedLifetime(true);
+                        }
+                    }
+                }
+            }.runTaskLater(plugin, 1L);
         }
     }
 
