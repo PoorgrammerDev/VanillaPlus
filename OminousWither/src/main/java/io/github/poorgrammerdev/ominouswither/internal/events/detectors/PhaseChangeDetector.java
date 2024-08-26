@@ -63,9 +63,6 @@ public class PhaseChangeDetector implements Listener {
         //If the health has not dipped past half, do not call event
         if (healthAfterDamage <= 0.0D || (healthAfterDamage / maxHealth) > 0.5D) return;
 
-        //Tag the wither with the second phase key
-        wither.getPersistentDataContainer().set(this.plugin.getSecondPhaseKey(), PersistentDataType.BOOLEAN, true);
-
         //Call event
         this.plugin.getServer().getPluginManager().callEvent(new OminousWitherPhaseChangeBeginEvent(wither));
     }

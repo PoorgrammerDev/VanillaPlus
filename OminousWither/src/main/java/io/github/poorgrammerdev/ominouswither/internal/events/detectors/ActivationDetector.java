@@ -40,9 +40,6 @@ public class ActivationDetector implements Listener {
         //Check if it's already fully spawned
         if (wither.getPersistentDataContainer().getOrDefault(this.plugin.getIsFullySpawnedKey(), PersistentDataType.BOOLEAN, false)) return;
 
-        //Mark as fully spawned
-        wither.getPersistentDataContainer().set(this.plugin.getIsFullySpawnedKey(), PersistentDataType.BOOLEAN, true);
-
         //*** Fire Event ***
         this.plugin.getServer().getPluginManager().callEvent(new OminousWitherActivateEvent(wither));
     }

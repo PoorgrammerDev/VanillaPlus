@@ -31,6 +31,7 @@ import io.github.poorgrammerdev.ominouswither.mechanics.customskulls.ApocalypseS
 import io.github.poorgrammerdev.ominouswither.mechanics.customskulls.ExplosiveSkull;
 import io.github.poorgrammerdev.ominouswither.mechanics.customskulls.GravitySkull;
 import io.github.poorgrammerdev.ominouswither.internal.CoroutineManager;
+import io.github.poorgrammerdev.ominouswither.internal.WitherPDCTagger;
 import io.github.poorgrammerdev.ominouswither.internal.config.BossStatsManager;
 
 public final class OminousWither extends JavaPlugin {
@@ -76,6 +77,7 @@ public final class OminousWither extends JavaPlugin {
             new ActivationDetector(this),
             new PhaseChangeDetector(this),
             loadDetector,
+            new WitherPDCTagger(this),
             new PreventFriendlyFire(this),
             new PreventExploits(this),
             new ExplosionResistance(this),
