@@ -1,0 +1,27 @@
+name: OminousWither
+author: PoorgrammerDev
+description: Adds a stronger variant of the Wither Boss 
+version: '${project.version}'
+main: io.github.poorgrammerdev.ominouswither.OminousWither
+api-version: '1.21.1'
+commands:
+  summonominouswither:
+    usage: /summonominouswither <x> <y> <z> <level>
+    description: Summons an Ominous Wither at a location. This is a player-only command as it sets the spawner to the player who executed it. Does not affect cooldowns.
+    permission: ominouswither.summonominouswither
+    permission-message: You do not have permission to use this command.
+    aliases: spawnominouswither
+  cooldown:
+    usage: "/cooldown get\n/cooldown get <player>\n/cooldown set <player> <seconds>\n/cooldown remove <player>"
+    description: View, modify, or remove cooldowns on spawning Ominous Withers. Even if cooldown duration is not active in the config, they can still be applied here.
+permissions:
+  ominouswither.creative_bypass_spawn_cooldown:
+    description: "Allows a player to bypass the cooldown system when building Ominous Withers in Creative Mode, even if the global setting is disabled"
+  ominouswither.summonominouswither:
+    description: "Allows a player to use a command to summon Ominous Withers"
+  ominouswither.cooldown_get_self:
+    description: "Allow players to view their own cooldown status via a command"
+  ominouswither.cooldown_get_others:
+    description: "Allow players to view any player's cooldown status via a command"
+  ominouswither.cooldown_modify:
+    description: "Allow players to set or remove cooldown statuses via a command"

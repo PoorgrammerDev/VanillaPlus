@@ -1,0 +1,6 @@
+name: DispensersShearPumpkins
+author: PoorgrammerDev
+description: Activating a dispenser with shears inside facing a pumpkin will carve it
+version: '${project.version}'
+main: io.github.poorgrammerdev.dispensersshearpumpkins.DispensersShearPumpkins
+api-version: '1.20.6'

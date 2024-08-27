@@ -1,0 +1,429 @@
+###############################
+#    OMINOUS WITHER CONFIG    #
+###############################
+
+# If a player builds an Ominous Wither in Creative Mode, should their Bad Omen effect be removed?
+creative_remove_omen: true
+
+# Define a custom loot table for the Ominous Wither to drop on death
+# If the value is null, invalid, or the loot table cannot be found, it will default to the vanilla Wither drops
+custom_loot_table: null
+
+# Makes dropped loot items and EXP invulnerable to any damage (e.g. explosions, fire, lava) except The Void
+invulnerable_loot: true
+
+# Makes dropped loot items never despawn
+immortal_loot: true
+
+# Makes dropped loot items and EXP glow
+glowing_loot: false
+
+# ***This system is disabled by default***
+# This prevents Ominous Withers from being rapidly spawned by placing a cooldown on the player who spawned it
+# The spawner of an Ominous Wither is unable to spawn another one until the cooldown expires or until the Ominous Wither that they previously spawned is killed
+# In other words, killing an Ominous Wither will reset its spawner's cooldown
+spawn_cooldown:
+  # To enable this system, set this to a positive integer value
+  # This value is the duration of the cooldown, measured in real-life seconds
+  cooldown_duration: 0
+
+  # Handles interaction between the cooldown system and Creative Mode
+  # If this is true:
+  #   - All players in Creative Mode spawning Ominous Withers are not put in cooldown regardless of permission
+  #   - Additionally, if they were already in cooldown from spawning it in Survival Mode, they'd be allow to spawn it regardless
+  #   - This would not reset their existing cooldown, however
+  # If this is false:
+  #   - They will still be put in cooldown unless they have the permission node `ominouswither.creative_bypass_spawn_cooldown`
+  #   - If they have an existing cooldown, they will be blocked from spawning unless they have the aformentioned permission node
+  # Please note that players in Survival Mode will still be put in cooldown, even if they have this permission node
+  global_creative_bypass: true
+
+  # If a player is blocked from spawning an Ominous Wither due to cooldown,
+  # with this option set to true they will spawn a regular Wither instead.
+  # If this is set to false, the Wither Skull will be placed down and nothing will happen
+  produce_regular_wither_on_failed_spawn: false
+
+  # If a player is blocked from spawning an Ominous Wither due to cooldown,
+  # send them a message with a short explanation and their remaining cooldown time
+  send_message_on_failed_spawn:
+    # Send a message through the regular chat system
+    chat_message: true
+
+    # Send a message through the actionbar title slot
+    actionbar: false
+
+  # Allows all players to do `/cooldown get` to view their own cooldown without needing any permissions
+  # This does not allow them to view others' cooldowns or set or remove anyone's cooldowns
+  # If this is disabled, players can still view their own cooldowns if they have the permission node `ominouswither.cooldown_get_self`
+  global_allow_view_own_cooldown: true
+
+############################
+#    BOSS STATS SECTION    #
+############################
+
+# This is a collection of different settings that pertain to the Ominous Wither's stats
+# These values essentially control how strong it is and how strong each of its moves are
+# 
+# Each setting has one required component: `formula`, a string
+#   This is a mathematical expression to determine the value of the stat. 
+#   This expression can use the variables `level` and `difficulty`, but doesn't have to.
+#   - `level` refers to the level of an Ominous Wither, or equivalently: the level of Bad Omen used when spawning the Ominous Wither. This value is in the interval [1,5]
+#   - `difficulty` refers to the Difficulty of the world that the Wither is in. This value is in the interval [1,3] with the mapping {Easy: 1, Normal: 2, Hard: 3}. Peaceful is disregarded since Withers can't exist in that mode.
+#   Not using a variable will simply make the stat constant across all different assignments of that variable.
+#   The system uses boxbeam's Crunch package, found here: https://github.com/boxbeam/Crunch
+# 
+#   Here is an example using a non-existent stat called "wither_power"
+#     wither_power:
+#       formula: "(level * 2) - 1"
+#   The resulting "wither_power" values for Ominous Withers level 1 through 5 would be 1, 3, 5, 7, and 9 respectively
+#   Since difficulty is not included in this formula, it will not affect the stat values at all.
+#   i.e. A level 3 Ominous Wither in Easy difficulty will have the same "wither_power" as a level 3 Ominous Wither in Hard difficulty.
+#
+# There are two additional optional components: `level-mapping` and `difficulty-mapping`, both arrays of numbers
+#   If `level-mapping` is present, it must be an array of 5 numeric values.
+#   If `difficulty-mapping` is present, it must be an array of 3 numeric values.
+#   
+#   These mappings replace their respective variable in the `formula` calculation above.
+#   The variable's assignment will be used as an index (assuming a 1-based indexing system) to this mapping / lookup table
+#   This allows for more custom calculations that can't be easily represented by an expression.
+# 
+#   Here is an example using a non-existent stat called "wither_reach"
+#     wither_reach:
+#       formula: "level + 0.5"
+#       level-mapping: [0, 0, 3, 7, 20]
+#   The resulting "wither_reach" values for Ominous Withers level 1 through 5 would be 0.5, 0.5, 3.5, 7.5, and 20.5 respectively
+
+# [!] WARNING: Adjusting any of these settings to invalid or extreme values may cause server errors, instability, or crashes!
+boss_stats:
+  # Speed of normal (black) skulls at launch
+  normal_skull_speed:
+    formula: "(0.2 * level) + 1.0"
+  
+  # Speed of Explosive skull (blue with orange fire trail) at launch
+  explosive_skull_speed:
+    formula: "10.0"
+
+  # Constant homing speed of Apocalypse skull (blue with large white dust trail)
+  apocalypse_skull_speed:
+    formula: "3.0"
+
+  # Speed of Gravity skull (blue with small pink dust trail) at launch
+  gravity_skull_speed:
+    formula: "5.0"
+
+  # Lifespan of all custom blue skulls in ticks
+  dangerous_skull_lifespan:
+    formula: "500"
+
+  # How long the homing effect on Apocalypse Skulls lasts, in ticks
+  # If this amount is less than the `dangerous_skull_lifespan` setting, the skull will simply stop homing and fly straight after this amount of ticks.
+  apocalypse_homing_lifespan:
+    formula: "100"
+
+  # The strength of explosion from the Explosive skull
+  explosive_skull_power:
+    formula: "3.75"
+
+  # Gravity Skull: Radius of circle to search for entities to apply gravity effect to
+  # A non-positive radius will disable the Gravity effect of the Gravity skull
+  gravity_radius:
+    formula: "6.25"
+
+  # Gravity Skull: Intensity of gravity effect
+  gravity_force_intensity:
+    formula: "2.0"
+
+  # Apocalypse Skull: how many Skeleton horsemen to spawn upon impact
+  apocalypse_spawn_amount:
+    formula: "level"
+
+  # Apocalypse Skull: how long before Skeleton horsemen disappear, in ticks
+  apocalypse_horseman_lifespan:
+    formula: "1000"
+
+  # Apocalypse Skull: Protection enchantment level of Skeleton Horseman's armor
+  apocalypse_horseman_armor_protection:
+    formula: "0"
+
+  # Apocalypse Skull: Power enchantment level of Skeleton Horsemen's bows
+  apocalypse_horseman_bow_power: 
+    formula: "3"
+
+  # Apocalypse Skull: Movement Speed attribute of Skeleton Horses
+  apocalypse_horse_speed:
+    formula: "0.5"
+
+  # Apocalypse Skull: Movement Efficiency attribute of Skeleton Horses
+  apocalypse_horse_movement_efficiency:
+    formula: "2.0"
+
+  # Probability of a fired skull being a custom blue skull
+  dangerous_skull_chance_boost:
+    formula: "0.05 * level"
+
+  # Ominous Wither's resistance to general explosion damage on a [0.0,1.0] scale; excludes end crystals
+  # 0.0 indicates no extra resistance ; 1.0 indicates full damage immunity
+  general_explosion_resistance:
+    formula: "0.5"
+
+  # Ominous Wither's resistance to end crystal damage on a [0.0,1.0] scale
+  # 0.0 indicates no extra resistance ; 1.0 indicates full damage immunity
+  end_crystal_resistance:
+    formula: "0.8"
+
+  # Minimum distance from target before Ominous Wither activates flight acceleration mechanic
+  # Setting this value too small may affect the Wither's AI
+  flight_acceleration_distance_threshold:
+    formula: "15"
+
+  # Speed of Ominous Wither during flight acceleration
+  # Non-positive numbers (i.e. any negative number or 0) deactivate the flight acceleration system
+  # Please note that with small enough positive values, the Wither can end up slower than vanilla speeds
+  flight_speed:
+    formula: "level"
+    level-mapping: [0.0, 0.0, 0.75, 1.5, 10]
+
+  # When the Ominous Wither suffocates inside a block, it evades this by teleporting away
+  # This mechanic is similar to how Endermen teleport away from arrows
+  # This defines the maximum radius that the Wither can search for a viable location in
+  # A non-positive value will deactivate this teleportation ability
+  suffocate_teleport_range:
+    formula: "10"
+
+  # Armor stat of Ominous Wither during the first phase
+  first_phase_armor:
+    formula: "4.0"
+
+  # Armor stat of Ominous Wither during the second phase
+  second_phase_armor:
+    formula: "7.0 + (level * 3.0)"
+
+  # Armor toughness stat of Ominous Wither during the first phase
+  first_phase_armor_toughness:
+    formula: "level * 2"
+
+  # Armor toughness stat of Ominous Wither during the second phase
+  second_phase_armor_toughness:
+    formula: "level * 4"
+
+  # Amount of normal skulls the Ominous Wither will fire in one volley
+  skull_barrage_amount:
+    formula: "level"
+    level-mapping: [3, 3, 3, 5, 5]
+
+  # Max Health of Ominous Wither
+  boss_max_health:
+    formula: "150 * (difficulty + 1)"
+
+  # How many Wither Skeleton minions will spawn along with the Ominous Wither
+  minion_amount:
+    formula: "10"
+
+  # Maximum radius to search for viable Wither Skeleton minion locations during spawn
+  minion_spawn_range:
+    formula: "10"
+
+  # Armor stat of spawned Wither Skeleton minions
+  minion_armor:
+    formula: "level * 2.0"
+
+  # Armor toughness stat of spawned Wither Skeleton minions
+  minion_armor_toughness:
+    formula: "level"
+
+  # Movement speed stat of spawned Wither Skeleton minions
+  minion_movement_speed:
+    formula: "0.375"
+
+  # Sharpness enchantment level of spawned Wither Skeleton minions
+  minion_sword_sharpness:
+    formula: "level"
+
+  # In the second phase, the Wither gains an enchanced version of its block breaking move
+  # This is its horizontal range in each direction
+  enhanced_break_range:
+    formula: "2"
+  
+  # Enhanced block breaking move vertical range in both top/down directions (this many blocks up and this many blocks down)
+  enhanced_break_height:
+    formula: "3"
+  
+  # How often, in ticks, the enhanced block break move can be used during the Second Phase
+  # Setting the interval to a non-positive number will deactivate the system, but the vanilla block break move will remain
+  enhanced_break_interval:
+    formula: "(-2 * level) + 20"
+
+  # The next few settings pertain to Life Drain, an extra move the Wither gains in its Second Phase where it summons a particle construct on its target
+  # The construct takes some startup time before it activates, and then begins directly draining the health of any entity inside of it that the Wither doesn't consider friendly
+  # The Life Drain bypasses all armor and Absorption hearts, but cannot kill its target, leaving them at half a heart at the lowest
+  # The drained health is used to heal the Wither
+
+  # Life Drain goes on cooldown once used and cannot be used by this Wither again until this many ticks passes
+  # Please note this counter starts directly when it is summoned by the Wither, not after the construct activates or despawns
+  # This means if this value is less than (startup time + lifespan), then there may be multiple Life Drain constructs active at once
+  life_drain_cooldown:
+    formula: "300 - (55 * (level - 1))"
+  
+  # How close the Wither must be to its target in order to summon the Life Drain construct on them
+  # Please note this indicates neither the distance from the construct to the Wither nor the distance from the construct to the target
+  # It solely indicates the max distance of the Wither to the target to trigger the attack. The location of the construct itself is not bounded by a range.
+  life_drain_range:
+    formula: "2.5 * level"
+  
+  # How long, in ticks, the construct must wait before it activates and begins draining HP
+  life_drain_startup_time:
+    formula: "40 - (6 * (level - 1))"
+  
+  # How long the construct can stay active and drain HP for before it despawns, in ticks
+  # Please note that this does not encompass the startup time; it is separate
+  # For example, if the startup time is 5 ticks and this is 20 ticks: the construct will load for 5 ticks, drain HP for 20 ticks, and despawns 25 ticks after it was initially spawned
+  life_drain_lifespan:
+    formula: "(15 * level) + 45"
+  
+  # The construct will drain 1 health from its targets every # ticks
+  life_drain_attack_interval:
+    formula: "3"
+    
+  # For every 1 health drained from a target, its summoner (the Wither) will regain this many health points
+  life_drain_heal_multiplier:
+    formula: "1.0"
+
+  # For each construct, its first hit on a given entity has a probability of inflicting a curse that instantly removes all Absorption from the target
+  # Repeated hits on the same enity cannot activate this - only the first hit on a unique entity, per construct
+  # The removed Absorption hearts do not heal the Wither
+  life_drain_curse_probability:
+    formula: "level"
+    level-mapping: [0, 0, 0, 0.5, 1.0]
+  
+  # The horizontal radius of the construct
+  # This value is half of the total width
+  life_drain_horizontal_radius:
+    formula: "1.0"
+  
+  # The vertical radius of the construct
+  # This value is half of the total height
+  life_drain_vertical_radius:
+    formula: "1.5"
+
+  # The next few settings pertain to Echoes, an extra move the Wither gains in its Second Phase where it plummets Players into the ground
+  # This move is intended as a counterattack to the Mace. It activates when airborne Player targets enter a certain range of the Wither while falling down
+  # The move causes the player to fall at a heightened speed until they reach the ground or until the duration is up
+
+  # Echoes goes on cooldown once used and cannot be used by this Wither again until this many ticks passes
+  # Please note this counter starts directly when it is used by the Wither, not once the Player reaches the ground or after its effect duration runs out
+  # This means if this value is less than max_effect_duration, it is possible, though unlikely, that the effect can be applied multiple times concurrently to the same player
+  # In this instance the effect would not compound however, since the effect simply sets the vertical component of their velocity to the downward_force value
+  echoes_cooldown:
+    formula: "700 - (75 * (level - 1))"
+
+  # How close the Wither's target must be in order to use Echoes on them
+  # The distance is measured at a point slightly above the Wither's base to give some vertical bias
+  echoes_range:
+    formula: "5.0"
+
+  # How fast the Player must be falling downward in order to trigger Echoes
+  # The Y (vertical) component of their velocity must be lesser (more negative) than this value to trigger
+  echoes_max_y_velocity:
+    formula: "-0.75"
+
+  # How long a single application of the Echoes effect can last at maximum
+  # The effect also terminates once the Player reaches the ground
+  echoes_max_effect_duration:
+    formula: "20"
+
+  # How strongly the player is sent plummeting into the ground
+  # The effect sets the Y (vertical) component of their velocity to this value
+  echoes_vertical_force:
+    formula: "-0.75 * level"
+
+  # Scales dropped experience points on death for Ominous Withers
+  # As of 16 August 2024, the vanilla Wither drops 50 experience points according to the Minecraft Wiki (https://minecraft.wiki/w/Wither)
+  # The Ominous Wither will drop the vanilla value multiplied by this scalar value. If the resulting number is a decimal, the decimal portion will be truncated.
+  # e.g. if multiplier = 1.75 ->  base * multiplier = 50 * 1.75 = 87.5  -> 87 experience points dropped
+  loot_exp_multiplier:
+    formula: "(2^level * ((5^difficulty)/10)) + ((2*(level^2) * 2*(difficulty^3))/15)"
+
+  # Scales amount of dropped items from the Ominous Wither
+  # If a custom loot table is not defined, this will simply take the original drops and multiply its quantities, respecting stack sizes
+  # If a custom loot table is defined, this will serve as the number of times the loot table is evaluated
+  #   Please note: this means if you have multiple rolls defined in your loot table, you will end up with (rolls * multiplier) items, assuming each item quantity is 1
+  loot_item_multiplier:
+    formula: "level + difficulty"
+
+
+
+##############################
+#    LOCALIZATION SECTION    #
+##############################
+
+# Every message sent to players can be customized here
+# Parameterized messages (using Java's built-in placeholders) will have their parameters specfied in a comment above them
+# All messages can make use of the Minecraft built-in color codes (see here: https://minecraft.wiki/w/Formatting_codes) using the symbol &
+messages:
+  # [Parameter 1 : integer ('%d')]: seconds of cooldown
+  attempted_build_on_cooldown_chat: "You are on cooldown! Wait %d seconds or kill an Ominous Wither you've previously spawned to reset."
+
+  # [Parameter 1 : integer ('%d')]: seconds of cooldown
+  attempted_build_on_cooldown_actionbar: "Cooldown: %d seconds"
+
+  insufficient_permissions_command: "&cYou do not have permission to use this command."
+  insufficient_permissions_subcommand: "&cYou do not have permission to use this sub-command."
+  invalid_subcommand: "&cInvalid subcommand."
+  missing_subcommand: "&cToo few arguments, must specify subcommand"
+  missing_player: "&cToo few arguments, must specify player."
+  missing_player_or_duration: "&cToo few arguments, must specify player and duration in seconds."
+  missing_position_or_level: "&cToo few arguments, must specify position and level."
+  missing_or_empty_position: "&cPosition argument cannot be null or empty."
+  console_player_required: "&cMust specify player when using this command from console."
+  console_sender_blocked: "&cOnly players can use this command."
+  invalid_player: "&cCould not find specified player."
+  invalid_duration_type: "&cDuration must be a valid integer (in seconds)."
+  invalid_duration_val: "&cDuration must be a non-negative integer (in seconds)."
+  invalid_level_type: "&cLevel argument must be a valid integer."
+  invalid_level_val: "&cLevel argument must be an integer in the interval [1,5]."
+  invalid_position_type: "&cPosition argument must be a valid number."
+  internal_error: "&cAn internal error ocurred."
+
+  # [Parameter 1 : string ('%s')]: Ominous Wither name color code
+  # [Parameter 2 : string ('%s')]: Ominous Wither level roman numeral
+  summon_success: "Summoned new %sOminous Wither %s&r"
+
+  get_self_no_cooldown: "You do not have a cooldown active."
+
+  # [Parameter 1 : integer ('%d')]: seconds of cooldown
+  get_self_cooldown: "You have %d seconds remaining in cooldown."
+
+  # [Parameter 1: string ('%s')]: target player name
+  get_other_no_cooldown: "%s does not have a cooldown active."
+
+  # [Parameter 1: string ('%s')]: target player name
+  # [Parameter 2: int ('%d')]: seconds of cooldown
+  get_other_cooldown: "%s has %d seconds remaining in cooldown."
+
+  # [Parameter 1: string ('%s')]: target player name
+  # [Parameter 2: int ('%d')]: seconds of cooldown
+  set_cooldown: "Set %s's cooldown to %d seconds."
+
+  # [Parameter 1: string ('%s')]: target player name
+  remove_no_cooldown: "%s did not have an active cooldown to remove."
+
+  # [Parameter 1: int ('%d')]: seconds of cooldown
+  # [Parameter 2: string ('%s')]: target player name
+  remove_cooldown: "Removed cooldown of %d seconds from %s."
+
+
+####################################
+#    TECHNICAL SETTINGS SECTION    #
+####################################
+
+# When a Wither is spawned, the plugin checks in this radius for who most likely spawned it
+# This is used to determine if the Wither should be an Ominous Wither, what level of Bad Omen was used, etc.
+# This likely shouldn't be modified unless your server has a way for players to build well beyond their reach limit
+spawner_search_radius: 10.0
+
+# Many small repeating tasks in this plugin that aren't required to be tick-perfect use a system that limits computation per tick
+# This can cause these tasks to not fire in certain ticks, but prevents the entire server from lagging
+# For example, a task that uses this system is the constant particle "aura" surrounding the Ominous Wither
+# This value below is the max amount of time, in milliseconds, that this system can take to run all tasks in a single tick
+# Increasing this value may cause some server lag and decreasing this value may cause some functions of the plugin to not work as well
+max_task_millis_per_tick: 2.5
