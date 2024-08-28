@@ -42,6 +42,7 @@ public class CooldownCommand implements CommandExecutor, TabCompleter {
     private final String getOtherCooldown;
     private final String setCooldown;
     private final String removedNoCooldown;
+    private final String removedExpiredCooldown;
     private final String removedCooldown;
 
 
@@ -67,6 +68,7 @@ public class CooldownCommand implements CommandExecutor, TabCompleter {
         this.getOtherCooldown = plugin.getConfig().getString("messages.get_other_cooldown", "");
         this.setCooldown = plugin.getConfig().getString("messages.set_cooldown", "");
         this.removedNoCooldown = plugin.getConfig().getString("messages.remove_no_cooldown", "");
+        this.removedExpiredCooldown = plugin.getConfig().getString("messages.remove_expired_cooldown", "");
         this.removedCooldown = plugin.getConfig().getString("messages.remove_cooldown", "");
     }
 
@@ -201,10 +203,18 @@ public class CooldownCommand implements CommandExecutor, TabCompleter {
 
         final Instant instant = this.cooldownManager.removeCooldown(target);
 
-        sender.sendMessage(instant != null ?
-            Utils.formatMessage(this.removedCooldown, Duration.between(Instant.now(), instant).toSeconds(), target.getName()) :
-            Utils.formatMessage(this.removedNoCooldown, target.getName())
-        );
+        if (instant == null) {
+            sender.sendMessage(Utils.formatMessage(this.removedNoCooldown, target.getName()));
+            return true;
+        }
+
+        final long remainingDuration = Duration.between(Instant.now(), instant).toSeconds();
+        if (remainingDuration <= 0) {
+            sender.sendMessage(Utils.formatMessage(this.removedExpiredCooldown, -remainingDuration, target.getName()));
+            return true;
+        }
+
+        sender.sendMessage(Utils.formatMessage(this.removedCooldown, remainingDuration, target.getName()));
         return true;
     }
     
