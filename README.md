@@ -4,7 +4,7 @@ VanillaPlus is a collection of Spigot plugins designed to enhance the vanilla Mi
 
 The common themes of all VanillaPlus plugins are:
 - Survival friendliness
-- Minimal commands and interfaces
+- Minimal required commands and interfaces
 - No required permissions management
 
 The motivation behind these themes is that these features should complement or extend Minecraft's game loop without disrupting the flow of the game.
@@ -16,6 +16,15 @@ Introduces multi-tools that combine the pickaxe, axe, and shovel into one tool. 
 
 ### [Hammer]()
 Introduces special pickaxes that can mine in a 3x3 area. There is one for each tool tier.
+
+### [RecoveryTotem]()
+Adds a craftable consumable Totem that provides a one-time keepInventory on death.
+
+### [OminousWither]()
+Adds harder variants of the Wither boss, summoned by having Bad Omen when building the Wither.
+
+### [DispensersShearPumpkins]()
+Activating a dispenser with shears inside will carve a pumpkin in front of it.
 
 ### [Harvest]()
 Quickly replant grown crops + hoe area-replant ability + dispenser auto-planting.
