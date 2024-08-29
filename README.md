@@ -9,27 +9,27 @@ The common themes of all VanillaPlus plugins are:
 
 The motivation behind these themes is that these features should complement or extend Minecraft's game loop without disrupting the flow of the game.
 
-The available plugins are listed below, as well as their brief descriptions. Each plugin's title is linked to its SpigotMC resource page which has more information.
+The available plugins are listed below, as well as their brief descriptions. Each plugin's title is linked to its own README page with more info.
 
-### [Paxel](https://www.spigotmc.org/resources/paxel.110810/ "SpigotMC resource page for this plugin")
+### [Paxel](./Paxel/README.md)
 Introduces multi-tools that combine the pickaxe, axe, and shovel into one tool. There is one for each tool tier.
 
-### [Hammer]()
+### [Hammer](./Hammer/README.md)
 Introduces special pickaxes that can mine in a 3x3 area. There is one for each tool tier.
 
-### [RecoveryTotem]()
+### [RecoveryTotem](./RecoveryTotem/README.md)
 Adds a craftable consumable Totem that provides a one-time keepInventory on death.
 
-### [OminousWither]()
+### [OminousWither](./OminousWither/README.md)
 Adds harder variants of the Wither boss, summoned by having Bad Omen when building the Wither.
 
-### [DispensersShearPumpkins]()
+### [DispensersShearPumpkins](./DispensersShearPumpkins/README.md)
 Activating a dispenser with shears inside will carve a pumpkin in front of it.
 
-### [Harvest]()
+### [Harvest](./Harvest/README.md)
 Quickly replant grown crops + hoe area-replant ability + dispenser auto-planting.
 
-### [XPControl]()
+### [XPControl](./XPControl/README.md)
 Control % of EXP points dropped, kept, and lost on death + EXP storage.
 
 <br />
