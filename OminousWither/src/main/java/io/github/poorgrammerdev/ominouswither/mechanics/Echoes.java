@@ -80,7 +80,10 @@ public class Echoes implements Listener {
             public boolean tick() {
                 //If wither no longer exists -> cancel
                 final Entity entity = plugin.getServer().getEntity(witherID);
-                if (!(entity instanceof Wither) || entity.isDead() || !entity.isInWorld()) return false;
+                if (!(entity instanceof Wither) || entity.isDead() || !entity.isInWorld()) {
+                    Echoes.this.lastUsed.remove(witherID);
+                    return false;
+                }
 
                 //Check cooldown
                 //If never used, then cannot be in cooldown. Otherwise check as normal

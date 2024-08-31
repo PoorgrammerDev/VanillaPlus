@@ -7,9 +7,11 @@ import org.bukkit.SoundCategory;
 import org.bukkit.Tag;
 import org.bukkit.World;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Wither;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import io.github.poorgrammerdev.ominouswither.OminousWither;
 import io.github.poorgrammerdev.ominouswither.internal.config.BossStat;
@@ -38,29 +40,36 @@ public class ApocalypseSkull extends AbstractHomingSkull {
         final LivingEntity hitEntity = (LivingEntity) event.getHitEntity();
         if (Tag.ENTITY_TYPES_WITHER_FRIENDS.isTagged(hitEntity.getType()) || this.plugin.isMinion(hitEntity)) return;
 
-        //Last damage cause must be this skull and it must've done damage after negation
-        //Unfortunately the Absorption potion effect seems to count as damage negation and the only method of detecting that is deprecated
-        //So Absorption is a counter to the Apocalypse skull for the time being 
-        final EntityDamageEvent lastDamageCause = hitEntity.getLastDamageCause();
-        if (
-            lastDamageCause == null ||
-            lastDamageCause.getDamageSource() == null ||
-            lastDamageCause.getDamageSource().getDirectEntity() == null ||
-            !lastDamageCause.getDamageSource().getDirectEntity().equals(event.getEntity()) ||
-            lastDamageCause.getFinalDamage() <= 0.0D
-        ) return;
+        //Delay by one tick to get correct Last Damage Cause
+        final Projectile skull = event.getEntity();
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                //Last damage cause must be this skull and it must've done damage after negation
+                //Unfortunately the Absorption potion effect seems to count as damage negation and the only method of detecting that is deprecated
+                //So Absorption is a counter to the Apocalypse skull for the time being 
+                final EntityDamageEvent lastDamageCause = hitEntity.getLastDamageCause();
+                if (
+                    lastDamageCause == null ||
+                    lastDamageCause.getDamageSource() == null ||
+                    lastDamageCause.getDamageSource().getDirectEntity() == null ||
+                    !lastDamageCause.getDamageSource().getDirectEntity().equals(skull) ||
+                    lastDamageCause.getFinalDamage() <= 0.0D
+                ) return;
 
-        final Location center = event.getEntity().getLocation();
+                final Location center = skull.getLocation();
 
-        //VFX + SFX
-        final World centerWorld = center.getWorld();
-        if (centerWorld != null) {
-            centerWorld.strikeLightningEffect(center);
-            centerWorld.playSound(center, Sound.ITEM_TRIDENT_THUNDER, SoundCategory.HOSTILE, 5, 0.875f);
-        }
+                //VFX + SFX
+                final World centerWorld = center.getWorld();
+                if (centerWorld != null) {
+                    centerWorld.strikeLightningEffect(center);
+                    centerWorld.playSound(center, Sound.ITEM_TRIDENT_THUNDER, SoundCategory.HOSTILE, 5, 0.875f);
+                }
 
-        //Start the apocalypse! o_O
-        this.apocalypseHorsemen.startApocalypse(wither, hitEntity);
+                //Start the apocalypse! o_O
+                apocalypseHorsemen.startApocalypse(wither, hitEntity);
+            }
+        }.runTaskLater(plugin, 1L);
     }
 
     @Override

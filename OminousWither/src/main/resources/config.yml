@@ -360,12 +360,15 @@ boss_stats:
 # Parameterized messages (using Java's built-in placeholders) will have their parameters specfied in a comment above them
 # All messages can make use of the Minecraft built-in color codes (see here: https://minecraft.wiki/w/Formatting_codes) using the symbol &
 messages:
-  # [Parameter 1 : integer ('%d')]: seconds of cooldown
+  # Can be sent to player via the chat system when attempting to build an Ominous Wither while still on cooldown
+  # - [Parameter 1 : integer ('%d')]: seconds of cooldown
   attempted_build_on_cooldown_chat: "You are on cooldown! Wait %d seconds or kill an Ominous Wither you've previously spawned to reset."
 
-  # [Parameter 1 : integer ('%d')]: seconds of cooldown
+  # Can be sent to player via actionbar when attempting to build an Ominous Wither while still on cooldown
+  # - [Parameter 1 : integer ('%d')]: seconds of cooldown
   attempted_build_on_cooldown_actionbar: "Cooldown: %d seconds"
 
+  # Command Error Messages
   insufficient_permissions_command: "&cYou do not have permission to use this command."
   insufficient_permissions_subcommand: "&cYou do not have permission to use this sub-command."
   invalid_subcommand: "&cInvalid subcommand."
@@ -384,31 +387,44 @@ messages:
   invalid_position_type: "&cPosition argument must be a valid number."
   internal_error: "&cAn internal error ocurred."
 
-  # [Parameter 1 : string ('%s')]: Ominous Wither name color code
-  # [Parameter 2 : string ('%s')]: Ominous Wither level roman numeral
+  # Sent on the use of `/summonominouswither`
+  # - [Parameter 1 : string ('%s')]: Ominous Wither name color code
+  # - [Parameter 2 : string ('%s')]: Ominous Wither level roman numeral
   summon_success: "Summoned new %sOminous Wither %s&r"
 
+  # Sent on the use of `/cooldown get` when the player has no cooldown active 
   get_self_no_cooldown: "You do not have a cooldown active."
 
-  # [Parameter 1 : integer ('%d')]: seconds of cooldown
+  # Sent on the use of `/cooldown get` when the player has a cooldown active 
+  # - [Parameter 1 : integer ('%d')]: seconds of cooldown
   get_self_cooldown: "You have %d seconds remaining in cooldown."
 
+  # Sent on the use of `/cooldown get <player>` when the target player has no cooldown active 
   # [Parameter 1: string ('%s')]: target player name
   get_other_no_cooldown: "%s does not have a cooldown active."
 
-  # [Parameter 1: string ('%s')]: target player name
-  # [Parameter 2: int ('%d')]: seconds of cooldown
+  # Sent on the use of `/cooldown get <player>` when the target player has a cooldown active 
+  # - [Parameter 1: string ('%s')]: target player name
+  # - [Parameter 2: int ('%d')]: seconds of cooldown
   get_other_cooldown: "%s has %d seconds remaining in cooldown."
 
-  # [Parameter 1: string ('%s')]: target player name
-  # [Parameter 2: int ('%d')]: seconds of cooldown
+  # Sent on the use of `/cooldown set`
+  # - [Parameter 1: string ('%s')]: target player name
+  # - [Parameter 2: int ('%d')]: seconds of cooldown
   set_cooldown: "Set %s's cooldown to %d seconds."
 
-  # [Parameter 1: string ('%s')]: target player name
-  remove_no_cooldown: "%s did not have an active cooldown to remove."
+  # Sent on the use of `/cooldown remove` when the target player didn't have a registered cooldown
+  # - [Parameter 1: string ('%s')]: target player name
+  remove_no_cooldown: "%s did not have a cooldown to remove."
 
-  # [Parameter 1: int ('%d')]: seconds of cooldown
-  # [Parameter 2: string ('%s')]: target player name
+  # Sent on the use of `/cooldown remove` when the target player had a registered cooldown, but it already expired
+  # - [Parameter 1: int ('%d')]: seconds of cooldown
+  # - [Parameter 2: string ('%s')]: target player name
+  remove_expired_cooldown: "Removed a cooldown that expired %d seconds ago from %s."
+
+  # Sent on the use of `/cooldown remove` when the target player had an active registered cooldown
+  # - [Parameter 1: int ('%d')]: seconds of cooldown
+  # - [Parameter 2: string ('%s')]: target player name
   remove_cooldown: "Removed cooldown of %d seconds from %s."
 
 

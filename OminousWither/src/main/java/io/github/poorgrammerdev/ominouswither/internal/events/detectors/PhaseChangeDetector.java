@@ -158,7 +158,7 @@ public class PhaseChangeDetector implements Listener {
                     }
 
                     //"Anchor" vfx
-                    //TODO: EXTREMELY CURSED VALUE; IS THERE A BETTER WAY?
+                    //TODO: messy value calculation, should clean up to enhance readability
                     final int index = Math.min((-ticks + 2*BUFF_ANIMATION_TICKS) / (BUFF_ANIMATION_TICKS / 4), 3);
                     for (int i = 0; i <= index ; i++) {
                         ParticleShapes.line(new ParticleInfo(Particle.SOUL_FIRE_FLAME, 3, 0.125, 0.125, 0.125), wither.getEyeLocation().subtract(0,1,0), wither.getLocation().add(this.anchorDirections[i]), 1.5);
