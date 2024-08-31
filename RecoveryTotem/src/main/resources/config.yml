@@ -15,3 +15,7 @@ write_description: true
 # The field can be any type, any value. As long as it exists on the item, it will be rejected.
 external_item_keys: {}
 
+# By default (false), the player will destroy one Totem of Recovery and keep all other items, including other Totems of Recovery.
+# If this is set to true, the player will still destroy one Totem of Recovery and keep all of their other items.
+#  However, if they were carrying more Totems of Recovery, those will be dropped where they died.
+drop_other_recovery_totems_on_death: false
