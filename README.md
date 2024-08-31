@@ -21,7 +21,7 @@ Introduces special pickaxes that can mine in a 3x3 area. There is one for each t
 Adds a craftable consumable Totem that provides a one-time keepInventory on death.
 
 ### [OminousWither](./OminousWither/README.md)
-Adds harder variants of the Wither boss, summoned by having Bad Omen when building the Wither.
+Adds a thrilling boss fight experience, summoned by building the Wither with Bad Omen.
 
 ### [DispensersShearPumpkins](./DispensersShearPumpkins/README.md)
 Activating a dispenser with shears inside will carve a pumpkin in front of it.
