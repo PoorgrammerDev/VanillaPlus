@@ -27,3 +27,19 @@ exhaustion_multiplier: 2.0
 # Enables the system that displays block breaking visual effects
 # for the (up to) 8 adjacent blocks while using the hammer
 show_adjacent_breaking: true
+
+# Counterbalances hammers by limiting the level of Efficiency that can be applied to it
+# [!] Please note that this system is disabled by default
+efficiency_limiter:
+  # Enable/disable the system
+  enabled: false
+
+  # Max level of Efficiency that can be applied to a hammer via the Enchanting Table or an Anvil
+  # Please note the /enchant command can still bypass this
+  max_level: 3
+
+  # Sends a message to a player informing them about the limit if they are about to enchant a Hammer and this system has modified their result
+  send_info_message_to_players: true
+
+  # Duration (in minutes) before sending another info message to the same player. This prevents spamming their chat with these messages
+  message_cooldown_minutes: 10
