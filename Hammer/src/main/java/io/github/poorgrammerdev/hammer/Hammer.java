@@ -35,6 +35,11 @@ public class Hammer extends JavaPlugin {
             this.getServer().getPluginManager().registerEvents(fauxBlockDamage, this);
         }
 
+        final EfficiencyLimiter efficiencyLimiter = new EfficiencyLimiter(this);
+        if (efficiencyLimiter.isEnabled()) {
+            this.getServer().getPluginManager().registerEvents(efficiencyLimiter, this);
+        }
+
         this.getServer().getPluginManager().registerEvents(new HammerMechanism(this, random, fauxBlockDamage), this);
         this.getServer().getPluginManager().registerEvents(new RepairingManager(this), this);
         this.getServer().getPluginManager().registerEvents(new RecipeManager(recipeKeyMap), this);
