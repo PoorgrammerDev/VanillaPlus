@@ -15,7 +15,7 @@ The available plugins are listed below, as well as their brief descriptions. Eac
 Introduces multi-tools that combine the pickaxe, axe, and shovel into one tool. There is one for each tool tier.
 
 ### [Hammer](./Hammer/README.md)
-Introduces special pickaxes that can mine in a 3x3 area. There is one for each tool tier.
+Introduces craftable pickaxes for each tool tier that mine in a 3x3 area.
 
 ### [RecoveryTotem](./RecoveryTotem/README.md)
 Adds a craftable consumable Totem that provides a one-time keepInventory on death.
