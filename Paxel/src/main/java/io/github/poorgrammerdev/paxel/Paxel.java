@@ -1,17 +1,14 @@
 package io.github.poorgrammerdev.paxel;
 
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.UUID;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeModifier;
-import org.bukkit.attribute.AttributeModifier.Operation;
-import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.Tag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.components.ToolComponent;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -39,8 +36,8 @@ public final class Paxel extends JavaPlugin {
         final RepairingManager repairingManager = new RepairingManager(this, toolMapper);
         this.getServer().getPluginManager().registerEvents(repairingManager, this);
 
-        final PaxelMechanism paxelMechanism = new PaxelMechanism(this, this.toolMapper);
-        this.getServer().getPluginManager().registerEvents(paxelMechanism, this);
+        final PaxelSpecialActions paxelSpecialActions = new PaxelSpecialActions(this, this.toolMapper);
+        this.getServer().getPluginManager().registerEvents(paxelSpecialActions, this);
 
         final RecipeManager recipeManager = new RecipeManager(toolMapper, paxelRecipeMap);
         this.getServer().getPluginManager().registerEvents(recipeManager, this);
@@ -48,11 +45,6 @@ public final class Paxel extends JavaPlugin {
         final GiveCommand giveCommand = new GiveCommand(this, toolMapper);
         this.getCommand("givepaxel").setExecutor(giveCommand);
         this.getCommand("givepaxel").setTabCompleter(giveCommand);
-    }
-
-    @Override
-    public void onDisable() {
-        // Plugin shutdown logic
     }
 
     /**
@@ -87,24 +79,47 @@ public final class Paxel extends JavaPlugin {
         final Material[] toolSet = this.toolMapper.getToolSet(tier);
         if (toolSet == null) return null;
 
-        final String displayName = getPaxelName(tier);
+        final Double speedObj = this.toolMapper.getSpeed(tier);
+        if (speedObj == null) return null;
+        
+        final String incorrectTagStr = this.toolMapper.getIncorrectTag(tier);
+        if (incorrectTagStr == null) return null;
 
-        final ItemBuilder builder = new ItemBuilder(toolSet[ToolMapper.PICKAXE_INDEX])
-            .setCustomModelData(this.getConfig().getInt("custom_model_data", 100))
-            .setName(ChatColor.RESET + displayName)
-            .setPersistentData(this.getPaxelKey(), PersistentDataType.BOOLEAN, true);
+        final Tag<Material> incorrectTag = this.getServer().getTag(Tag.REGISTRY_BLOCKS, NamespacedKey.minecraft(incorrectTagStr), Material.class);
+        if (incorrectTag == null) {
+            this.getLogger().warning("Invalid tag \"" + incorrectTagStr + "\" for tier \"" + tier + "\"!");
+            return null;
+        }
+        
+        final Float speed = (float) speedObj.doubleValue();
+        final String name = getPaxelName(tier);
+
+        final ItemStack paxel = new ItemStack(toolSet[ToolMapper.PICKAXE_INDEX]);
+        final ItemMeta meta = paxel.getItemMeta();
+        if (meta == null) throw new IllegalStateException("ItemMeta cannot be null!");
+        
+        meta.setCustomModelData(this.getConfig().getInt("custom_model_data", 100));
+        meta.setItemName(name);
+        meta.getPersistentDataContainer().set(this.getPaxelKey(), PersistentDataType.BOOLEAN, true);
+
+        //Component-based Paxel mechanism
+        final ToolComponent tool = meta.getTool();
+
+        tool.addRule(incorrectTag, speed, false); //NOTE: this must go before the other rules
+        tool.addRule(Tag.MINEABLE_AXE, speed, true);
+        tool.addRule(Tag.MINEABLE_PICKAXE, speed, true);
+        tool.addRule(Tag.MINEABLE_SHOVEL, speed, true);
+
+        tool.setDamagePerBlock(1);
+        meta.setTool(tool);
         
         if (this.getConfig().getBoolean("write_description", true)) {
             //The reason for setting the lore too is because the player can rename the tool
-            builder.setLore(ChatColor.GRAY + displayName);
+            meta.setLore(Arrays.asList(ChatColor.GRAY + name));
         }
 
-        if (this.getConfig().getBoolean("experimental_attack_speed", false)) {
-            //Adds instant attack speed modifier
-            builder.addAttributeModifier(Attribute.GENERIC_ATTACK_SPEED, new AttributeModifier(UUID.randomUUID(), "Paxel Cosmetic Speed", 999, Operation.ADD_NUMBER, EquipmentSlot.HAND));
-        }
-
-        return builder.build();
+        paxel.setItemMeta(meta);
+        return paxel;
     }
 
     /**

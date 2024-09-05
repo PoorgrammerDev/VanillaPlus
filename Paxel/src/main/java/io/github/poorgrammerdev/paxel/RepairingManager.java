@@ -136,27 +136,20 @@ public class RepairingManager implements Listener {
         final ItemMeta meta = result.getItemMeta();
         if (meta == null || !plugin.isPaxel(result)) return;
         
-        //Compare the existing name with the expected name
-        //If they match then nothing needs to be changed
-        final String oldName = ChatColor.stripColor(meta.getDisplayName());
-        final String newName = plugin.getPaxelName(toolMapper.getToolTier(result.getType()));
-        if (oldName.equals(newName)) return;
+        final String resultTier = this.toolMapper.getToolTier(result.getType());
 
-        //Search for the ingredient (base) paxel
-        ItemStack oldPaxel = null;
-        for (final ItemStack ingredient : event.getInventory()) {
-            if (this.plugin.isPaxel(ingredient)) {
-                oldPaxel = ingredient;
-                break;
-            }
-        }
+        //Update ToolComponent
+        //Easiest way to do this is just to create a Netherite Paxel from scratch and copy its tool component
+        final ItemStack temp = this.plugin.createPaxel(resultTier);
+        final ItemMeta tempMeta = temp.getItemMeta();
+        if (tempMeta == null || !tempMeta.hasTool() || tempMeta.getTool() == null) throw new IllegalStateException("ToolComponent is missing from temp item!");
+        meta.setTool(tempMeta.getTool());
 
-        //Add the new name if the tool is not already renamed
-        if (oldPaxel == null || oldName.equals(plugin.getPaxelName(toolMapper.getToolTier(oldPaxel.getType())))) {
-            meta.setDisplayName(ChatColor.RESET + newName);
-        }
+        //Update item name
+        final String newName = plugin.getPaxelName(resultTier);
+        meta.setItemName(newName);
 
-        //Add the new description
+        //Update description
         if (plugin.getConfig().getBoolean("write_description", true)) {
             meta.setLore(Arrays.asList(ChatColor.GRAY + newName));
         }

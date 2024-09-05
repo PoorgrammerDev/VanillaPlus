@@ -6,43 +6,21 @@ import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 /**
- * Swaps the paxel's base item around during mining to replicate effect
+ * Implements special right click actions (stripping logs or pathing grass)
  * @author Thomas Tran
  */
-public class PaxelMechanism implements Listener {
+public class PaxelSpecialActions implements Listener {
     private final Paxel plugin;
     private final ToolMapper toolMapper;
     
-    public PaxelMechanism(Paxel plugin, ToolMapper toolMapper) {
+    public PaxelSpecialActions(Paxel plugin, ToolMapper toolMapper) {
         this.plugin = plugin;
         this.toolMapper = toolMapper;
-    }
-
-    /**
-     * Listens for when the player begins mining a block to switch paxel base tools
-     */
-    @EventHandler
-    public void beginMining(BlockDamageEvent event) {
-        if (event.isCancelled()) return;
-        
-        final ItemStack tool = event.getItemInHand();
-
-        //Make sure the item in question is a paxel
-        if (!plugin.isPaxel(tool)) return;
-
-        final Material blockType = event.getBlock().getType();
-        
-        //If there is no mismatch or if it is not applicable -> do nothing and return
-        final int toolSwapType = getToolSwapType(tool.getType(), blockType);
-        if (toolSwapType < 0) return;
-
-        //Swap the paxel type to match the block player is mining
-        swapPaxelType(tool, toolSwapType);
     }
 
     /**
@@ -65,8 +43,8 @@ public class PaxelMechanism implements Listener {
             swapPaxelType(tool, ToolMapper.AXE_INDEX);
 
             //After swapping the type the intended action is handled automatically (though I'm not exactly sure why)
-        }
 
+        }
         //Attempting to path a dirt block without the paxel in shovel mode
         else if (Tag.DIRT.isTagged(block.getType()) && !Tag.ITEMS_SHOVELS.isTagged(tool.getType())) {
             //Swaps to the correct type
@@ -74,6 +52,16 @@ public class PaxelMechanism implements Listener {
 
             //After swapping the type the intended action is handled automatically (though I'm not exactly sure why)
         }
+        else return;
+
+        //One tick later, swaps the tool back to continue using as normal
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                swapPaxelType(tool, ToolMapper.PICKAXE_INDEX);
+            }
+            
+        }.runTaskLater(plugin, 1L);
     }
 
     /**
@@ -91,28 +79,5 @@ public class PaxelMechanism implements Listener {
         
         //Swap the item type
         tool.setType(toolSet[toolSwapIndex]);
-    }
-    
-    /**
-     * Checks if the tool being used to mine the block is not the optimal tool.
-     * @param toolType
-     * @param blockType
-     * @return Toolset index for the correct tool to use, or -1 if optimal or -2 if not applicable
-     */
-    private int getToolSwapType(final Material toolType, final Material blockType) {
-        if (Tag.MINEABLE_AXE.isTagged(blockType)) {
-            if (!Tag.ITEMS_AXES.isTagged(toolType)) return ToolMapper.AXE_INDEX;
-            return -1;
-        }
-        if (Tag.MINEABLE_PICKAXE.isTagged(blockType)) {
-            if (!Tag.ITEMS_PICKAXES.isTagged(toolType)) return ToolMapper.PICKAXE_INDEX;
-            return -1;
-        }
-        if (Tag.MINEABLE_SHOVEL.isTagged(blockType)) {
-            if (!Tag.ITEMS_SHOVELS.isTagged(toolType)) return ToolMapper.SHOVEL_INDEX;
-            return -1;
-        }
-
-        return -2;
     }
 }

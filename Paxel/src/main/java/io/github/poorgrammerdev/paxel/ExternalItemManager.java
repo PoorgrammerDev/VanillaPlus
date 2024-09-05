@@ -7,7 +7,6 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
 
 /**
  * Checks if an item is a registered special item from another plugin
@@ -34,13 +33,12 @@ public class ExternalItemManager {
         if (meta == null) return false;
 
         for (final NamespacedKey key : this.externalKeys) {
-            if (meta.getPersistentDataContainer().getOrDefault(key, PersistentDataType.BOOLEAN, false)) {
+            if (meta.getPersistentDataContainer().has(key)) {
                 return true;
             }
         }
 
         return false;
     }
-    
 
 }

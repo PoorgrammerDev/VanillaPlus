@@ -12,13 +12,31 @@ custom_model_data: 100
 write_description: true
 
 # Items from other plugins that should not be allowed to be crafted into a paxel
-# Identified by a boolean namespaced key in the item's PersistentDataContainer
+# Identified by a namespaced key representing a field in the item's PersistentDataContainer
+# The field can be any type, any value. As long as it exists on the item, it will be rejected.
 external_tool_keys:
 - "hammer:is_hammer"
 
-# [!] Experimental Feature - DISABLED by default
-# Gives all paxels instant (+999) attack speed to fix a cosmetic bug
-# where constant swapping results in the paxel always being in cooldown.
-# Attack damage modifiers are removed from the tool to prevent it being used as a weapon.
-# Only affects NEW paxels, will not convert existing ones!
-experimental_attack_speed: false
+# Defines the base mining speed to use in the Paxel's Tool Components
+# These values are from the Minecraft Wiki (called 'Tool Speed' as of 4 Sep 2024) here: https://minecraft.wiki/w/Breaking#Speed
+# If any new tool tiers are added in the future, a speed value for them *must* be set here for Paxels of that tier to be available
+base_mining_speeds:
+  wooden: 2.0
+  stone: 4.0
+  iron: 6.0
+  golden: 12.0
+  diamond: 8.0
+  netherite: 9.0
+
+# Defines the block tag used to determine what blocks cannot be harvested for drops by a Paxel
+# For example, a Wooden Paxel should not be able to harvest Obsidian by breaking it
+# These values can be found on the Minecraft Wiki (see https://minecraft.wiki/w/Tag) and must correspond with in-game Tags
+# If any new tool tiers are added in the future, a tag for them *must* be set here for Paxels of that tier to be available
+# Please do not include the "minecraft:" namespace, as that is already inferred by the plugin
+incorrect_tag:
+  wooden: "incorrect_for_wooden_tool"
+  stone: "incorrect_for_stone_tool"
+  iron: "incorrect_for_iron_tool"
+  golden: "incorrect_for_gold_tool"
+  diamond: "incorrect_for_diamond_tool"
+  netherite: "incorrect_for_netherite_tool"
