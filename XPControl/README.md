@@ -1,4 +1,4 @@
-# [XPControl]()
+# XPControl
 
 XPControl is a plugin that allows the server owner to configure how experience points are kept, dropped, and lost on death.
 

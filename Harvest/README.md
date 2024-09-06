@@ -1,4 +1,4 @@
-# [Harvest]()
+# Harvest
 
 Harvest is a plugin that adds quality-of-life farming abilities.
 
