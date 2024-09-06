@@ -12,7 +12,7 @@ The motivation behind these themes is that these features should complement or e
 The available plugins are listed below, as well as their brief descriptions. Each plugin's title is linked to its own README page with more info.
 
 ### [Paxel](./Paxel/README.md)
-Introduces multi-tools that combine the pickaxe, axe, and shovel into one tool. There is one for each tool tier.
+Adds craftable paxel multi-tools, a combination of the pickaxe, axe, and shovel.
 
 ### [Hammer](./Hammer/README.md)
 Introduces craftable pickaxes for each tool tier that mine in a 3x3 area.
