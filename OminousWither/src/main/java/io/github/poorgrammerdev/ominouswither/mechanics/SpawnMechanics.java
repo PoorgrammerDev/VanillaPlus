@@ -21,7 +21,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.loot.LootTables;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
@@ -30,6 +29,7 @@ import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherActiv
 import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherLoadEvent;
 import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherSpawnEvent;
 import io.github.poorgrammerdev.ominouswither.internal.events.OminousWitherUnloadEvent;
+import io.github.poorgrammerdev.ominouswither.utils.EmptyLootTable;
 import io.github.poorgrammerdev.ominouswither.utils.ItemBuilder;
 import io.github.poorgrammerdev.ominouswither.utils.ParticleInfo;
 import io.github.poorgrammerdev.ominouswither.utils.Utils;
@@ -81,10 +81,10 @@ public class SpawnMechanics implements Listener {
         final String witherName = Utils.WITHER_NAME_COLOR + "Ominous Wither" + (levelRoman != null ? (" " + levelRoman) : "");
 
         wither.setCustomName(witherName);
-        wither.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(this.plugin.getBossStatsManager().getStat(BossStat.BOSS_MAX_HEALTH, level, difficulty));
-        wither.getAttribute(Attribute.GENERIC_ARMOR).setBaseValue(this.plugin.getBossStatsManager().getStat(BossStat.FIRST_PHASE_ARMOR, level, difficulty));
-        wither.getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS).setBaseValue(this.plugin.getBossStatsManager().getStat(BossStat.FIRST_PHASE_ARMOR_TOUGHNESS, level, difficulty));
-        wither.getAttribute(Attribute.GENERIC_FOLLOW_RANGE).setBaseValue(1024);
+        wither.getAttribute(Attribute.MAX_HEALTH).setBaseValue(this.plugin.getBossStatsManager().getStat(BossStat.BOSS_MAX_HEALTH, level, difficulty));
+        wither.getAttribute(Attribute.ARMOR).setBaseValue(this.plugin.getBossStatsManager().getStat(BossStat.FIRST_PHASE_ARMOR, level, difficulty));
+        wither.getAttribute(Attribute.ARMOR_TOUGHNESS).setBaseValue(this.plugin.getBossStatsManager().getStat(BossStat.FIRST_PHASE_ARMOR_TOUGHNESS, level, difficulty));
+        wither.getAttribute(Attribute.FOLLOW_RANGE).setBaseValue(1024);
 
         //Wither looks at its spawner while spawning
         this.performOminousStare(wither.getUniqueId(), player.getUniqueId());
@@ -124,7 +124,7 @@ public class SpawnMechanics implements Listener {
 
         //Set Wither's health to its Max Health
         //(This could not be done at spawn-time since it seems to be hardcoded in MC to set to 300 at explode-time)
-        wither.setHealth(wither.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
+        wither.setHealth(wither.getAttribute(Attribute.MAX_HEALTH).getValue());
 
         //Summon minions
         this.spawnMinions(wither);
@@ -268,12 +268,12 @@ public class SpawnMechanics implements Listener {
             final WitherSkeleton minion = (WitherSkeleton) entity;
             minion.setPersistent(true);
             minion.getPersistentDataContainer().set(this.plugin.getMinionKey(), PersistentDataType.BOOLEAN, true);
-            minion.setLootTable(LootTables.EMPTY.getLootTable());
+            minion.setLootTable(new EmptyLootTable(plugin));
             minion.setCanPickupItems(false);
-            minion.getAttribute(Attribute.GENERIC_ARMOR).setBaseValue(this.plugin.getBossStatsManager().getStat(BossStat.MINION_ARMOR, level, difficulty));
-            minion.getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS).setBaseValue(this.plugin.getBossStatsManager().getStat(BossStat.MINION_ARMOR_TOUGHNESS, level, difficulty));
-            minion.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(this.plugin.getBossStatsManager().getStat(BossStat.MINION_MOVEMENT_SPEED, level, difficulty));
-            minion.getAttribute(Attribute.GENERIC_FOLLOW_RANGE).setBaseValue(1024);
+            minion.getAttribute(Attribute.ARMOR).setBaseValue(this.plugin.getBossStatsManager().getStat(BossStat.MINION_ARMOR, level, difficulty));
+            minion.getAttribute(Attribute.ARMOR_TOUGHNESS).setBaseValue(this.plugin.getBossStatsManager().getStat(BossStat.MINION_ARMOR_TOUGHNESS, level, difficulty));
+            minion.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(this.plugin.getBossStatsManager().getStat(BossStat.MINION_MOVEMENT_SPEED, level, difficulty));
+            minion.getAttribute(Attribute.FOLLOW_RANGE).setBaseValue(1024);
 
             //Targets the spawner if possible
             if (Utils.isTargetable(spawner)) {
@@ -283,7 +283,7 @@ public class SpawnMechanics implements Listener {
             final EntityEquipment equipment = minion.getEquipment();
             if (equipment == null) continue;
 
-            equipment.setItemInMainHandDropChance(-32768);
+            equipment.setItemInMainHandDropChance(0.0f);
             final ItemStack weapon =
                 new ItemBuilder(Material.NETHERITE_SWORD)
                     .addEnchant(Enchantment.SHARPNESS, (int) this.plugin.getBossStatsManager().getStat(BossStat.MINION_SWORD_SHARPNESS, level, difficulty), true)
@@ -294,7 +294,7 @@ public class SpawnMechanics implements Listener {
             equipment.setItemInMainHand(weapon);
 
             if (level == 5) {
-                equipment.setItemInOffHandDropChance(-32768);
+                equipment.setItemInOffHandDropChance(0.0f);
                 equipment.setItemInOffHand(new ItemStack(Material.TOTEM_OF_UNDYING));
             }
         }

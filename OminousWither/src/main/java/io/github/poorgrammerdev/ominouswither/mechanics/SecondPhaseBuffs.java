@@ -27,8 +27,8 @@ public class SecondPhaseBuffs implements Listener {
     private void onPhaseChange(final OminousWitherPhaseChangeBeginEvent event) {
         final Wither wither = event.getWither();
         
-        wither.getAttribute(Attribute.GENERIC_ARMOR).setBaseValue(this.plugin.getBossStatsManager().getStat(BossStat.SECOND_PHASE_ARMOR, wither));
-        wither.getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS).setBaseValue(this.plugin.getBossStatsManager().getStat(BossStat.SECOND_PHASE_ARMOR_TOUGHNESS, wither));
+        wither.getAttribute(Attribute.ARMOR).setBaseValue(this.plugin.getBossStatsManager().getStat(BossStat.SECOND_PHASE_ARMOR, wither));
+        wither.getAttribute(Attribute.ARMOR_TOUGHNESS).setBaseValue(this.plugin.getBossStatsManager().getStat(BossStat.SECOND_PHASE_ARMOR_TOUGHNESS, wither));
 
         //Fog effect
         wither.getBossBar().addFlag(BarFlag.CREATE_FOG);

@@ -346,7 +346,7 @@ public class LifeDrain implements Listener {
 
                             //Heal the Wither with drained HP
                             if (wither != null && !wither.isDead() && wither.isInWorld()) {
-                                final double hpBound = wither.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() / 2.0;
+                                final double hpBound = wither.getAttribute(Attribute.MAX_HEALTH).getValue() / 2.0;
 
                                 wither.setHealth(Math.min(wither.getHealth() + (hpDrained * this.healMultiplier), hpBound));
                             }

@@ -56,7 +56,7 @@ public class PhaseChangeDetector implements Listener {
         if (wither.getPersistentDataContainer().getOrDefault(this.plugin.getSecondPhaseKey(), PersistentDataType.BOOLEAN, false)) return;
 
         //Wither must be below half health
-        final double maxHealth = wither.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+        final double maxHealth = wither.getAttribute(Attribute.MAX_HEALTH).getValue();
         final double healthAfterDamage = wither.getHealth() - event.getFinalDamage();
 
         //If the player somehow kills the Wither in one shot bypassing the second phase entirely, do not call event
@@ -75,7 +75,7 @@ public class PhaseChangeDetector implements Listener {
         final Wither wither = event.getWither();
 
         //Wither grows in size
-        wither.getAttribute(Attribute.GENERIC_SCALE).setBaseValue(1.5);
+        wither.getAttribute(Attribute.SCALE).setBaseValue(1.5);
 
         wither.getNearbyEntities(20, 20, 20)
             .stream()

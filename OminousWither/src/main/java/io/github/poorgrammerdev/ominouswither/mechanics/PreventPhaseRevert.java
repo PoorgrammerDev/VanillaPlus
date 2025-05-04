@@ -38,7 +38,7 @@ public class PreventPhaseRevert implements Listener {
         if (wither.getInvulnerabilityTicks() > 0 || !wither.getPersistentDataContainer().getOrDefault(this.plugin.getSecondPhaseKey(), PersistentDataType.BOOLEAN, false)) return;
 
         //Calculate how much the Wither can heal
-        final double maxHealth = wither.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+        final double maxHealth = wither.getAttribute(Attribute.MAX_HEALTH).getValue();
         final double halfHealth = maxHealth / 2.0D;
         final double maxHealAmount = halfHealth - wither.getHealth();
 
@@ -74,7 +74,7 @@ public class PreventPhaseRevert implements Listener {
      */
     private void forceHealthBoundary(final Wither witherParam) {
         final UUID witherID = witherParam.getUniqueId();
-        final double healthBoundary = witherParam.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() / 2.0D;
+        final double healthBoundary = witherParam.getAttribute(Attribute.MAX_HEALTH).getValue() / 2.0D;
 
         this.plugin.getCoroutineManager().enqueue(new ICoroutine() {
             @Override

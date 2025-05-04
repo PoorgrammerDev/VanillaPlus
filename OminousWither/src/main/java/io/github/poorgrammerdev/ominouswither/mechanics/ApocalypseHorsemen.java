@@ -27,7 +27,6 @@ import org.bukkit.event.world.EntitiesLoadEvent;
 import org.bukkit.event.world.EntitiesUnloadEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.loot.LootTables;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -37,6 +36,7 @@ import org.bukkit.util.Vector;
 import io.github.poorgrammerdev.ominouswither.OminousWither;
 import io.github.poorgrammerdev.ominouswither.coroutines.PassableLocationFinder;
 import io.github.poorgrammerdev.ominouswither.internal.config.BossStat;
+import io.github.poorgrammerdev.ominouswither.utils.EmptyLootTable;
 import io.github.poorgrammerdev.ominouswither.utils.ItemBuilder;
 
 /**
@@ -187,20 +187,20 @@ public class ApocalypseHorsemen implements Listener {
     private void applySkeletonEffects(final Skeleton skeleton, final int level, final Difficulty difficulty) {
         //Handle base stats, etc.
         skeleton.getPersistentDataContainer().set(this.plugin.getMinionKey(), PersistentDataType.BOOLEAN, true);
-        skeleton.setLootTable(LootTables.EMPTY.getLootTable());
+        skeleton.setLootTable(new EmptyLootTable(plugin));
         skeleton.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, PotionEffect.INFINITE_DURATION, 0));
-        skeleton.getAttribute(Attribute.GENERIC_FOLLOW_RANGE).setBaseValue(128);
+        skeleton.getAttribute(Attribute.FOLLOW_RANGE).setBaseValue(128);
 
         // ----- EQUIPMENT ------
         final EntityEquipment skeletonEquipment = skeleton.getEquipment();
         if (skeletonEquipment == null) return;
 
         //Cannot drop any equipment
-        skeletonEquipment.setHelmetDropChance(-32767);
-        skeletonEquipment.setChestplateDropChance(-32767);
-        skeletonEquipment.setLeggingsDropChance(-32767);
-        skeletonEquipment.setBootsDropChance(-32767);
-        skeletonEquipment.setItemInMainHandDropChance(-32767);
+        skeletonEquipment.setHelmetDropChance(0.0f);
+        skeletonEquipment.setChestplateDropChance(0.0f);
+        skeletonEquipment.setLeggingsDropChance(0.0f);
+        skeletonEquipment.setBootsDropChance(0.0f);
+        skeletonEquipment.setItemInMainHandDropChance(0.0f);
 
         //Armor
         final int protectionLevel = (int) this.plugin.getBossStatsManager().getStat(BossStat.APOCALYPSE_HORSEMAN_ARMOR_PROTECTION, level, difficulty);
@@ -229,12 +229,12 @@ public class ApocalypseHorsemen implements Listener {
      */
     private void applyHorseEffects(final SkeletonHorse horse, final int level, final Difficulty difficulty) {
         horse.getPersistentDataContainer().set(this.plugin.getMinionKey(), PersistentDataType.BOOLEAN, true);
-        horse.setLootTable(LootTables.EMPTY.getLootTable());
+        horse.setLootTable(new EmptyLootTable(plugin));
         horse.setTamed(true);
         horse.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, PotionEffect.INFINITE_DURATION, 0));
-        horse.getAttribute(Attribute.GENERIC_FOLLOW_RANGE).setBaseValue(128);
-        horse.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(this.plugin.getBossStatsManager().getStat(BossStat.APOCALYPSE_HORSE_SPEED, level, difficulty));
-        horse.getAttribute(Attribute.GENERIC_MOVEMENT_EFFICIENCY).setBaseValue(this.plugin.getBossStatsManager().getStat(BossStat.APOCALYPSE_HORSE_MOVEMENT_EFFICIENCY, level, difficulty));
+        horse.getAttribute(Attribute.FOLLOW_RANGE).setBaseValue(128);
+        horse.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(this.plugin.getBossStatsManager().getStat(BossStat.APOCALYPSE_HORSE_SPEED, level, difficulty));
+        horse.getAttribute(Attribute.MOVEMENT_EFFICIENCY).setBaseValue(this.plugin.getBossStatsManager().getStat(BossStat.APOCALYPSE_HORSE_MOVEMENT_EFFICIENCY, level, difficulty));
     }
     
     //#region BehaviorControl
