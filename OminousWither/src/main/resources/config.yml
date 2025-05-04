@@ -316,6 +316,12 @@ boss_stats:
   echoes_cooldown:
     formula: "700 - (75 * (level - 1))"
 
+  # If Echoes is on cooldown and a player hits the Ominous Wither with a Mace attack that's strong enough (over a damage threshold),
+  # it has this percent chance probability to halve the remaining cooldown time
+  echoes_cooldown_reduction_probability:
+    formula: "level"
+    level-mapping: [0, 0, 0.25, 0.5, 1.0]
+
   # How close the Wither's target must be in order to use Echoes on them
   # The distance is measured at a point slightly above the Wither's base to give some vertical bias
   echoes_range:

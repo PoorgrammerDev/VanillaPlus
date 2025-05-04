@@ -307,7 +307,7 @@ public class LifeDrain implements Listener {
                             //Determine if first hit and should apply curse
                             //Not directly performing curse/register here since untargetable players may still exist here
                             final boolean isNewTarget = !this.previousTargets.contains(entity.getUniqueId());
-                            final boolean applyCurse = isNewTarget && (random.nextDouble() < this.curseProbability);
+                            final boolean applyCurse = isNewTarget && (random.nextDouble() <= this.curseProbability);
 
                             //If player, check if targetable and also play SFX
                             if (entity instanceof Player) {

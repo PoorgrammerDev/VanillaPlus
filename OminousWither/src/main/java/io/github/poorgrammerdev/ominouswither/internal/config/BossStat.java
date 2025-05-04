@@ -47,6 +47,7 @@ public enum BossStat {
     LIFE_DRAIN_HORIZONTAL_RADIUS("boss_stats.life_drain_horizontal_radius"),
     LIFE_DRAIN_VERTICAL_RADIUS("boss_stats.life_drain_vertical_radius"),
     ECHOES_COOLDOWN("boss_stats.echoes_cooldown"),
+    ECHOES_COOLDOWN_REDUCTION_PROBABILITY("boss_stats.echoes_cooldown_reduction_probability"),
     ECHOES_RANGE("boss_stats.echoes_range"),
     ECHOES_MAX_Y_VELOCITY("boss_stats.echoes_max_y_velocity"),
     ECHOES_MAX_EFFECT_DURATION("boss_stats.echoes_max_effect_duration"),
